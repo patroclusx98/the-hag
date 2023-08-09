@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 42830436}
   - component: {fileID: 42830435}
   m_Layer: 5
-  m_Name: Settings Button
+  m_Name: SettingsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -549,8 +549,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneLoader: {fileID: 479190023}
   audioManager: {fileID: 972039536}
-  menuCamera: {fileID: 996911523}
-  menuCanvas: {fileID: 1106553283}
 --- !u!1 &972039535
 GameObject:
   m_ObjectHideFlags: 0
@@ -581,7 +579,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musics:
-  - name: Music_MainMenu
+  - musicName: Menu_Music_Main
     audioClip: {fileID: 8300000, guid: a204e317464b34743a7e03aee24e016a, type: 3}
     volume: 0.4
     pitch: 1
@@ -589,7 +587,7 @@ MonoBehaviour:
     playOnAwake: 1
     source: {fileID: 0}
   sounds:
-  - name: Sound_StartGame
+  - soundName: Menu_Sound_Start
     audioClip: {fileID: 8300000, guid: 1d26ad1aed5731b439cfc9f4a471330d, type: 3}
     volume: 0.8
     pitch: 0.8
@@ -717,10 +715,10 @@ GameObject:
   - component: {fileID: 1106553284}
   - component: {fileID: 1106553283}
   - component: {fileID: 1106553282}
-  - component: {fileID: 1106553281}
   - component: {fileID: 1106553285}
+  - component: {fileID: 1106553281}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: MenuCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -802,7 +800,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 901170121}
-  - {fileID: 1434414727}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1006,7 +1003,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 0}
+  m_FirstSelected: {fileID: 1865325707}
   m_sendNavigationEvents: 1
   m_DragThreshold: 0
 --- !u!224 &1434414727
@@ -1016,16 +1013,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1434414724}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0067112, y: 1.0067112, z: 1.0067112}
+  m_LocalRotation: {x: -0, y: 0.8294278, z: -0, w: 0.55861396}
+  m_LocalPosition: {x: 0, y: 0, z: -7.362276}
+  m_LocalScale: {x: 0.0023768896, y: 0.0023768896, z: 0.0023768896}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1106553284}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -578.3556, y: -300}
+  m_AnchoredPosition: {x: 2.3232637e+9, y: -2.2609502e+10}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1566075861
@@ -1206,7 +1203,7 @@ GameObject:
   - component: {fileID: 1865325710}
   - component: {fileID: 1865325709}
   m_Layer: 5
-  m_Name: Start Button
+  m_Name: StartButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1339,7 +1336,7 @@ GameObject:
   - component: {fileID: 1963768449}
   - component: {fileID: 1963768448}
   m_Layer: 5
-  m_Name: Exit Button
+  m_Name: ExitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1467,4 +1464,5 @@ SceneRoots:
   - {fileID: 972039537}
   - {fileID: 996911524}
   - {fileID: 1106553284}
+  - {fileID: 1434414727}
   - {fileID: 1566075863}

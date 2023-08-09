@@ -5,12 +5,15 @@ public class PlayerHand : MonoBehaviour
     public ObjectInteraction objectInteraction;
     public MouseLook mouseLook;
 
-    Quaternion originTransform;
+    private Quaternion originTransform;
+
+    // Start is called before the first frame update
     void Start()
     {
         originTransform = gameObject.transform.localRotation;
     }
 
+    // Update is called once per frame
     void Update()
     {
         if (!mouseLook.isInteracting && !mouseLook.isInInventory)
@@ -24,7 +27,7 @@ public class PlayerHand : MonoBehaviour
         float upLimit = objectInteraction.carryingObject ? 75f : 40f;
         float downLimit = objectInteraction.carryingObject ? -40f : -50f;
         float xMouseRotation = -mouseLook.xRotation;
-        float mouseX = Input.GetAxis("Mouse X") * mouseLook.mouseSens;
+        float mouseX = Input.GetAxis("Mouse X") * mouseLook.mouseSensitivity;
 
         if (xMouseRotation > upLimit)
         {

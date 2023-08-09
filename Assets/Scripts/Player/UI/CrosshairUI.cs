@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class Crosshair : MonoBehaviour
+public class CrosshairUI : MonoBehaviour
 {
+    public PlayerStats playerStats;
+    public Camera mainCamera;
     public RawImage crosshair;
     public RawImage crosshairHand;
     public Image crosshairItem;
@@ -11,9 +13,9 @@ public class Crosshair : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool raycast = Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hitInfo, PlayerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
+        bool raycast = Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
 
-        Item selectedItem = Inventory.instance != null ? Inventory.instance.selectedItem : null;
+        Item selectedItem = PlayerInventory.instance != null ? PlayerInventory.instance.selectedItem : null;
         if (selectedItem != null)
         {
             crosshairHand.enabled = false;
@@ -39,7 +41,7 @@ public class Crosshair : MonoBehaviour
                 crosshairItem.enabled = false;
             }
 
-            if (PlayerStats.canInteract && raycast && hitInfo.transform.CompareTag("Interactable"))
+            if (playerStats.canInteract && raycast && hitInfo.transform.CompareTag("Interactable"))
             {
                 crosshairHand.enabled = true;
                 crosshair.enabled = false;

@@ -2,27 +2,26 @@
 
 public class InventoryUI : MonoBehaviour
 {
-    public Transform itemsParent;
     public GameObject inventoryUI;
+    public PlayerStats playerStats;
     public MouseLook mouseLook;
 
-    Inventory inventory;
-
-    InventorySlot[] slots;
+    private PlayerInventory inventory;
+    private InventorySlot[] slots;
 
     // Start is called before the first frame update
     void Start()
     {
-        inventory = Inventory.instance;
+        inventory = PlayerInventory.instance;
         inventory.onItemChangedCallback += UpdateUI;
 
-        slots = itemsParent.GetComponentsInChildren<InventorySlot>();
+        slots = inventoryUI.GetComponentsInChildren<InventorySlot>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if ((PlayerStats.canInteract || mouseLook.isInInventory) && Input.GetKeyDown(KeyCode.E))
+        if ((playerStats.canInteract || mouseLook.isInInventory) && Input.GetKeyDown(KeyCode.E))
         {
             ToggleInventory(false);
         }

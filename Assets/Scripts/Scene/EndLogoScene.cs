@@ -3,7 +3,6 @@ using UnityEngine.Video;
 
 public class EndLogoScene : MonoBehaviour
 {
-
     public SceneLoader sceneLoader;
     public VideoPlayer videoPlayer;
 
@@ -13,7 +12,7 @@ public class EndLogoScene : MonoBehaviour
         videoPlayer.loopPointReached += EndVideo;
     }
 
-    void EndVideo(VideoPlayer vp)
+    public void EndVideo(VideoPlayer vp)
     {
         sceneLoader.LoadNextScene(1f);
     }

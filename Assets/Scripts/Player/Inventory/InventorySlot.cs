@@ -3,8 +3,8 @@ using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour
 {
-    Item item;
     public Image icon;
+    private Item item;
 
     public void AddItem(Item newItem)
     {
@@ -32,7 +32,7 @@ public class InventorySlot : MonoBehaviour
             }
             else
             {
-                Inventory.instance.selectedItem = item;
+                PlayerInventory.instance.selectedItem = item;
             }
             GetComponentInParent<InventoryUI>().ToggleInventory(true);
         }

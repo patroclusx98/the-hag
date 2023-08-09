@@ -5,7 +5,7 @@ public class HintUI : MonoBehaviour
 {
     public static HintUI instance;
     public Animator animator;
-    private TMP_Text tmpText;
+    public TMP_Text tmpText;
 
     void Awake()
     {
@@ -13,8 +13,6 @@ public class HintUI : MonoBehaviour
         if (instance != null)
             Debug.LogWarning("More than one instance of Inventory found!");
         instance = this;
-
-        tmpText = GetComponentInChildren<TMP_Text>();
     }
 
     public void DisplayHintMessage(string newHintText)

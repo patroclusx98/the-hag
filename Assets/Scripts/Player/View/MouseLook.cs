@@ -3,16 +3,19 @@
 public class MouseLook : MonoBehaviour
 {
     public PlayerMovement playerMovement;
+    public PlayerStats playerStats;
 
+    [Header("Mouse Attributes")]
     [Range(0.3f, 2f)]
-    public float mouseSens = 1f;
+    public float mouseSensitivity = 1f;
 
-    [HideInInspector]
-    public bool isInteracting = false;
-    [HideInInspector]
-    public bool isInInventory = false;
-    [HideInInspector]
-    public float xRotation = 0f;
+    [Header("Mouse Inspector")]
+    [ReadOnlyInspector]
+    public bool isInteracting;
+    [ReadOnlyInspector]
+    public bool isInInventory;
+    [ReadOnlyInspector]
+    public float xRotation;
 
     // Start is called before the first frame update
     void Start()
@@ -33,8 +36,8 @@ public class MouseLook : MonoBehaviour
     void DoMouseLook()
     {
         //Looking logic
-        float mouseX = Input.GetAxis("Mouse X") * mouseSens;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSens;
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
         if (mouseX != 0 || mouseY != 0)
         {
@@ -52,7 +55,7 @@ public class MouseLook : MonoBehaviour
 
         if (isInInventory)
         {
-            PlayerStats.canInteract = false;
+            playerStats.canInteract = false;
 
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
@@ -60,7 +63,7 @@ public class MouseLook : MonoBehaviour
         else
         {
             if (!isItemSelected)
-                PlayerStats.canInteract = true;
+                playerStats.canInteract = true;
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;

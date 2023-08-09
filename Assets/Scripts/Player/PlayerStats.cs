@@ -5,91 +5,85 @@ public class PlayerStats : MonoBehaviour
     public PlayerMovement playerMovement;
     public AudioManager audioManager;
 
-    //Interaction
-    [System.NonSerialized]
-    public static bool canInteract = true;
-    [System.NonSerialized]
-    public static float reachDistance = 1.1f;
-    [System.NonSerialized]
-    public static float throwForce = 180f;
+    [Header("Player Interaction Attributes")]
+    public bool canInteract = true;
+    public float reachDistance = 1.1f;
+    public float strength = 180f;
 
-    [Header("Player Speed")]
-    //Speed
+    [Header("Player Speed Attributes")]
     public float walkSpeed = 2f;
     public float sprintSpeed = 4f;
     public float climbSpeed = 1f;
     public float fallDamageSpeed = 1f;
 
-    [Header("Player Stamina")]
-    //Stamina
+    [Header("Player Stamina Attributes")]
     public bool isStaminaDrainEnabled = true;
     public float playerStamina = 100f;
-    public float staminaChangeSpeed = 15f;
-    public float adrenalineModifier = 2f;
-    [HideInInspector]
+    public float staminaChangeSpeed = 10f;
+
+    [Header("Player Modifier Attributes")]
     public bool isAdrenalineOn = false;
-
-    [HideInInspector]
+    public float adrenalineModifier = 2f;
     public bool canRun = true;
-    [HideInInspector]
     public bool canJump = true;
-
-    [HideInInspector]
+    [ReadOnlyInspector]
     public bool hasFallDamage = false;
 
-    bool canRecoverRun = true;
-    bool canRecoverJump = true;
+    private bool canRunInternal = true;
+    private bool canJumpInternal = true;
+    private float fallDamageRecoveryTimer = 0f;
+    private float fallDamageRecoveryLength = 0f;
 
     // Update is called once per frame
     void Update()
     {
-        float staminaSpeed = staminaChangeSpeed;
+        float staminaDrainSpeed = staminaChangeSpeed;
         if (isAdrenalineOn)
         {
-            staminaSpeed = staminaChangeSpeed / adrenalineModifier;
+            staminaDrainSpeed = staminaChangeSpeed / adrenalineModifier;
         }
 
-        HandleStamina(staminaSpeed);
+        HandleStamina(staminaDrainSpeed);
 
         if (hasFallDamage)
-            RecoverFallDamage();
+            HandleFallDamage();
     }
 
-    void HandleStamina(float staminaSpeed)
+    void HandleStamina(float staminaDrainSpeed)
     {
         if (playerStamina < 40f)
         {
-            audioManager.PlayCollectionSound2D("Sound_Player_Breath", false, 0f);
+            audioManager.PlayCollectionSound2D("Sound_Player_Breath", false, 0.5f);
         }
 
         if (isStaminaDrainEnabled)
         {
-            if (playerMovement.isRunning && canRun)
+            if (playerMovement.isRunning && GetCanRun())
             {
                 if (playerStamina > 0f)
                 {
                     if (!playerMovement.hasJumped)
                     {
-                        playerStamina -= Time.deltaTime * staminaSpeed;
+                        playerStamina -= Time.deltaTime * staminaDrainSpeed;
                     }
                 }
                 else
                 {
                     playerStamina = 0f;
-                    canRun = false;
+                    canRunInternal = false;
                 }
             }
-            if (playerMovement.hasJumped && canJump)
+            if (playerMovement.hasJumped && GetCanJump())
             {
                 if (playerStamina >= 10f)
                 {
-                    playerStamina -= staminaSpeed;
-                    canJump = false;
+                    playerStamina -= staminaDrainSpeed;
+                    canJumpInternal = false;
                 }
                 else
                 {
                     playerStamina = 0f;
-                    canJump = false;
+                    canJumpInternal = false;
                 }
             }
         }
@@ -99,7 +93,7 @@ public class PlayerStats : MonoBehaviour
             //Stamina recover
             if (!playerMovement.isRunning && !playerMovement.hasJumped)
             {
-                playerStamina += Time.deltaTime * staminaChangeSpeed * adrenalineModifier;
+                playerStamina += Time.deltaTime * staminaChangeSpeed;
                 if (playerStamina > 100f)
                 {
                     playerStamina = 100f;
@@ -107,43 +101,20 @@ public class PlayerStats : MonoBehaviour
             }
 
             //Run recover
-            if (playerStamina >= staminaSpeed * 2f && !playerMovement.isRunning)
+            if (playerStamina >= 60f && !playerMovement.isRunning)
             {
-                if (canRecoverRun)
-                    canRun = true;
+                canRunInternal = true;
             }
 
             //Jump recover
-            if (playerStamina >= staminaSpeed && !playerMovement.hasJumped)
+            if (playerStamina >= staminaDrainSpeed && !playerMovement.hasJumped)
             {
-                if (canRecoverJump)
-                    canJump = true;
+                canJumpInternal = true;
             }
         }
     }
 
-    public void SetCanRun(bool canRun)
-    {
-        this.canRun = canRun;
-        canRecoverRun = canRun;
-    }
-
-    public void SetCanJump(bool canJump)
-    {
-        this.canJump = canJump;
-        canRecoverJump = canJump;
-    }
-
-    private float fallDamageRecoveryTimer = 0f;
-    private float fallDamageRecoveryLength = 0f;
-    public void SetFallDamage(float lengthMultiplier)
-    {
-        fallDamageRecoveryLength = 1f * lengthMultiplier;
-
-        fallDamageRecoveryTimer = 0f;
-        hasFallDamage = true;
-    }
-    public void RecoverFallDamage()
+    public void HandleFallDamage()
     {
         if (fallDamageRecoveryTimer < fallDamageRecoveryLength)
         {
@@ -154,5 +125,33 @@ public class PlayerStats : MonoBehaviour
             fallDamageRecoveryTimer = 0f;
             hasFallDamage = false;
         }
+    }
+
+    public bool GetCanRun()
+    {
+        return canRun && canRunInternal;
+    }
+
+    public bool GetCanJump()
+    {
+        return canJump && canJumpInternal;
+    }
+
+    public void SetCanRun(bool canRun)
+    {
+        this.canRun = canRun;
+    }
+
+    public void SetCanJump(bool canJump)
+    {
+        this.canJump = canJump;
+    }
+
+    public void SetFallDamage(float lengthMultiplier)
+    {
+        fallDamageRecoveryLength = 1f * lengthMultiplier;
+
+        fallDamageRecoveryTimer = 0f;
+        hasFallDamage = true;
     }
 }

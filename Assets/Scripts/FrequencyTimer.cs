@@ -3,14 +3,12 @@ using UnityEngine;
 
 public class FrequencyTimer : MonoBehaviour
 {
-    string ID;
-    float frequencyInSeconds;
-
-    float timeElapsedWhileMute = 0f;
-    float frequencyCounter = 0f;
-
-    bool hasStarted = false;
-    bool hasEnded = false;
+    private string ID;
+    private float frequencyInSeconds;
+    private float timeElapsedWhileMute;
+    private float frequencyCounter;
+    private bool hasStarted;
+    private bool hasEnded;
 
     public static FrequencyTimer GetInstance(string ID, GameObject gameObject)
     {
@@ -26,6 +24,7 @@ public class FrequencyTimer : MonoBehaviour
         return ft;
     }
 
+    // Update is called once per frame
     void Update()
     {
         if (hasStarted)

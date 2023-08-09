@@ -2,8 +2,12 @@
 
 public class Climbable : MonoBehaviour
 {
-    PlayerMovement playerMovement;
-    bool canClimb;
+    [Header("Climbable Attributes")]
+    [Range(0f, -1f)]
+    public float faceAwayTolerance = -0.5f;
+
+    private PlayerMovement playerMovement;
+    private bool canClimb;
 
     // Start is called before the first frame update
     void Start()
@@ -11,13 +15,12 @@ public class Climbable : MonoBehaviour
         playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
     }
 
+    // Update is called once per frame
     void Update()
     {
         if (canClimb)
         {
-            float facingDotProduct = CalcFacingDotProduct();
-
-            if (facingDotProduct > 0.6f)
+            if (CheckFacing())
             {
                 playerMovement.isClimbing = true;
             }
@@ -28,12 +31,14 @@ public class Climbable : MonoBehaviour
         }
     }
 
-    float CalcFacingDotProduct()
+    //Check if player is facing the climbable object
+    bool CheckFacing()
     {
-        Vector3 ladderVector = -gameObject.transform.right;
-        Vector3 cameraVector = Camera.main.transform.right;
+        Vector3 objectFacing = -gameObject.transform.right;
+        Vector3 cameraFacing = Camera.main.transform.right;
+        float facingDotProduct = Vector3.Dot(cameraFacing, objectFacing);
 
-        return Vector3.Dot(cameraVector, ladderVector);
+        return facingDotProduct > faceAwayTolerance;
     }
 
     private void OnTriggerEnter(Collider other)

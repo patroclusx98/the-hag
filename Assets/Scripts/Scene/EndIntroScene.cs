@@ -5,7 +5,7 @@ public class EndIntroScene : MonoBehaviour
 {
     public SceneLoader sceneLoader;
 
-    void EndIntro()
+    public void EndIntro()
     {
         if (SceneManager.GetActiveScene().buildIndex == 1)
         {

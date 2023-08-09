@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a78d621cdacd7c64f9ae1d8590b4bd3d, type: 3}
-  m_Name: Enterance Key
+  m_Name: Room Key
   m_EditorClassIdentifier: 
-  name: Enterance Key
+  name: Room Key
   icon: {fileID: 21300000, guid: beab580baaca1be46877855ba998ead9, type: 3}
   usableGameObjects:
   - {fileID: 0}

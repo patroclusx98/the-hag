@@ -6,44 +6,42 @@ public class PlayerMovement : MonoBehaviour
     public PlayerStats playerStats;
     public AudioManager audioManager;
 
-    private Vector3 defaultCameraPosition;
-
-    [HideInInspector]
-    public bool isWalking = false;
-    [HideInInspector]
-    public bool isRunning = false;
-    [HideInInspector]
-    public float playerSpeed;
-
-    [HideInInspector]
-    public Vector3 moveVelocity;
-
-    private bool isJumping = false;
-    [HideInInspector]
-    public bool hasJumped = false;
     [Header("Movement Attributes")]
     public float gravityForce = -25f;
     public float jumpHeight = 0.8f;
-    [HideInInspector]
-    public Vector3 verticalVelocity;
-
-    [HideInInspector]
-    public bool isCrouching = false;
     public float crouchHeight = 1.1f;
-
-    [HideInInspector]
-    public bool isGrounded;
-    public LayerMask groundMask;
     public float wallHitTolerance = 0.8f;
-    private bool didWalkIntoWall = false;
+    public LayerMask groundMask;
+
+    [Header("Movement Inspector")]
+    [ReadOnlyInspector]
+    public float playerSpeed;
+    [ReadOnlyInspector]
+    public Vector3 moveVelocity;
+    [ReadOnlyInspector]
+    public Vector3 verticalVelocity;
+    [ReadOnlyInspector]
+    public bool isGrounded;
+    [ReadOnlyInspector]
+    public bool isWalking;
+    [ReadOnlyInspector]
+    public bool isRunning;
+    [ReadOnlyInspector]
+    public bool hasJumped;
+    [ReadOnlyInspector]
+    public bool isCrouching;
+    [ReadOnlyInspector]
+    public bool isClimbing;
+    [ReadOnlyInspector]
+    public GameObject gameObjectUnderPlayer;
+
+    private Vector3 defaultCameraPosition;
     private Vector3 moveDirectionOnWallCollision;
-    float defaultStepOffset;
+    private bool isJumping;
+    private bool didWalkIntoWall;
+    private float defaultStepOffset;
 
-    [HideInInspector]
-    public bool isClimbing = false;
-    [HideInInspector]
-    public GameObject gameObjectUnderPlayer = null;
-
+    // Start is called before the first frame update
     private void Start()
     {
         defaultCameraPosition = Camera.main.transform.localPosition;
@@ -94,6 +92,11 @@ public class PlayerMovement : MonoBehaviour
         {
             ApplyGravity();
         }
+    }
+
+    public bool IsPlayerMoving()
+    {
+        return isWalking || isRunning;
     }
 
     void ApplyGravity()
@@ -154,7 +157,7 @@ public class PlayerMovement : MonoBehaviour
         if (!didWalkIntoWall)
         {
             //Sprinting logic
-            if (Input.GetKey(KeyCode.LeftShift) && z >= 0.5f && !isCrouching && playerStats.canRun && !playerStats.hasFallDamage)
+            if (Input.GetKey(KeyCode.LeftShift) && z >= 0.5f && !isCrouching && playerStats.GetCanRun() && !playerStats.hasFallDamage)
             {
                 playerSpeed = playerStats.sprintSpeed;
                 isRunning = true;
@@ -193,11 +196,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public bool IsPlayerMoving()
-    {
-        return isWalking || isRunning;
-    }
-
     void Climb()
     {
         float x = Input.GetAxis("Horizontal");
@@ -219,7 +217,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump()
     {
-        if (playerStats.canJump)
+        if (playerStats.GetCanJump())
         {
             Ray ray = new Ray
             {

@@ -2,13 +2,15 @@
 
 public class PlayerFOV : MonoBehaviour
 {
-    public Camera mainCamera;
     public PlayerMovement playerMovement;
+    public Camera mainCamera;
 
-    float defaultFov;
-
+    [Header("FOV Attributes")]
     public float distortionSensitivity = 3f;
 
+    private float defaultFov;
+
+    // Start is called before the first frame update
     void Start()
     {
         defaultFov = mainCamera.fieldOfView;

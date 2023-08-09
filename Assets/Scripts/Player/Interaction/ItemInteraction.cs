@@ -3,52 +3,58 @@
 public class ItemInteraction : MonoBehaviour
 {
     public PlayerMovement playerMovement;
+    public PlayerStats playerStats;
+    public Camera mainCamera;
 
-    GameObject itemInHand;
-    Inventory inventory;
+    private PlayerInventory inventory;
+    private GameObject itemInHand;
 
+    // Start is called before the first frame update
     void Start()
     {
-        inventory = Inventory.instance;
+        inventory = PlayerInventory.instance;
     }
 
+    // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             Item selectedItem = inventory != null ? inventory.selectedItem : null;
+
             if (selectedItem != null)
             {
-                RaycastHit hitInfo;
-                bool rayHit = Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hitInfo, PlayerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
+                bool rayHit = Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
                 selectedItem.Use(rayHit ? hitInfo.transform.gameObject : null);
-
                 inventory.selectedItem = null;
-                PlayerStats.canInteract = true;
+                playerStats.canInteract = true;
             }
             else
             {
-                PickUpItem();
+                if (playerStats.canInteract)
+                {
+                    PickUpItem();
+                }
             }
         }
     }
 
     void PickUpItem()
     {
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hitInfo, PlayerStats.reachDistance, LayerMask.GetMask("Item"), QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Item"), QueryTriggerInteraction.Ignore))
         {
             itemInHand = hitInfo.transform.gameObject;
 
             if (itemInHand.CompareTag("Interactable"))
             {
-                if (Inventory.instance.HasSpace())
+                if (inventory.HasSpace())
                 {
-                    ItemObjHolder itemObjHolder = itemInHand.GetComponent<ItemObjHolder>();
+                    ItemInteractable itemObjHolder = itemInHand.GetComponent<ItemInteractable>();
                     Item item = itemObjHolder != null ? itemObjHolder.item : null;
                     if (item != null)
                     {
-                        Inventory.instance.AddItem(item);
                         item.usableGameObjects = itemObjHolder.usableGameObjects;
+                        inventory.AddItem(item);
                         Destroy(itemInHand);
                     }
                     else
@@ -58,7 +64,7 @@ public class ItemInteraction : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning("No space left in inventory!");
+                    HintUI.instance.DisplayHintMessage("No space in inventory!");
                 }
             }
         }

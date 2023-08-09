@@ -7,11 +7,11 @@ public class ItemKey : Item
     {
         if (base.Use(hoveredObject))
         {
-            hoveredObject.TryGetComponent<DoorInteraction>(out var doorInteraction);
-            if (doorInteraction != null)
+            hoveredObject.TryGetComponent<DoorInteractable>(out var doorObject);
+            if (doorObject != null)
             {
-                doorInteraction.isLocked = false;
-                Inventory.instance.RemoveItem(this);
+                doorObject.isLocked = false;
+                PlayerInventory.instance.RemoveItem(this);
                 return true;
             }
         }

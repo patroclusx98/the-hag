@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour
+public class PlayerInventory : MonoBehaviour
 {
-    public static Inventory instance;
+    public static PlayerInventory instance;
+
+    [Header("Inventory Attributes")]
+    public int maxSpace = 8;
+
+    [Header("Inventory Inspector")]
     public List<Item> itemsList = new List<Item>();
-
-    [HideInInspector]
+    [ReadOnlyInspector]
     public Item selectedItem;
-
-    public int maxSpace = 10;
 
     public delegate void OnItemChanged();
     public OnItemChanged onItemChangedCallback;
@@ -26,14 +28,12 @@ public class Inventory : MonoBehaviour
     public void AddItem(Item itemObject)
     {
         itemsList.Add(itemObject);
-
         onItemChangedCallback?.Invoke();
     }
 
     public void RemoveItem(Item itemObject)
     {
         itemsList.Remove(itemObject);
-
         onItemChangedCallback?.Invoke();
     }
 
@@ -45,20 +45,13 @@ public class Inventory : MonoBehaviour
         }
         else
         {
-            Debug.Log("Invalid inventory item index!");
+            Debug.LogWarning("Invalid inventory item index!");
             return null;
         }
     }
 
     public bool HasSpace()
     {
-        if (itemsList.Count < maxSpace)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return itemsList.Count < maxSpace;
     }
 }

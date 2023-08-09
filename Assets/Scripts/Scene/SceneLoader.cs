@@ -7,7 +7,10 @@ public class SceneLoader : MonoBehaviour
     public Animator transition;
     public AudioManager audioManager;
 
-    bool isSkipped = false;
+    [Header("Scene Loader Inspector")]
+    [SerializeField]
+    [ReadOnlyInspector]
+    private bool isSkipped = false;
 
     // Update is called once per frame
     void Update()
@@ -15,13 +18,18 @@ public class SceneLoader : MonoBehaviour
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {
             Cursor.visible = false;
+            if (Input.GetButtonDown("Jump") && !isSkipped)
+            {
+                isSkipped = true;
+                LoadNextScene(0f);
+            }
         }
         else if (SceneManager.GetActiveScene().buildIndex == 1)
         {
             if (Input.GetButtonDown("Jump") && !isSkipped)
             {
-                LoadNextScene(4f);
                 isSkipped = true;
+                LoadNextScene(4f);
             }
         }
         else if (SceneManager.GetActiveScene().buildIndex == 2)
