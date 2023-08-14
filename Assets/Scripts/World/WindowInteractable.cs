@@ -25,7 +25,8 @@ public class WindowInteractable : MonoBehaviour
     [ReadOnlyInspector]
     public Vector3 toPosition;
 
-    void Reset()
+    //Reset is called on component add/reset
+    private void Reset()
     {
         //Auto set window params
         gameObject.tag = "Interactable";
@@ -41,7 +42,7 @@ public class WindowInteractable : MonoBehaviour
         boxCollider.size = new Vector3(boxCollider.size.x, boxCollider.size.y + 0.3f, boxCollider.size.z);
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
@@ -49,7 +50,7 @@ public class WindowInteractable : MonoBehaviour
         }
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {

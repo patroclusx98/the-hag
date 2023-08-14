@@ -14,14 +14,14 @@ public class HeadBobbing : MonoBehaviour
     private float timer;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         defaultPosX = transform.localPosition.x;
         defaultPosY = transform.localPosition.y;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (playerMovement.IsPlayerMoving() && (Mathf.Abs(playerMovement.moveVelocity.x) > 0.35f || Mathf.Abs(playerMovement.moveVelocity.z) > 0.35f))
         {
@@ -32,7 +32,7 @@ public class HeadBobbing : MonoBehaviour
         }
         else
         {
-            //Idle
+            //Player is idle
             timer = 0;
             transform.localPosition = new Vector3(transform.localPosition.x, Mathf.Lerp(transform.localPosition.y, defaultPosY, Time.deltaTime * runningBobbingSpeed), transform.localPosition.z);
             transform.localPosition = new Vector3(Mathf.Lerp(transform.localPosition.x, defaultPosX, Time.deltaTime * runningBobbingSpeed), transform.localPosition.y, transform.localPosition.z);

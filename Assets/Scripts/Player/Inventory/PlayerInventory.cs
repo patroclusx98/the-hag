@@ -16,11 +16,12 @@ public class PlayerInventory : MonoBehaviour
     public delegate void OnItemChanged();
     public OnItemChanged onItemChangedCallback;
 
-    void Awake()
+    //Awake is called on script load
+    private void Awake()
     {
         //Singleton instance
         if (instance != null)
-            Debug.LogWarning("More than one instance of Inventory found!");
+            Debug.LogWarning("More than one instance of Player Inventory is found!");
 
         instance = this;
     }
@@ -37,6 +38,12 @@ public class PlayerInventory : MonoBehaviour
         onItemChangedCallback?.Invoke();
     }
 
+    public void RemoveAll()
+    {
+        itemsList.Clear();
+        onItemChangedCallback?.Invoke();
+    }
+
     public Item GetItem(int index)
     {
         if (itemsList.Count > index)
@@ -45,7 +52,7 @@ public class PlayerInventory : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Invalid inventory item index!");
+            Debug.LogWarning("Invalid Player Inventory item index!");
             return null;
         }
     }

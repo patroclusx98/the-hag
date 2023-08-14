@@ -10,7 +10,7 @@ public class InventoryUI : MonoBehaviour
     private InventorySlot[] slots;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         inventory = PlayerInventory.instance;
         inventory.onItemChangedCallback += UpdateUI;
@@ -19,7 +19,7 @@ public class InventoryUI : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if ((playerStats.canInteract || mouseLook.isInInventory) && Input.GetKeyDown(KeyCode.E))
         {
@@ -27,7 +27,7 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    void UpdateUI()
+    private void UpdateUI()
     {
         for (int i = 0; i < slots.Length; i++)
         {

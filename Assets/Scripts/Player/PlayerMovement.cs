@@ -4,6 +4,7 @@ public class PlayerMovement : MonoBehaviour
 {
     public CharacterController characterController;
     public PlayerStats playerStats;
+    public Camera mainCamera;
     public AudioManager audioManager;
 
     [Header("Movement Attributes")]
@@ -11,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     public float jumpHeight = 0.8f;
     public float crouchHeight = 1.1f;
     public float wallHitTolerance = 0.8f;
+    public float maxObjectPushWeight = 5f;
     public LayerMask groundMask;
 
     [Header("Movement Inspector")]
@@ -44,12 +46,12 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        defaultCameraPosition = Camera.main.transform.localPosition;
+        defaultCameraPosition = mainCamera.transform.localPosition;
         defaultStepOffset = characterController.stepOffset;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         isGrounded = characterController.isGrounded;
 
@@ -94,12 +96,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public bool IsPlayerMoving()
-    {
-        return isWalking || isRunning;
-    }
-
-    void ApplyGravity()
+    private void ApplyGravity()
     {
         if (!isGrounded)
         {
@@ -138,7 +135,7 @@ public class PlayerMovement : MonoBehaviour
         characterController.Move(verticalVelocity * Time.deltaTime);
     }
 
-    void MovePlayer()
+    private void MovePlayer()
     {
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
@@ -196,7 +193,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void Climb()
+    private void Climb()
     {
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
@@ -215,7 +212,7 @@ public class PlayerMovement : MonoBehaviour
         characterController.Move(playerSpeed * Time.deltaTime * moveVelocity);
     }
 
-    void Jump()
+    private void Jump()
     {
         if (playerStats.GetCanJump())
         {
@@ -236,11 +233,11 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void ToggleCrouch()
+    private void ToggleCrouch()
     {
         if (!isCrouching)
         {
-            Camera.main.transform.localPosition = new Vector3(0f, Camera.main.transform.localPosition.y - (characterController.height - crouchHeight) * 0.5f, -0.072f);
+            mainCamera.transform.localPosition = new Vector3(0f, mainCamera.transform.localPosition.y - (characterController.height - crouchHeight) * 0.5f, -0.072f);
             characterController.height = crouchHeight;
             gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y * 0.5f, gameObject.transform.position.z);
             isCrouching = true;
@@ -257,7 +254,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (!Physics.Raycast(ray, characterController.height - 0.05f, -1, QueryTriggerInteraction.Ignore))
             {
-                Camera.main.transform.localPosition = defaultCameraPosition; //Default camera pos
+                mainCamera.transform.localPosition = defaultCameraPosition; //Default camera pos
                 characterController.height = 2f; //Default player height
                 isCrouching = false;
 
@@ -265,10 +262,10 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        Camera.main.GetComponent<HeadBobbing>().UpdateDefaultPosY(Camera.main.transform.localPosition.y);
+        mainCamera.GetComponent<HeadBobbing>().UpdateDefaultPosY(mainCamera.transform.localPosition.y);
     }
 
-    void OnControllerColliderHit(ControllerColliderHit hit)
+    private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         //Check for horizontal collisions only
         if (hit.moveDirection.y == 0f)
@@ -286,7 +283,7 @@ public class PlayerMovement : MonoBehaviour
 
     //Pushes small rigid bodies around when collided with
     //Returns true if object can be pushed and/or is being pushed
-    bool PushRigidBodyObjects(ControllerColliderHit hit)
+    private bool PushRigidBodyObjects(ControllerColliderHit hit)
     {
         Rigidbody objectBody = hit.rigidbody;
 
@@ -295,7 +292,7 @@ public class PlayerMovement : MonoBehaviour
             return false;
 
         // Do not push heavy objects
-        if (objectBody.mass >= 5f)
+        if (objectBody.mass > maxObjectPushWeight)
             return false;
 
         // Calculate push direction from move direction
@@ -309,7 +306,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //Returns true if player is walking into a wall
-    void CheckForWallHit(ControllerColliderHit hit)
+    private void CheckForWallHit(ControllerColliderHit hit)
     {
         //If collided object is being pushed than do not stop the player
         if (hit.collider.gameObject.layer == LayerMask.NameToLayer("ObjectCarried") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Door"))
@@ -324,7 +321,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //Check and sets the game object that is under the player
-    void CheckObjectBelowPlayer(ControllerColliderHit hit)
+    private void CheckObjectBelowPlayer(ControllerColliderHit hit)
     {
         Vector3 pointOfHitLocal = transform.InverseTransformPoint(hit.point);
 
@@ -334,7 +331,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void PlayStepSound()
+    private void PlayStepSound()
     {
         if (isGrounded && moveVelocity.magnitude > 0.35f)
         {
@@ -353,11 +350,16 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void PlayImpactSound()
+    private void PlayImpactSound()
     {
         if (isGrounded)
         {
             audioManager.PlayCollectionSound3D("Sound_Step_Walk_Dirt", false, 0f, gameObject);
         }
+    }
+
+    public bool IsPlayerMoving()
+    {
+        return isWalking || isRunning;
     }
 }

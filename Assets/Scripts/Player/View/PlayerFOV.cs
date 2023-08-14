@@ -11,13 +11,13 @@ public class PlayerFOV : MonoBehaviour
     private float defaultFov;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         defaultFov = mainCamera.fieldOfView;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (playerMovement.isRunning || playerMovement.verticalVelocity.y < -10f)
         {

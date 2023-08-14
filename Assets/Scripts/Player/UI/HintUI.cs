@@ -7,11 +7,12 @@ public class HintUI : MonoBehaviour
     public Animator animator;
     public TMP_Text tmpText;
 
-    void Awake()
+    //Awake is called on script load
+    private void Awake()
     {
         //Singleton instance
         if (instance != null)
-            Debug.LogWarning("More than one instance of Inventory found!");
+            Debug.LogWarning("More than one instance of Hint UI is found!");
         instance = this;
     }
 

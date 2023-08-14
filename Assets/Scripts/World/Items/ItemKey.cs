@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Key", menuName = "Inventory/Key")]
+
 public class ItemKey : Item
 {
     public override bool Use(GameObject hoveredObject)
@@ -12,6 +13,7 @@ public class ItemKey : Item
             {
                 doorObject.isLocked = false;
                 PlayerInventory.instance.RemoveItem(this);
+
                 return true;
             }
         }

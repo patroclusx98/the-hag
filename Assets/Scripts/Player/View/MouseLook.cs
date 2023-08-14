@@ -6,7 +6,7 @@ public class MouseLook : MonoBehaviour
     public PlayerStats playerStats;
 
     [Header("Mouse Attributes")]
-    [Range(0.3f, 2f)]
+    [Range(0.3f, 3f)]
     public float mouseSensitivity = 1f;
 
     [Header("Mouse Inspector")]
@@ -18,14 +18,14 @@ public class MouseLook : MonoBehaviour
     public float xRotation;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (!isInteracting && !isInInventory)
         {
@@ -33,7 +33,7 @@ public class MouseLook : MonoBehaviour
         }
     }
 
-    void DoMouseLook()
+    private void DoMouseLook()
     {
         //Looking logic
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;

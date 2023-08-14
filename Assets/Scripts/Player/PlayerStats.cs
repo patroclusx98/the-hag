@@ -35,7 +35,7 @@ public class PlayerStats : MonoBehaviour
     private float fallDamageRecoveryLength = 0f;
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         float staminaDrainSpeed = staminaChangeSpeed;
         if (isAdrenalineOn)
@@ -49,7 +49,7 @@ public class PlayerStats : MonoBehaviour
             HandleFallDamage();
     }
 
-    void HandleStamina(float staminaDrainSpeed)
+    private void HandleStamina(float staminaDrainSpeed)
     {
         if (playerStamina < 40f)
         {
@@ -114,7 +114,7 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    public void HandleFallDamage()
+    private void HandleFallDamage()
     {
         if (fallDamageRecoveryTimer < fallDamageRecoveryLength)
         {

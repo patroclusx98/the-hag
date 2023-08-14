@@ -10,13 +10,13 @@ public class ItemInteraction : MonoBehaviour
     private GameObject itemInHand;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         inventory = PlayerInventory.instance;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -39,7 +39,7 @@ public class ItemInteraction : MonoBehaviour
         }
     }
 
-    void PickUpItem()
+    private void PickUpItem()
     {
         if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Item"), QueryTriggerInteraction.Ignore))
         {

@@ -8,12 +8,11 @@ public class SceneLoader : MonoBehaviour
     public AudioManager audioManager;
 
     [Header("Scene Loader Inspector")]
-    [SerializeField]
     [ReadOnlyInspector]
-    private bool isSkipped = false;
+    public bool isSkipped = false;
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {
@@ -38,19 +37,19 @@ public class SceneLoader : MonoBehaviour
         }
     }
 
-    public void LoadNextScene(float transitionLengthInSeconds)
-    {
-        if (audioManager != null)
-            audioManager.FadeOutAllAudio(2.5f);
-        StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex + 1, transitionLengthInSeconds));
-    }
-
-    IEnumerator LoadLevel(int index, float transitionLengthInSeconds)
+    private IEnumerator LoadLevel(int index, float transitionLengthInSeconds)
     {
         transition.SetTrigger("EndFade");
 
         yield return new WaitForSeconds(transitionLengthInSeconds);
 
         SceneManager.LoadScene(index);
+    }
+
+    public void LoadNextScene(float transitionLengthInSeconds)
+    {
+        if (audioManager != null)
+            audioManager.FadeOutAllAudio(2.5f);
+        StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex + 1, transitionLengthInSeconds));
     }
 }

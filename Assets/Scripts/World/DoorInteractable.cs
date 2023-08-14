@@ -40,7 +40,8 @@ public class DoorInteractable : MonoBehaviour
     [ReadOnlyInspector]
     public IEnumerator prevCoroutine;
 
-    void Reset()
+    //Reset is called on component add/reset
+    private void Reset()
     {
         //Auto set door params
         gameObject.tag = "Interactable";
@@ -57,11 +58,14 @@ public class DoorInteractable : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (!isDoorGrabbed && prevCoroutine == null && !IsDoorClosed(0f) && IsDoorClosed(1f))
         {
-            CloseDoor();
+            fromRotation = gameObject.transform.rotation;
+            toRotation = Quaternion.Euler(gameObject.transform.eulerAngles.x, defaultClosedRotation.eulerAngles.y, gameObject.transform.eulerAngles.z);
+
+            gameObject.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, 0.1f);
         }
     }
 
@@ -72,15 +76,6 @@ public class DoorInteractable : MonoBehaviour
         float angle = Quaternion.Angle(gameObject.transform.rotation, defaultClosedRotation);
 
         return angle <= deviationInDegrees;
-    }
-
-    //Shuts the door
-    void CloseDoor()
-    {
-        fromRotation = gameObject.transform.rotation;
-        toRotation = Quaternion.Euler(gameObject.transform.eulerAngles.x, defaultClosedRotation.eulerAngles.y, gameObject.transform.eulerAngles.z);
-
-        gameObject.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, 0.1f);
     }
 
     //Clamps rotation to min and max door openings
@@ -177,7 +172,7 @@ public class DoorInteractable : MonoBehaviour
     }
 
     //Calculate the rotation from the velocity
-    void CalcVelocityToRotation(float multiplier)
+    private void CalcVelocityToRotation(float multiplier)
     {
         fromRotation = gameObject.transform.rotation;
         float toRotationYVelocity = ClampRotation(fromRotation.eulerAngles.y + physicsVelocity * multiplier);
@@ -191,7 +186,7 @@ public class DoorInteractable : MonoBehaviour
     }
 
     //Moves the door by the applied velocity
-    IEnumerator MoveDoorByVelocity(bool useSmoothing)
+    private IEnumerator MoveDoorByVelocity(bool useSmoothing)
     {
         while (lerpTimer < 1f)
         {
@@ -227,7 +222,7 @@ public class DoorInteractable : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
@@ -243,7 +238,7 @@ public class DoorInteractable : MonoBehaviour
         }
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {

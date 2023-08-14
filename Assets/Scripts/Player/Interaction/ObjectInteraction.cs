@@ -33,13 +33,13 @@ public class ObjectInteraction : MonoBehaviour
     private Vector3 lastVelocity;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         defaultPlayerWalkSpeed = playerMovement.playerStats.walkSpeed;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (isObjectGrabbed)
         {
@@ -60,7 +60,7 @@ public class ObjectInteraction : MonoBehaviour
         {
             if (carryingObject)
             {
-                if (objectInHandRB.mass < maxObjectCarryWeight)
+                if (objectInHandRB.mass <= maxObjectCarryWeight)
                 {
                     CarryObject();
 
@@ -96,7 +96,7 @@ public class ObjectInteraction : MonoBehaviour
         }
     }
 
-    bool CheckIfObjUnderPlayer()
+    private bool CheckIfObjUnderPlayer()
     {
         if (playerMovement.gameObjectUnderPlayer != null && playerMovement.gameObjectUnderPlayer == objectInHand)
         {
@@ -106,7 +106,7 @@ public class ObjectInteraction : MonoBehaviour
         return false;
     }
 
-    void CheckObjDrop()
+    private void CheckObjDrop()
     {
         Vector3 cameraPosition = mainCamera.transform.position;
         Vector3 cameraFacing = mainCamera.transform.forward;
@@ -132,7 +132,7 @@ public class ObjectInteraction : MonoBehaviour
         }
     }
 
-    Vector3 GetVelocity()
+    private Vector3 GetVelocity()
     {
         Vector3 velocity = (objectInHand.transform.position - lastPosition) / Time.deltaTime;
         lastPosition = objectInHand.transform.position;
@@ -140,7 +140,7 @@ public class ObjectInteraction : MonoBehaviour
         return velocity;
     }
 
-    Vector3 GetVelocityDirection()
+    private Vector3 GetVelocityDirection()
     {
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
@@ -152,14 +152,14 @@ public class ObjectInteraction : MonoBehaviour
         return xyDirection - objectInHand.transform.position;
     }
 
-    void StopObjectForces()
+    private void StopObjectForces()
     {
         objectInHandRB.velocity = Vector3.zero;
         objectInHandRB.angularVelocity = Vector3.zero;
         objectInHandRB.Sleep();
     }
 
-    void CenterHandObject()
+    private void CenterHandObject()
     {
         Vector3 movementVector = Vector3.MoveTowards(objectInHand.transform.position, gameObject.transform.position, 1f);
 
@@ -177,7 +177,7 @@ public class ObjectInteraction : MonoBehaviour
         }
     }
 
-    void CarryObject()
+    private void CarryObject()
     {
         //Get object movement directional velocity
         GetVelocityDirection();
@@ -197,7 +197,7 @@ public class ObjectInteraction : MonoBehaviour
         }
     }
 
-    void DragObject()
+    private void DragObject()
     {
         //Move object with player
         Vector3 objPosition = objectInHand.transform.position;
@@ -217,9 +217,9 @@ public class ObjectInteraction : MonoBehaviour
         }
     }
 
-    void DropObj()
+    private void DropObj()
     {
-        //If velocity persists, apply that to the item
+        //If velocity persists, apply that to the object
         objectInHandRB.AddForce(GetVelocityDirection() * Mathf.Clamp(lastVelocity.magnitude * 2f, 0f, 30f), ForceMode.Force);
 
         //Reset object back to default
@@ -243,7 +243,7 @@ public class ObjectInteraction : MonoBehaviour
         carryingHeavyObject = false;
     }
 
-    void CalcDistanceBySize()
+    private void CalcDistanceBySize()
     {
         Vector3 objBoundsSize = Vector3.Scale(objectInHand.transform.localScale, objectInHand.GetComponent<MeshFilter>().sharedMesh.bounds.size);
         objDistanceBySize = Mathf.Clamp(objBoundsSize.magnitude - 0.75f, 0f, 0.4f);
@@ -252,7 +252,7 @@ public class ObjectInteraction : MonoBehaviour
     }
 
     //Called once when object is being picked up
-    void PickUpObject()
+    private void PickUpObject()
     {
         if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore))
         {
@@ -272,7 +272,7 @@ public class ObjectInteraction : MonoBehaviour
                     //Set object params
                     CalcDistanceBySize();
 
-                    if (objectInHandRB.mass < maxObjectCarryWeight)
+                    if (objectInHandRB.mass <= maxObjectCarryWeight)
                     {
                         objectInHand.transform.parent = gameObject.transform;
                         objectInHandRB.useGravity = false;

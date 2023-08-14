@@ -21,11 +21,12 @@ public class FrequencyTimer : MonoBehaviour
             ft = gameObject.AddComponent<FrequencyTimer>();
             ft.ID = prefixID + ID;
         }
+
         return ft;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (hasStarted)
         {
@@ -43,7 +44,7 @@ public class FrequencyTimer : MonoBehaviour
         }
     }
 
-    void CountFreq()
+    private void CountFreq()
     {
         if (frequencyCounter < frequencyInSeconds)
         {
@@ -57,6 +58,7 @@ public class FrequencyTimer : MonoBehaviour
         }
     }
 
+    //Returns true at the start of the phase
     public bool IsStartPhase(float frequencyInSeconds)
     {
         if (!hasStarted)
@@ -73,6 +75,7 @@ public class FrequencyTimer : MonoBehaviour
         }
     }
 
+    //Returns true at the end of the phase
     public bool IsEndPhase(float frequencyInSeconds)
     {
         if (!hasStarted)
@@ -84,6 +87,7 @@ public class FrequencyTimer : MonoBehaviour
         if (hasEnded)
         {
             hasEnded = false;
+
             return true;
         }
         else

@@ -11,7 +11,7 @@ public class CrosshairUI : MonoBehaviour
     public Animator crosshairItemAnimator;
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         bool raycast = Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
 

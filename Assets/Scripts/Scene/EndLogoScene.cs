@@ -7,7 +7,7 @@ public class EndLogoScene : MonoBehaviour
     public VideoPlayer videoPlayer;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         videoPlayer.loopPointReached += EndVideo;
     }

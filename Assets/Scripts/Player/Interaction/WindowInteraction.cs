@@ -9,7 +9,7 @@ public class WindowInteraction : MonoBehaviour
     private WindowInteractable windowObject;
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (windowObject && windowObject.isWindowGrabbed)
         {
@@ -48,7 +48,7 @@ public class WindowInteraction : MonoBehaviour
     }
 
     //Check if player is near the window
-    bool IsPlayerNearby()
+    private bool IsPlayerNearby()
     {
         Vector3 windowOrigin = windowObject.transform.position;
         Vector3 windowEdgeBottom = windowOrigin - windowObject.transform.up * (windowObject.transform.GetComponent<MeshFilter>().sharedMesh.bounds.size.y - 0.1f);
@@ -57,16 +57,16 @@ public class WindowInteraction : MonoBehaviour
         return isPlayerNearby;
     }
 
-    void CalcYPosMotion()
+    private void CalcYPosMotion()
     {
-        float mouseY = Input.GetAxis("Mouse Y") * (mouseLook.mouseSensitivity * windowObject.dragResistance);
+        float mouseY = Input.GetAxis("Mouse Y") * windowObject.dragResistance;
         mouseY = windowObject.isPlayerColliding && mouseY < 0f ? 0f : mouseY;
 
         windowObject.yPosMotion = Mathf.Clamp(windowObject.yPosMotion + mouseY, windowObject.defaultClosedPosition.y, windowObject.defaultClosedPosition.y + windowObject.maxOpeningPosition);
     }
 
     //Check if looking at window and grab it
-    void GrabWindow()
+    private void GrabWindow()
     {
         if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Window"), QueryTriggerInteraction.Ignore))
         {

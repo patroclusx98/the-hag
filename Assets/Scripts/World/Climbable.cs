@@ -10,13 +10,13 @@ public class Climbable : MonoBehaviour
     private bool canClimb;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (canClimb)
         {
@@ -31,8 +31,8 @@ public class Climbable : MonoBehaviour
         }
     }
 
-    //Check if player is facing the climbable object
-    bool CheckFacing()
+    //Check if player is facing the climbable object within the allowed tolerance
+    private bool CheckFacing()
     {
         Vector3 objectFacing = -gameObject.transform.right;
         Vector3 cameraFacing = Camera.main.transform.right;

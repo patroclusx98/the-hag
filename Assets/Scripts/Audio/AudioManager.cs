@@ -14,6 +14,7 @@ public class AudioManager : MonoBehaviour
     private AudioMixerGroup soundAudioGroup;
     private AudioMixerGroup musicAudioGroup;
 
+    //Awake is called on script load
     void Awake()
     {
         audioMixer = Resources.Load<AudioMixer>("MasterAudioMixer");
@@ -58,8 +59,8 @@ public class AudioManager : MonoBehaviour
 
                 sc.collectionSources[i].volume = sc.volume * 0.5f;
                 sc.collectionSources[i].pitch = sc.pitch;
-
                 sc.collectionSources[i].playOnAwake = false;
+
                 sc.collectionSources[i].dopplerLevel = 0.05f;
             }
         }
@@ -510,19 +511,21 @@ public class AudioManager : MonoBehaviour
 
     private IEnumerator FadeOutAllSoundCR(float fadeTime)
     {
-        float currentTime = 0;
+        float currentTime = 0f;
+        AudioSource[] allAudioSources = FindObjectsOfType<AudioSource>();
+
         audioMixer.GetFloat("SoundVolume", out float currentVol);
-        currentVol = Mathf.Pow(10, currentVol / 20);
+        currentVol = Mathf.Pow(10, currentVol / 20f);
 
         while (currentTime < fadeTime)
         {
             currentTime += Time.deltaTime;
             float newVol = Mathf.Lerp(currentVol, 0.0001f, currentTime / fadeTime);
-            audioMixer.SetFloat("SoundVolume", Mathf.Log10(newVol) * 20);
+            audioMixer.SetFloat("SoundVolume", Mathf.Log10(newVol) * 20f);
+
             yield return null;
         }
 
-        AudioSource[] allAudioSources = FindObjectsOfType<AudioSource>();
         foreach (AudioSource audioSource in allAudioSources)
         {
             if (audioSource.outputAudioMixerGroup.name == "Sound" && audioSource.isPlaying)

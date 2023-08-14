@@ -12,7 +12,7 @@ public class DoorInteraction : MonoBehaviour
     private float walkDotProduct;
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (doorObject && doorObject.isDoorGrabbed)
         {
@@ -77,7 +77,7 @@ public class DoorInteraction : MonoBehaviour
     }
 
     //Check if player is near the door
-    bool IsPlayerNearby()
+    private bool IsPlayerNearby()
     {
         Vector3 doorOrigin = doorObject.transform.position;
         Vector3 doorEdgeRight = doorOrigin + doorObject.transform.right * (doorObject.transform.GetComponent<MeshFilter>().sharedMesh.bounds.size.x - 0.1f);
@@ -88,7 +88,7 @@ public class DoorInteraction : MonoBehaviour
     }
 
     //Applies max velocity to close or open the door
-    void SlamDoor()
+    private void SlamDoor()
     {
         doorObject.isSlammed = true;
 
@@ -103,7 +103,7 @@ public class DoorInteraction : MonoBehaviour
     }
 
     //Calculates direction of walking applied in relation to door's facing
-    float CalcWalkDotProduct()
+    private float CalcWalkDotProduct()
     {
         Vector3 doorVector = doorObject.transform.forward;
         Vector3 cameraVector = mainCamera.transform.forward;
@@ -112,7 +112,7 @@ public class DoorInteraction : MonoBehaviour
     }
 
     //Calculates direction of mouse movement applied in relation to door's facing
-    float CalcMouseDotProduct()
+    private float CalcMouseDotProduct()
     {
         Vector3 doorVector1 = doorObject.transform.up;
         Vector3 doorVector2 = doorObject.transform.forward;
@@ -122,11 +122,11 @@ public class DoorInteraction : MonoBehaviour
         return mouseDotProduct = Vector3.Dot(cameraVector, doorLook);
     }
 
-    void CalcYDegMotion()
+    private void CalcYDegMotion()
     {
-        float mouseX = Input.GetAxis("Mouse X") * (mouseLook.mouseSensitivity * doorObject.dragResistanceMouse);
-        float mouseY = Input.GetAxis("Mouse Y") * (mouseLook.mouseSensitivity * doorObject.dragResistanceMouse);
-        float walkX = Input.GetAxis("Vertical") * doorObject.dragResistanceMouse * Time.deltaTime;
+        float mouseX = Input.GetAxis("Mouse X") * doorObject.dragResistanceMouse;
+        float mouseY = Input.GetAxis("Mouse Y") * doorObject.dragResistanceMouse;
+        float walkX = Input.GetAxis("Vertical") * doorObject.dragResistanceWalk * Time.deltaTime;
         float walkY = Input.GetAxis("Horizontal") * doorObject.dragResistanceWalk * Time.deltaTime;
 
         //Set mouse and walk movement based on initial direction
@@ -205,7 +205,7 @@ public class DoorInteraction : MonoBehaviour
     }
 
     //Check if looking at door and grab it
-    void GrabDoor()
+    private void GrabDoor()
     {
         if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Door"), QueryTriggerInteraction.Ignore))
         {
