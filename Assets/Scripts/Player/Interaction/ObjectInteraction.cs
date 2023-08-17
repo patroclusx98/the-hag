@@ -64,7 +64,7 @@ public class ObjectInteraction : MonoBehaviour
                 {
                     CarryObject();
 
-                    //Object rotation in hand
+                    /** Object rotation in hand **/
                     if (Input.GetKey(KeyCode.R))
                     {
                         mouseLook.isInteracting = true;
@@ -111,21 +111,21 @@ public class ObjectInteraction : MonoBehaviour
         Vector3 cameraPosition = mainCamera.transform.position;
         Vector3 cameraFacing = mainCamera.transform.forward;
 
-        //Object too heavy
+        // Object too heavy
         if (objectInHandRB.mass > maxObjectCarryWeight && objectInHandRB.mass > maxObjectDragWeight)
         {
             HintUI.instance.DisplayHintMessage("Object is too heavy!");
             DropObj();
         }
 
-        //Object out of hands
+        // Object out of hands
         bool rayHit = Physics.Raycast(cameraPosition, cameraFacing, out RaycastHit hitInfo, playerStats.reachDistance, ~ignoredLayer, QueryTriggerInteraction.Ignore);
         if (rayHit && !hitInfo.transform.gameObject.Equals(objectInHand))
         {
             DropObj();
         }
 
-        //Object under player
+        // Object under player
         if (CheckIfObjUnderPlayer())
         {
             DropObj();
@@ -179,17 +179,17 @@ public class ObjectInteraction : MonoBehaviour
 
     private void CarryObject()
     {
-        //Get object movement directional velocity
+        // Get object movement directional velocity
         GetVelocityDirection();
 
-        //Try to move object to center of camera
+        // Try to move object to center of camera
         CenterHandObject();
         lastVelocity = GetVelocity();
 
-        //If object cannot be held anymore drop it
+        // If object cannot be held anymore drop it
         CheckObjDrop();
 
-        //Throw object away
+        // Throw object away
         if (Input.GetKey(KeyCode.Mouse1))
         {
             DropObj();
@@ -199,17 +199,20 @@ public class ObjectInteraction : MonoBehaviour
 
     private void DragObject()
     {
-        //Move object with player
+        /** Move object with player **/
+
         Vector3 objPosition = objectInHand.transform.position;
         Vector3 toPosition = objPosition + playerMovement.moveVelocity * playerMovement.playerSpeed;
 
         if (playerMovement.IsPlayerMoving())
+        {
             objectInHand.transform.position = Vector3.Lerp(objPosition, toPosition, Time.deltaTime);
+        }
 
-        //If object cannot be dragged anymore let go
+        // If object cannot be dragged anymore let go
         CheckObjDrop();
 
-        //Push object away
+        // Push object away
         if (Input.GetKey(KeyCode.Mouse1))
         {
             DropObj();
@@ -219,10 +222,10 @@ public class ObjectInteraction : MonoBehaviour
 
     private void DropObj()
     {
-        //If velocity persists, apply that to the object
+        // If velocity persists, apply that to the object
         objectInHandRB.AddForce(GetVelocityDirection() * Mathf.Clamp(lastVelocity.magnitude * 2f, 0f, 30f), ForceMode.Force);
 
-        //Reset object back to default
+        // Reset object back to default
         objectInHand.transform.parent = defaultParent;
         objectInHand.layer = LayerMask.NameToLayer("Object");
         objectInHand.transform.localScale = defaultScale;
@@ -230,7 +233,7 @@ public class ObjectInteraction : MonoBehaviour
         objectInHandRB.angularDrag = defaultAngularDrag;
         objectInHandRB.useGravity = true;
 
-        //Reset player hand and stats
+        // Reset player hand and stats
         gameObject.transform.position = gameObject.transform.position - gameObject.transform.forward * objDistanceBySize;
 
         if (carryingHeavyObject)
@@ -251,7 +254,7 @@ public class ObjectInteraction : MonoBehaviour
         gameObject.transform.position = gameObject.transform.position + gameObject.transform.forward * objDistanceBySize;
     }
 
-    //Called once when object is being picked up
+    // Called once when object is being picked up
     private void PickUpObject()
     {
         if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore))
@@ -263,13 +266,13 @@ public class ObjectInteraction : MonoBehaviour
             {
                 if (!CheckIfObjUnderPlayer())
                 {
-                    //Get object defaults
+                    /** Get object defaults **/
                     defaultParent = objectInHand.transform.parent;
                     defaultScale = objectInHand.transform.localScale;
                     defaultDrag = objectInHandRB.drag;
                     defaultAngularDrag = objectInHandRB.angularDrag;
 
-                    //Set object params
+                    // Set object params
                     CalcDistanceBySize();
 
                     if (objectInHandRB.mass <= maxObjectCarryWeight)

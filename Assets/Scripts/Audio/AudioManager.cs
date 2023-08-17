@@ -14,7 +14,7 @@ public class AudioManager : MonoBehaviour
     private AudioMixerGroup soundAudioGroup;
     private AudioMixerGroup musicAudioGroup;
 
-    //Awake is called on script load
+    // Awake is called on script load
     void Awake()
     {
         audioMixer = Resources.Load<AudioMixer>("MasterAudioMixer");
@@ -69,7 +69,7 @@ public class AudioManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //Play all onAwake music
+        // Play all onAwake music
         foreach (AudioMusic music in musics)
         {
             if (music.source.playOnAwake)
@@ -78,7 +78,7 @@ public class AudioManager : MonoBehaviour
             }
         }
 
-        //Play all onAwake sounds
+        // Play all onAwake sounds
         foreach (AudioSound sound in sounds)
         {
             if (sound.source.playOnAwake)
@@ -88,7 +88,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    //SOUND 2D METHODS
+    /** SOUND 2D METHODS **/
 
     public void PlaySound2D(string soundName, bool canOverlap, float frequencyInSeconds)
     {
@@ -113,7 +113,7 @@ public class AudioManager : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogWarning("Loop sounds cannot be overlapped! Sound: " + soundName);
+                        Debug.LogWarning("Looped sounds cannot be overlapped: " + soundName);
                     }
                 }
             }
@@ -191,7 +191,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    //SOUND 3D METHODS
+    /** SOUND 3D METHODS **/
 
     public void PlaySound3D(string soundName, bool canOverlap, float frequencyInSeconds, GameObject gameObject)
     {
@@ -234,7 +234,7 @@ public class AudioManager : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogWarning("Loop sounds cannot be overlapped! Sound: " + soundName);
+                        Debug.LogWarning("Loop sounds cannot be overlapped: " + soundName);
                     }
                 }
             }
@@ -280,7 +280,7 @@ public class AudioManager : MonoBehaviour
 
                 if (!canOverlap)
                 {
-                    //What the f*ck?
+                    // What the f*ck?
                     bool objSCSourceIsPlaying = Array.Find(Array.FindAll(gameObject.GetComponents<AudioSource>(), objSource => Array.Find(sc.collectionSources.ToArray(), scSource => objSource.clip == scSource.clip) != null), sound => sound.isPlaying) != null;
 
                     if (!objSCSourceIsPlaying)
@@ -335,9 +335,10 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    //MUSIC METHODS
+    /** MUSIC METHODS **/
 
-    public bool IsMusicPlaying()
+    // Returns true if any music is playing in the background
+    private bool IsMusicPlaying()
     {
         foreach (AudioMusic m in musics)
         {
@@ -364,7 +365,7 @@ public class AudioManager : MonoBehaviour
                 }
                 else
                 {
-                    StartCoroutine(SwapMusic(m.source, 3f));
+                    SwapMusic(m.source, 3f);
                 }
             }
         }
@@ -391,48 +392,72 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private IEnumerator SwapMusic(AudioSource musicSource, float swapSpeed)
+    /** AUDIO FADE METHODS **/
+
+    /// <summary>
+    /// Fades out the specified 2D sound
+    /// </summary>
+    /// <param name="soundName">The name of the sound as defined in the Audio Manager instance</param>
+    /// <param name="fadeTime">Fade out time in seconds</param>
+    public void FadeOutSound2D(string soundName, float fadeTime)
     {
-        FadeOutCurrentMusic(swapSpeed);
-
-        yield return new WaitForSeconds(1.6f);
-
-        musicSource.Play();
+        StartCoroutine(FadeOutSound2DCR(soundName, fadeTime));
     }
 
-    //AUDIO FADE METHODS
-
-    public void FadeOutSound2D(string audioName, float fadeTime)
+    /// <summary>
+    /// Fades out the specified 3D sound
+    /// </summary>
+    /// <param name="soundName">The name of the sound as defined in the Audio Manager instance</param>
+    /// <param name="fadeTime">Fade out time in seconds</param>
+    /// <param name="gameObject">GameObject the sound is attached to</param>
+    public void FadeOutSound3D(string soundName, float fadeTime, GameObject gameObject)
     {
-        StartCoroutine(FadeOutSound2DCR(audioName, fadeTime));
+        StartCoroutine(FadeOutSound3DCR(soundName, fadeTime, gameObject));
     }
 
-    public void FadeOutSound3D(string audioName, float fadeTime, GameObject gameObject)
+    /// <summary>
+    /// Fades out the currently playing music
+    /// </summary>
+    /// <param name="fadeTime">Fade out time in seconds</param>
+    public void FadeOutMusic(float fadeTime)
     {
-        StartCoroutine(FadeOutSound3DCR(audioName, fadeTime, gameObject));
+        StartCoroutine(FadeOutMusicCR(fadeTime));
     }
 
-    public void FadeOutCurrentMusic(float fadeTime)
+    /// <summary>
+    /// Swaps the currently playing music to a new music with a transition
+    /// </summary>
+    /// <param name="musicSource">The source of the new music to play</param>
+    /// <param name="swapTime">Swap cross-fade time in seconds</param>
+    public void SwapMusic(AudioSource musicSource, float swapTime)
     {
-        StartCoroutine(FadeOutCurrentMusicCR(fadeTime));
+        StartCoroutine(SwapMusicCR(musicSource, swapTime));
     }
 
+    /// <summary>
+    /// Fades out all currently playing sounds
+    /// </summary>
+    /// <param name="fadeTime">Fade out time in seconds</param>
     public void FadeOutAllSound(float fadeTime)
     {
         StartCoroutine(FadeOutAllSoundCR(fadeTime));
     }
 
+    /// <summary>
+    /// Fades out all currently playing audio
+    /// </summary>
+    /// <param name="fadeTime">Fade out time in seconds</param>
     public void FadeOutAllAudio(float fadeTime)
     {
-        StartCoroutine(FadeOutCurrentMusicCR(fadeTime));
+        StartCoroutine(FadeOutMusicCR(fadeTime));
         StartCoroutine(FadeOutAllSoundCR(fadeTime));
     }
 
-    //AUDIO FADE COROUTINES
+    /** AUDIO FADE COROUTINES **/
 
-    private IEnumerator FadeOutSound2DCR(string audioName, float fadeTime)
+    private IEnumerator FadeOutSound2DCR(string soundName, float fadeTime)
     {
-        AudioSound s = Array.Find(sounds, sound => sound.soundName == audioName);
+        AudioSound s = Array.Find(sounds, sound => sound.soundName == soundName);
 
         if (s != null)
         {
@@ -440,7 +465,7 @@ public class AudioManager : MonoBehaviour
             {
                 float startVolume = s.source.volume;
 
-                while (s.source.volume > 0)
+                while (fadeTime > 0f && s.source.volume > 0)
                 {
                     s.source.volume -= startVolume * Time.deltaTime / fadeTime;
 
@@ -453,13 +478,13 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Could not find audio to fade out: " + audioName);
+            Debug.LogWarning("Could not find sound to fade out: " + soundName);
         }
     }
 
-    private IEnumerator FadeOutSound3DCR(string audioName, float fadeTime, GameObject gameObject)
+    private IEnumerator FadeOutSound3DCR(string soundName, float fadeTime, GameObject gameObject)
     {
-        AudioSound s = Array.Find(sounds, sound => sound.soundName == audioName);
+        AudioSound s = Array.Find(sounds, sound => sound.soundName == soundName);
 
         if (s != null)
         {
@@ -469,7 +494,7 @@ public class AudioManager : MonoBehaviour
             {
                 float startVolume = objS.volume;
 
-                while (objS.volume > 0)
+                while (fadeTime > 0f && objS.volume > 0)
                 {
                     objS.volume -= startVolume * Time.deltaTime / fadeTime;
 
@@ -482,11 +507,11 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Could not find audio to fade out: " + audioName);
+            Debug.LogWarning("Could not find sound to fade out: " + soundName);
         }
     }
 
-    private IEnumerator FadeOutCurrentMusicCR(float fadeTime)
+    private IEnumerator FadeOutMusicCR(float fadeTime)
     {
         foreach (AudioMusic m in musics)
         {
@@ -494,7 +519,7 @@ public class AudioManager : MonoBehaviour
             {
                 float startVolume = m.source.volume;
 
-                while (m.source.volume > 0)
+                while (fadeTime > 0f && m.source.volume > 0)
                 {
                     m.source.volume -= startVolume * Time.deltaTime / fadeTime;
 
@@ -503,10 +528,17 @@ public class AudioManager : MonoBehaviour
 
                 m.source.Stop();
                 m.source.volume = startVolume;
-
-                break;
             }
         }
+    }
+
+    private IEnumerator SwapMusicCR(AudioSource musicSource, float swapTime)
+    {
+        StartCoroutine(FadeOutMusicCR(swapTime));
+
+        yield return new WaitForSeconds(0.5f);
+
+        musicSource.Play();
     }
 
     private IEnumerator FadeOutAllSoundCR(float fadeTime)

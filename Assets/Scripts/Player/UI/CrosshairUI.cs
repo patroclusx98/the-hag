@@ -13,43 +13,47 @@ public class CrosshairUI : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        bool raycast = Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
-
+        bool rayHit = Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
         Item selectedItem = PlayerInventory.instance != null ? PlayerInventory.instance.selectedItem : null;
+
         if (selectedItem != null)
         {
-            crosshairHand.enabled = false;
+            /** Active item selection from inventory **/
+
             crosshair.enabled = false;
+            crosshairHand.enabled = false;
 
             crosshairItem.enabled = true;
             crosshairItem.sprite = selectedItem.icon;
 
-            if (raycast && hitInfo.transform.CompareTag("Interactable"))
+            if (rayHit && hitInfo.transform.CompareTag("Interactable"))
             {
-                crosshairItemAnimator.SetBool("isItemOverObject", true);
+                crosshairItemAnimator.SetBool("PulseCrosshairItem", true);
             }
             else
             {
-                crosshairItemAnimator.SetBool("isItemOverObject", false);
+                crosshairItemAnimator.SetBool("PulseCrosshairItem", false);
             }
         }
         else
         {
+            /** No active item selection from inventory **/
+
             if (crosshairItem.enabled)
             {
-                crosshairItemAnimator.SetBool("isItemOverObject", false);
+                crosshairItemAnimator.SetBool("PulseCrosshairItem", false);
                 crosshairItem.enabled = false;
             }
 
-            if (playerStats.canInteract && raycast && hitInfo.transform.CompareTag("Interactable"))
+            if (playerStats.canInteract && rayHit && hitInfo.transform.CompareTag("Interactable"))
             {
-                crosshairHand.enabled = true;
                 crosshair.enabled = false;
+                crosshairHand.enabled = true;
             }
             else
             {
-                crosshairHand.enabled = false;
                 crosshair.enabled = true;
+                crosshairHand.enabled = false;
             }
         }
     }

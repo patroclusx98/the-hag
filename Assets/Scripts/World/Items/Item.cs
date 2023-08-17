@@ -15,12 +15,14 @@ public class Item : ScriptableObject
     {
         if (usableGameObjects.Count == 0)
         {
-            //Item does not need a game object to be used on
+            /** Item does not need a game object to be used on **/
+
             return true;
         }
         else
         {
-            //Item needs a game object to be used on
+            /** Item needs a game object to be used on **/
+
             if (hoveredObject != null)
             {
                 if (usableGameObjects.Contains(hoveredObject))

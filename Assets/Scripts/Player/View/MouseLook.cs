@@ -35,7 +35,6 @@ public class MouseLook : MonoBehaviour
 
     private void DoMouseLook()
     {
-        //Looking logic
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
@@ -63,7 +62,9 @@ public class MouseLook : MonoBehaviour
         else
         {
             if (!isItemSelected)
+            {
                 playerStats.canInteract = true;
+            }
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;

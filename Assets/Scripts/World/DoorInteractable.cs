@@ -40,18 +40,17 @@ public class DoorInteractable : MonoBehaviour
     [ReadOnlyInspector]
     public IEnumerator prevCoroutine;
 
-    //Reset is called on component add/reset
+    // Reset is called on component add/reset
     private void Reset()
     {
-        //Auto set door params
+        /** Auto set door params **/
         gameObject.tag = "Interactable";
         gameObject.layer = LayerMask.NameToLayer("Door");
         defaultClosedRotation = gameObject.transform.parent.rotation;
 
-        //Auto add trigger collider
+        /** Auto add/reset trigger collider **/
         BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
-        if (gameObject.GetComponent<BoxCollider>() != null)
-            DestroyImmediate(boxCollider);
+        if (boxCollider) DestroyImmediate(boxCollider);
         boxCollider = gameObject.AddComponent<BoxCollider>();
         boxCollider.isTrigger = true;
         boxCollider.size = new Vector3(boxCollider.size.x + 0.1f, boxCollider.size.y, boxCollider.size.z + 0.2f);
@@ -69,8 +68,10 @@ public class DoorInteractable : MonoBehaviour
         }
     }
 
-    //Check if door is near to closed position by specified amount
-    //Passing '0f' will check for fully closed state
+    /*
+    * Checks if door is near to closed position by specified amount
+    * Passing '0f' will check for fully closed state
+    */
     public bool IsDoorClosed(float deviationInDegrees)
     {
         float angle = Quaternion.Angle(gameObject.transform.rotation, defaultClosedRotation);
@@ -78,10 +79,10 @@ public class DoorInteractable : MonoBehaviour
         return angle <= deviationInDegrees;
     }
 
-    //Clamps rotation to min and max door openings
+    // Clamps rotation to min and max door openings
     public float ClampRotation(float rotation)
     {
-        //Calculate motion velocity
+        /** Calculate motion velocity **/
         float calcDifference = rotation - lastYDegMotion;
         if (calcDifference < -maxOpeningDegrees * 2f)
         {
@@ -93,14 +94,15 @@ public class DoorInteractable : MonoBehaviour
         }
         motionVelocity = Mathf.Clamp(calcDifference, -2f, 2f);
 
-        //Check and clamp rotation
+        /** Check and clamp rotation **/
         if (isLeftSided)
         {
+            /** Negative rotation **/
+
             float fromRotation = defaultClosedRotation.eulerAngles.y;
             float calcMaxRotation = fromRotation - maxOpeningDegrees;
             float toRotation = calcMaxRotation < 0f ? 360f + calcMaxRotation : calcMaxRotation;
 
-            //Negative rotation
             if (fromRotation > toRotation)
             {
                 if (rotation <= fromRotation && rotation >= toRotation)
@@ -115,7 +117,6 @@ public class DoorInteractable : MonoBehaviour
             else
             {
                 float wrappedRotation = rotation < 0f ? 360f + rotation : rotation >= 360f ? rotation - 360f : rotation;
-                //ISSUE: R0-LY359(E-359 SE1) || R359+LY1(E360 SE0)
 
                 if (!(wrappedRotation > fromRotation && wrappedRotation < toRotation))
                 {
@@ -133,11 +134,12 @@ public class DoorInteractable : MonoBehaviour
         }
         else
         {
+            /** Positive rotation **/
+
             float fromRotation = defaultClosedRotation.eulerAngles.y;
             float calcMaxRotation = fromRotation + maxOpeningDegrees;
             float toRotation = calcMaxRotation >= 360f ? calcMaxRotation - 360f : calcMaxRotation;
 
-            //Positive rotation
             if (fromRotation > toRotation)
             {
                 float wrappedRotation = rotation < 0f ? 360f + rotation : rotation >= 360f ? rotation - 360f : rotation;
@@ -171,11 +173,12 @@ public class DoorInteractable : MonoBehaviour
         return rotation;
     }
 
-    //Calculate the rotation from the velocity
+    // Calculate the rotation from the velocity
     private void CalcVelocityToRotation(float multiplier)
     {
         fromRotation = gameObject.transform.rotation;
         float toRotationYVelocity = ClampRotation(fromRotation.eulerAngles.y + physicsVelocity * multiplier);
+
         if (toRotationYVelocity != fromRotation.eulerAngles.y)
         {
             toRotation = Quaternion.Euler(gameObject.transform.eulerAngles.x, toRotationYVelocity, gameObject.transform.eulerAngles.z);
@@ -185,7 +188,7 @@ public class DoorInteractable : MonoBehaviour
         lerpTimer = 0f;
     }
 
-    //Moves the door by the applied velocity
+    // Moves the door by the applied velocity
     private IEnumerator MoveDoorByVelocity(bool useSmoothing)
     {
         while (lerpTimer < 1f)
@@ -200,7 +203,7 @@ public class DoorInteractable : MonoBehaviour
         prevCoroutine = null;
     }
 
-    //Apply velocity to door
+    // Apply velocity to door
     public void ApplyVelocityToDoor(float multiplier)
     {
         if (physicsVelocity != 0f)
@@ -217,6 +220,7 @@ public class DoorInteractable : MonoBehaviour
                 {
                     prevCoroutine = MoveDoorByVelocity(true);
                 }
+
                 StartCoroutine(prevCoroutine);
             }
         }
@@ -226,14 +230,14 @@ public class DoorInteractable : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            //Stop any door motion
+            // Stop any door motion
             if (prevCoroutine != null)
             {
                 StopCoroutine(prevCoroutine);
                 prevCoroutine = null;
             }
-            physicsVelocity = 0f;
 
+            physicsVelocity = 0f;
             isPlayerColliding = true;
         }
     }
@@ -246,7 +250,22 @@ public class DoorInteractable : MonoBehaviour
         }
     }
 
-    //EVENT HANDLERS FOR OTHER SCRIPTS
+    public void PlayDoorHandleAnimation()
+    {
+        if (doorHandleAnimator != null && IsDoorClosed(0f))
+        {
+            if (isLeftSided && !doorHandleAnimator.GetBool("UseLeftHandle"))
+            {
+                doorHandleAnimator.SetBool("UseLeftHandle", true);
+            }
+            else if (!isLeftSided && !doorHandleAnimator.GetBool("UseRightHandle"))
+            {
+                doorHandleAnimator.SetBool("UseRightHandle", true);
+            }
+        }
+    }
+
+    /** EVENT HANDLERS **/
 
     public void EventLockDoor()
     {

@@ -25,18 +25,17 @@ public class WindowInteractable : MonoBehaviour
     [ReadOnlyInspector]
     public Vector3 toPosition;
 
-    //Reset is called on component add/reset
+    // Reset is called on component add/reset
     private void Reset()
     {
-        //Auto set window params
+        /** Auto set window params **/
         gameObject.tag = "Interactable";
         gameObject.layer = LayerMask.NameToLayer("Window");
-        defaultClosedPosition = gameObject.transform.position;
+        defaultClosedPosition = gameObject.transform.localPosition;
 
-        //Auto add trigger collider
+        /** Auto add/reset trigger collider **/
         BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
-        if (gameObject.GetComponent<BoxCollider>() != null)
-            DestroyImmediate(boxCollider);
+        if (boxCollider) DestroyImmediate(boxCollider);
         boxCollider = gameObject.AddComponent<BoxCollider>();
         boxCollider.isTrigger = true;
         boxCollider.size = new Vector3(boxCollider.size.x, boxCollider.size.y + 0.3f, boxCollider.size.z);
@@ -58,7 +57,7 @@ public class WindowInteractable : MonoBehaviour
         }
     }
 
-    //EVENT HANDLERS FOR OTHER SCRIPTS
+    /** EVENT HANDLERS **/
 
     public void EventLockWindow()
     {

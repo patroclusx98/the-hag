@@ -58,7 +58,7 @@ public class FrequencyTimer : MonoBehaviour
         }
     }
 
-    //Returns true at the start of the phase
+    // Returns true at the start of the phase
     public bool IsStartPhase(float frequencyInSeconds)
     {
         if (!hasStarted)
@@ -75,7 +75,7 @@ public class FrequencyTimer : MonoBehaviour
         }
     }
 
-    //Returns true at the end of the phase
+    // Returns true at the end of the phase
     public bool IsEndPhase(float frequencyInSeconds)
     {
         if (!hasStarted)

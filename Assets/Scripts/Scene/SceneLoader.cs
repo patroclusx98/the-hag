@@ -7,49 +7,70 @@ public class SceneLoader : MonoBehaviour
     public Animator transition;
     public AudioManager audioManager;
 
+    [Header("Scene Loader Attributes")]
+    [Tooltip("Fade in time in seconds. Setting 0 will skip the fade in.")]
+    public float fadeInTime = 1f;
+    [Tooltip("Fade out time in seconds. Setting 0 will skip the fade out.")]
+    public float fadeOutTime = 1f;
+
     [Header("Scene Loader Inspector")]
     [ReadOnlyInspector]
     public bool isSkipped = false;
+
+    //Awake is called on script load
+    private void Awake()
+    {
+        transition.SetFloat("FadeInTime", 1f / (fadeInTime > 0f ? fadeInTime : 0.0001f));
+        transition.SetFloat("FadeOutTime", 1f / (fadeOutTime > 0f ? fadeOutTime : 0.0001f));
+    }
 
     // Update is called once per frame
     private void Update()
     {
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {
+            /** Logo Scene **/
+
             Cursor.visible = false;
-            if (Input.GetButtonDown("Jump") && !isSkipped)
-            {
-                isSkipped = true;
-                LoadNextScene(0f);
-            }
         }
         else if (SceneManager.GetActiveScene().buildIndex == 1)
         {
-            if (Input.GetButtonDown("Jump") && !isSkipped)
-            {
-                isSkipped = true;
-                LoadNextScene(4f);
-            }
+            /** Intro Scene **/
+
+            Cursor.visible = false;
         }
         else if (SceneManager.GetActiveScene().buildIndex == 2)
         {
+            /** Menu Scene **/
+
             Cursor.visible = true;
         }
     }
 
-    private IEnumerator LoadLevel(int index, float transitionLengthInSeconds)
+    /// <summary>
+    /// Loads the next scene with the cross-fade transition
+    /// </summary>
+    public void LoadNextScene()
     {
-        transition.SetTrigger("EndFade");
+        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
 
-        yield return new WaitForSeconds(transitionLengthInSeconds);
-
-        SceneManager.LoadScene(index);
+        if (SceneUtility.GetScenePathByBuildIndex(nextSceneIndex).Length > 0)
+        {
+            StartCoroutine(LoadSceneCR(nextSceneIndex));
+        }
+        else
+        {
+            Debug.LogWarning("Scene does not exist for the next index: " + nextSceneIndex);
+        }
     }
 
-    public void LoadNextScene(float transitionLengthInSeconds)
+    private IEnumerator LoadSceneCR(int sceneIndex)
     {
-        if (audioManager != null)
-            audioManager.FadeOutAllAudio(2.5f);
-        StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex + 1, transitionLengthInSeconds));
+        audioManager.FadeOutAllAudio(fadeOutTime);
+        transition.SetTrigger("StartFadeOut");
+
+        yield return new WaitForSeconds(fadeOutTime);
+
+        SceneManager.LoadScene(sceneIndex);
     }
 }

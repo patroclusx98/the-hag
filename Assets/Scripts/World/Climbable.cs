@@ -31,7 +31,7 @@ public class Climbable : MonoBehaviour
         }
     }
 
-    //Check if player is facing the climbable object within the allowed tolerance
+    // Check if player is facing the climbable object within the allowed tolerance
     private bool CheckFacing()
     {
         Vector3 objectFacing = -gameObject.transform.right;

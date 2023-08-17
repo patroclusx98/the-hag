@@ -26,15 +26,15 @@ public class WindowInteraction : MonoBehaviour
         {
             if (windowObject && windowObject.isWindowGrabbed)
             {
-                windowObject.yPosMotion = windowObject.transform.position.y;
+                windowObject.yPosMotion = windowObject.transform.localPosition.y;
                 windowObject.lastYPosMotion = windowObject.yPosMotion;
                 CalcYPosMotion();
 
                 if (windowObject.lastYPosMotion != windowObject.yPosMotion)
                 {
-                    windowObject.fromPosition = windowObject.transform.position;
+                    windowObject.fromPosition = windowObject.transform.localPosition;
                     windowObject.toPosition = new Vector3(windowObject.fromPosition.x, windowObject.yPosMotion, windowObject.fromPosition.z);
-                    windowObject.transform.position = Vector3.MoveTowards(windowObject.fromPosition, windowObject.toPosition, 1f);
+                    windowObject.transform.localPosition = Vector3.MoveTowards(windowObject.fromPosition, windowObject.toPosition, 1f);
                 }
             }
             else
@@ -47,7 +47,7 @@ public class WindowInteraction : MonoBehaviour
         }
     }
 
-    //Check if player is near the window
+    // Check if player is near the window
     private bool IsPlayerNearby()
     {
         Vector3 windowOrigin = windowObject.transform.position;
@@ -65,10 +65,12 @@ public class WindowInteraction : MonoBehaviour
         windowObject.yPosMotion = Mathf.Clamp(windowObject.yPosMotion + mouseY, windowObject.defaultClosedPosition.y, windowObject.defaultClosedPosition.y + windowObject.maxOpeningPosition);
     }
 
-    //Check if looking at window and grab it
+    // Check if looking at window and grab it
     private void GrabWindow()
     {
-        if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Window"), QueryTriggerInteraction.Ignore))
+        bool rayHit = Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Window"), QueryTriggerInteraction.Ignore);
+
+        if (rayHit)
         {
             windowObject = hitInfo.transform.gameObject.GetComponent<WindowInteractable>();
 
@@ -83,7 +85,6 @@ public class WindowInteraction : MonoBehaviour
                 HintUI.instance.DisplayHintMessage("Window is locked!");
                 windowObject = null;
             }
-
         }
     }
 }

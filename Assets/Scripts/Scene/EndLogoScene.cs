@@ -12,8 +12,18 @@ public class EndLogoScene : MonoBehaviour
         videoPlayer.loopPointReached += EndVideo;
     }
 
-    public void EndVideo(VideoPlayer vp)
+    // Update is called once per frame
+    private void Update()
     {
-        sceneLoader.LoadNextScene(1f);
+        if (Input.GetKeyDown(KeyCode.Space) && !sceneLoader.isSkipped)
+        {
+            sceneLoader.isSkipped = true;
+            EndVideo(videoPlayer);
+        }
+    }
+
+    public void EndVideo(VideoPlayer videoPlayer)
+    {
+        sceneLoader.LoadNextScene();
     }
 }

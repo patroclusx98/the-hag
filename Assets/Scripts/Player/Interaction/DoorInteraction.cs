@@ -54,7 +54,7 @@ public class DoorInteraction : MonoBehaviour
                     doorObject.toRotation = Quaternion.Euler(doorObject.transform.eulerAngles.x, doorObject.yDegMotion, doorObject.transform.eulerAngles.z);
                     doorObject.transform.rotation = Quaternion.Lerp(doorObject.fromRotation, doorObject.toRotation, 1f);
 
-                    //Calc highest velocity applied by player
+                    // Calculate highest velocity applied by player
                     float calcVelocity = doorObject.motionVelocity * 25f;
                     if (Mathf.Abs(doorObject.physicsVelocity) < Mathf.Abs(calcVelocity) && Mathf.Abs(doorObject.motionVelocity) > 0.12f)
                     {
@@ -76,7 +76,7 @@ public class DoorInteraction : MonoBehaviour
         }
     }
 
-    //Check if player is near the door
+    // Check if player is near the door
     private bool IsPlayerNearby()
     {
         Vector3 doorOrigin = doorObject.transform.position;
@@ -87,7 +87,7 @@ public class DoorInteraction : MonoBehaviour
         return isPlayerNearby;
     }
 
-    //Applies max velocity to close or open the door
+    // Applies max velocity to close or open the door
     private void SlamDoor()
     {
         doorObject.isSlammed = true;
@@ -102,7 +102,7 @@ public class DoorInteraction : MonoBehaviour
         }
     }
 
-    //Calculates direction of walking applied in relation to door's facing
+    // Calculates direction of walking applied in relation to door's facing
     private float CalcWalkDotProduct()
     {
         Vector3 doorVector = doorObject.transform.forward;
@@ -111,7 +111,7 @@ public class DoorInteraction : MonoBehaviour
         return walkDotProduct = Vector3.Dot(cameraVector, doorVector);
     }
 
-    //Calculates direction of mouse movement applied in relation to door's facing
+    // Calculates direction of mouse movement applied in relation to door's facing
     private float CalcMouseDotProduct()
     {
         Vector3 doorVector1 = doorObject.transform.up;
@@ -129,44 +129,52 @@ public class DoorInteraction : MonoBehaviour
         float walkX = Input.GetAxis("Vertical") * doorObject.dragResistanceWalk * Time.deltaTime;
         float walkY = Input.GetAxis("Horizontal") * doorObject.dragResistanceWalk * Time.deltaTime;
 
-        //Set mouse and walk movement based on initial direction
+        // Set mouse and walk movement based on initial direction
         CalcMouseDotProduct();
         CalcWalkDotProduct();
 
-        //Player movement
+        // Player movement
         if (playerMovement.IsPlayerMoving())
         {
             if (walkDotProduct < -0.5f)
             {
-                //Front Side
+                /** Front Side **/
+
                 doorObject.yDegMotion = doorObject.ClampRotation(doorObject.isLeftSided ? doorObject.yDegMotion - walkX : doorObject.yDegMotion + walkX);
             }
             else if (walkDotProduct > 0.5f)
             {
-                //Back Side
+                /** Back Side **/
+
                 doorObject.yDegMotion = doorObject.ClampRotation(doorObject.isLeftSided ? doorObject.yDegMotion + walkX : doorObject.yDegMotion - walkX);
             }
             else
             {
-                //In between
+                /** In between **/
+
                 doorObject.yDegMotion = doorObject.ClampRotation(doorObject.yDegMotion - walkY);
             }
         }
 
-        //Mouse movement
+        // If door is colliding with player stop further motion towards player
         mouseY = doorObject.isPlayerColliding && mouseY < 0f ? 0f : mouseY;
 
+        // Mouse movement
         if (walkDotProduct < 0f)
         {
-            //Front side
+            /** Front side **/
+
             if (mouseDotProduct < 0.65f && mouseDotProduct > -0.65f)
             {
-                //Middle look
+                /** Middle look **/
+
                 doorObject.yDegMotion = doorObject.ClampRotation(doorObject.isLeftSided ? doorObject.yDegMotion - mouseY : doorObject.yDegMotion + mouseY);
             }
+
             if (mouseDotProduct > 0.45f || mouseDotProduct < -0.45f)
             {
-                //Angled look
+                /** Angled look **/
+
                 if (mouseDotProduct > 0.45f)
                 {
                     mouseX = doorObject.isPlayerColliding && mouseX > 0f ? 0f : mouseX;
@@ -181,15 +189,19 @@ public class DoorInteraction : MonoBehaviour
         }
         else
         {
-            //Back side
+            /** Back side **/
+
             if (mouseDotProduct < 0.65f && mouseDotProduct > -0.65f)
             {
-                //Middle look
+                /** Middle look **/
+
                 doorObject.yDegMotion = doorObject.ClampRotation(doorObject.isLeftSided ? doorObject.yDegMotion + mouseY : doorObject.yDegMotion - mouseY);
             }
+
             if (mouseDotProduct > 0.45f || mouseDotProduct < -0.45f)
             {
-                //Angled look
+                /** Angled look **/
+
                 if (mouseDotProduct > 0.45f)
                 {
                     mouseX = doorObject.isPlayerColliding && mouseX < 0f ? 0f : mouseX;
@@ -204,39 +216,26 @@ public class DoorInteraction : MonoBehaviour
         }
     }
 
-    //Check if looking at door and grab it
+    // Check if looking at door and grab it
     private void GrabDoor()
     {
-        if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Door"), QueryTriggerInteraction.Ignore))
+        bool rayHit = Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Door"), QueryTriggerInteraction.Ignore);
+
+        if (rayHit)
         {
             doorObject = hitInfo.transform.gameObject.GetComponent<DoorInteractable>();
 
-            //Play door handle animation
-            if (doorObject.doorHandleAnimator != null && doorObject.doorHandleAnimator.GetCurrentAnimatorStateInfo(0).IsName("Default"))
-            {
-                if (doorObject.IsDoorClosed(0f))
-                {
-                    switch (doorObject.isLeftSided)
-                    {
-                        case true:
-                            doorObject.doorHandleAnimator.SetTrigger("triggerHandleLeft");
-                            break;
-                        case false:
-                            doorObject.doorHandleAnimator.SetTrigger("triggerHandleRight");
-                            break;
-                    }
-                }
-            }
-
             if (!doorObject.isLocked)
             {
-                //Stop any door motion
+                // Stop any door motion
                 if (doorObject.prevCoroutine != null)
                 {
                     StopCoroutine(doorObject.prevCoroutine);
                     doorObject.prevCoroutine = null;
                     doorObject.physicsVelocity = 0f;
                 }
+
+                doorObject.PlayDoorHandleAnimation();
 
                 mouseLook.isInteracting = true;
                 playerStats.canInteract = false;
