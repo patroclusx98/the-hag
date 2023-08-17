@@ -3,23 +3,22 @@ using UnityEngine;
 
 public class FrequencyTimer : MonoBehaviour
 {
-    private string ID;
-    private float frequencyInSeconds;
-    private float timeElapsedWhileMute;
+    private string id;
+    private float frequencyTime;
     private float frequencyCounter;
+    private float idleCounter;
     private bool hasStarted;
-    private bool hasEnded;
 
-    public static FrequencyTimer GetInstance(string ID, GameObject gameObject)
+    public static FrequencyTimer GetInstance(string id, GameObject gameObject)
     {
-        string prefixID = gameObject.name + "_";
+        string prefixedId = gameObject.name + "_" + id;
 
-        FrequencyTimer ft = Array.Find(gameObject.GetComponents<FrequencyTimer>(), instance => instance.ID == prefixID + ID);
+        FrequencyTimer ft = Array.Find(gameObject.GetComponents<FrequencyTimer>(), instance => instance.id == prefixedId);
 
         if (ft == null)
         {
             ft = gameObject.AddComponent<FrequencyTimer>();
-            ft.ID = prefixID + ID;
+            ft.id = prefixedId;
         }
 
         return ft;
@@ -30,69 +29,47 @@ public class FrequencyTimer : MonoBehaviour
     {
         if (hasStarted)
         {
-            timeElapsedWhileMute = 0;
-            CountFreq();
+            CountFrequency();
         }
         else
         {
-            timeElapsedWhileMute += Time.deltaTime;
+            CountIdle();
         }
+    }
 
-        if (timeElapsedWhileMute > frequencyInSeconds)
+    private void CountFrequency()
+    {
+        frequencyCounter += Time.deltaTime;
+
+        if (frequencyCounter >= frequencyTime)
+        {
+            frequencyCounter = 0f;
+            idleCounter = 0f;
+            hasStarted = false;
+        }
+    }
+
+    private void CountIdle()
+    {
+        idleCounter += Time.deltaTime;
+
+        if (idleCounter >= frequencyTime * 2f)
         {
             Destroy(this);
         }
     }
 
-    private void CountFreq()
-    {
-        if (frequencyCounter < frequencyInSeconds)
-        {
-            frequencyCounter += Time.deltaTime * 0.9f;
-        }
-        else
-        {
-            frequencyCounter = 0f;
-            hasStarted = false;
-            hasEnded = true;
-        }
-    }
-
-    // Returns true at the start of the phase
-    public bool IsStartPhase(float frequencyInSeconds)
+    // Returns true at the start of every phase
+    public bool GetStartPhase(float frequencyTime)
     {
         if (!hasStarted)
         {
-            this.frequencyInSeconds = frequencyInSeconds;
+            this.frequencyTime = frequencyTime;
             hasStarted = true;
-            hasEnded = false;
 
             return true;
         }
-        else
-        {
-            return false;
-        }
-    }
 
-    // Returns true at the end of the phase
-    public bool IsEndPhase(float frequencyInSeconds)
-    {
-        if (!hasStarted)
-        {
-            this.frequencyInSeconds = frequencyInSeconds;
-            hasStarted = true;
-        }
-
-        if (hasEnded)
-        {
-            hasEnded = false;
-
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 }

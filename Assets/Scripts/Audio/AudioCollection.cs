@@ -21,7 +21,7 @@ public class AudioCollection
     public float maxDistance;
 
     [HideInInspector]
-    public List<AudioSource> collectionSources;
+    public List<AudioSource> sources;
     [HideInInspector]
     public AudioSource lastSourcePlayed;
 }
