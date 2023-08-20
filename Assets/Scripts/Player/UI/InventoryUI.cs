@@ -4,7 +4,7 @@ public class InventoryUI : MonoBehaviour
 {
     public GameObject inventoryUI;
     public PlayerStats playerStats;
-    public MouseLook mouseLook;
+    public PlayerLook playerLook;
 
     private PlayerInventory inventory;
     private InventorySlot[] slots;
@@ -21,7 +21,7 @@ public class InventoryUI : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if ((playerStats.canInteract || mouseLook.isInInventory) && Input.GetKeyDown(KeyCode.E))
+        if ((playerStats.canInteract || playerLook.isInInventory) && Input.GetKeyDown(KeyCode.E))
         {
             ToggleInventory(false);
         }
@@ -45,6 +45,6 @@ public class InventoryUI : MonoBehaviour
     public void ToggleInventory(bool isItemSelected)
     {
         inventoryUI.SetActive(!inventoryUI.activeSelf);
-        mouseLook.ToggleInventoryCursor(isItemSelected);
+        playerLook.ToggleInventoryCursor(isItemSelected);
     }
 }

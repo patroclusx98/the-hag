@@ -4,8 +4,8 @@ public class DoorInteraction : MonoBehaviour
 {
     public PlayerMovement playerMovement;
     public PlayerStats playerStats;
+    public PlayerLook playerLook;
     public Camera mainCamera;
-    public MouseLook mouseLook;
 
     private DoorInteractable doorObject;
     private float mouseDotProduct;
@@ -20,7 +20,7 @@ public class DoorInteraction : MonoBehaviour
             {
                 doorObject.ApplyVelocityToDoor(1f);
 
-                mouseLook.isInteracting = false;
+                playerLook.isInteracting = false;
                 playerStats.canInteract = true;
                 doorObject.isDoorGrabbed = false;
                 doorObject = null;
@@ -127,7 +127,7 @@ public class DoorInteraction : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * doorObject.dragResistanceMouse;
         float mouseY = Input.GetAxis("Mouse Y") * doorObject.dragResistanceMouse;
         float walkX = Input.GetAxis("Vertical") * doorObject.dragResistanceWalk * Time.deltaTime;
-        float walkY = Input.GetAxis("Horizontal") * doorObject.dragResistanceWalk * Time.deltaTime;
+        float walkZ = Input.GetAxis("Horizontal") * doorObject.dragResistanceWalk * Time.deltaTime;
 
         // Set mouse and walk movement based on initial direction
         CalcMouseDotProduct();
@@ -152,7 +152,7 @@ public class DoorInteraction : MonoBehaviour
             {
                 /** In between **/
 
-                doorObject.yDegMotion = doorObject.ClampRotation(doorObject.yDegMotion - walkY);
+                doorObject.yDegMotion = doorObject.ClampRotation(doorObject.yDegMotion - walkZ);
             }
         }
 
@@ -237,7 +237,7 @@ public class DoorInteraction : MonoBehaviour
 
                 doorObject.PlayDoorHandleAnimation();
 
-                mouseLook.isInteracting = true;
+                playerLook.isInteracting = true;
                 playerStats.canInteract = false;
                 doorObject.isSlammed = false;
                 doorObject.isDoorGrabbed = true;

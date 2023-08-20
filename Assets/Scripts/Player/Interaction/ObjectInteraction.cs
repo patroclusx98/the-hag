@@ -5,7 +5,7 @@ public class ObjectInteraction : MonoBehaviour
     public PlayerMovement playerMovement;
     public PlayerStats playerStats;
     public Camera mainCamera;
-    public MouseLook mouseLook;
+    public PlayerLook playerLook;
     public LayerMask ignoredLayer;
 
     [Header("Interaction Attributes")]
@@ -35,7 +35,7 @@ public class ObjectInteraction : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        defaultPlayerWalkSpeed = playerMovement.playerStats.walkSpeed;
+        defaultPlayerWalkSpeed = playerStats.walkSpeed;
     }
 
     // Update is called once per frame
@@ -51,7 +51,7 @@ public class ObjectInteraction : MonoBehaviour
                 }
 
                 isObjectGrabbed = false;
-                mouseLook.isInteracting = false;
+                playerLook.isInteracting = false;
                 playerStats.canInteract = true;
             }
         }
@@ -67,22 +67,22 @@ public class ObjectInteraction : MonoBehaviour
                     /** Object rotation in hand **/
                     if (Input.GetKey(KeyCode.R))
                     {
-                        mouseLook.isInteracting = true;
+                        playerLook.isInteracting = true;
 
-                        float mouseX = Input.GetAxis("Mouse X") * 2f;
-                        float mouseY = Input.GetAxis("Mouse Y") * 2f;
+                        float mouseX = Input.GetAxis("Mouse X");
+                        float mouseY = Input.GetAxis("Mouse Y");
 
                         objectInHand.transform.Rotate(mainCamera.transform.up, -mouseX, Space.World);
                         objectInHand.transform.Rotate(mainCamera.transform.right, mouseY, Space.World);
                     }
                     else if (Input.GetKeyUp(KeyCode.R))
                     {
-                        mouseLook.isInteracting = false;
+                        playerLook.isInteracting = false;
                     }
                 }
                 else
                 {
-                    mouseLook.isInteracting = true;
+                    playerLook.isInteracting = true;
                     DragObject();
                 }
             }
@@ -193,7 +193,7 @@ public class ObjectInteraction : MonoBehaviour
         if (Input.GetKey(KeyCode.Mouse1))
         {
             DropObj();
-            objectInHandRB.AddForce(mainCamera.transform.forward * playerStats.strength);
+            objectInHandRB.AddForce(playerStats.strength * mainCamera.transform.forward);
         }
     }
 
@@ -238,10 +238,11 @@ public class ObjectInteraction : MonoBehaviour
 
         if (carryingHeavyObject)
         {
-            playerMovement.playerStats.walkSpeed = defaultPlayerWalkSpeed;
-            playerMovement.playerStats.SetCanRun(true);
+            playerStats.walkSpeed = defaultPlayerWalkSpeed;
+            playerStats.SetCanJump(true);
         }
 
+        playerStats.SetCanRun(true);
         carryingObject = false;
         carryingHeavyObject = false;
     }
@@ -282,8 +283,8 @@ public class ObjectInteraction : MonoBehaviour
                     }
                     else
                     {
-                        playerMovement.playerStats.walkSpeed = playerMovement.playerStats.walkSpeed * 0.7f - (1f - 5f / objectInHandRB.mass);
-                        playerMovement.playerStats.SetCanRun(false);
+                        playerStats.walkSpeed = playerStats.walkSpeed * 0.7f - (1f - 5f / objectInHandRB.mass);
+                        playerStats.SetCanJump(false);
                         carryingHeavyObject = true;
                     }
 
@@ -292,6 +293,7 @@ public class ObjectInteraction : MonoBehaviour
 
                     carryingObject = true;
                     isObjectGrabbed = true;
+                    playerStats.SetCanRun(false);
                     playerStats.canInteract = false;
                 }
             }

@@ -14,122 +14,129 @@ public class PlayerStats : MonoBehaviour
     public float walkSpeed = 2f;
     public float sprintSpeed = 4f;
     public float climbSpeed = 1f;
-    public float fallDamageSpeed = 1f;
 
     [Header("Player Stamina Attributes")]
-    public bool isStaminaDrainEnabled = true;
+    public bool isStaminaEnabled = true;
     public float playerStamina = 100f;
     public float staminaChangeSpeed = 10f;
 
     [Header("Player Modifier Attributes")]
-    public bool isAdrenalineOn = false;
+    public bool isAdrenalineOn;
     public float adrenalineModifier = 2f;
     public bool canRun = true;
     public bool canJump = true;
     [ReadOnlyInspector]
-    public bool hasFallDamage = false;
+    public bool hasFallDamage;
+    [ReadOnlyInspector]
+    public float fallDamageRecoveryTime;
 
     private bool canRunInternal = true;
     private bool canJumpInternal = true;
-    private float fallDamageRecoveryTimer = 0f;
-    private float fallDamageRecoveryLength = 0f;
 
     // Update is called once per frame
     private void Update()
     {
         float staminaDrainSpeed = staminaChangeSpeed;
+
         if (isAdrenalineOn)
         {
             staminaDrainSpeed = staminaChangeSpeed / adrenalineModifier;
         }
 
-        HandleStamina(staminaDrainSpeed);
+        if (isStaminaEnabled)
+        {
+            HandleStamina(staminaDrainSpeed);
+        }
 
         if (hasFallDamage)
+        {
             HandleFallDamage();
+        }
     }
 
     private void HandleStamina(float staminaDrainSpeed)
     {
-        if (playerStamina < 40f)
+        /** Player running stamina drain **/
+        if (playerMovement.isRunning && GetCanRun())
         {
-            audioManager.PlayCollectionSound2D("Sound_Player_Breath", false, 0.5f);
-        }
-
-        if (isStaminaDrainEnabled)
-        {
-            if (playerMovement.isRunning && GetCanRun())
+            if (playerStamina > 0f)
             {
-                if (playerStamina > 0f)
+                if (!playerMovement.isJumping)
                 {
-                    if (!playerMovement.hasJumped)
-                    {
-                        playerStamina -= Time.deltaTime * staminaDrainSpeed;
-                    }
-                }
-                else
-                {
-                    playerStamina = 0f;
-                    canRunInternal = false;
+                    playerStamina -= staminaDrainSpeed * Time.deltaTime;
                 }
             }
-            if (playerMovement.hasJumped && GetCanJump())
+            else
             {
-                if (playerStamina >= 10f)
-                {
-                    playerStamina -= staminaDrainSpeed;
-                    canJumpInternal = false;
-                }
-                else
-                {
-                    playerStamina = 0f;
-                    canJumpInternal = false;
-                }
+                playerStamina = 0f;
+                canRunInternal = false;
+            }
+        }
+
+        /** PLayer jumping stamina drain **/
+        if (playerMovement.isJumping && GetCanJump())
+        {
+            if (playerStamina >= staminaDrainSpeed)
+            {
+                playerStamina -= staminaDrainSpeed;
+                canJumpInternal = false;
+            }
+            else
+            {
+                playerStamina = 0f;
+                canJumpInternal = false;
             }
         }
 
         if (playerStamina < 100f)
         {
-            //Stamina recover
-            if (!playerMovement.isRunning && !playerMovement.hasJumped)
+            /** Recover player stamina **/
+            if (!playerMovement.isRunning && !playerMovement.isJumping)
             {
-                playerStamina += Time.deltaTime * staminaChangeSpeed;
+                playerStamina += staminaChangeSpeed * Time.deltaTime;
+
                 if (playerStamina > 100f)
                 {
                     playerStamina = 100f;
                 }
             }
 
-            //Run recover
-            if (playerStamina >= 60f && !playerMovement.isRunning)
+            /** Recover running **/
+            if (playerStamina >= 50f && !playerMovement.isRunning)
             {
                 canRunInternal = true;
             }
 
-            //Jump recover
-            if (playerStamina >= staminaDrainSpeed && !playerMovement.hasJumped)
+            /** Recover jumping **/
+            if (playerStamina >= staminaDrainSpeed && !playerMovement.isJumping)
             {
                 canJumpInternal = true;
             }
+        }
+
+        /** Player tired sound play **/
+        if (playerStamina < 40f)
+        {
+            audioManager.PlayCollectionSound2D("Sound_Player_Breath", false, 0.5f);
         }
     }
 
     private void HandleFallDamage()
     {
-        if (fallDamageRecoveryTimer < fallDamageRecoveryLength)
+        if (fallDamageRecoveryTime > 0f)
         {
-            fallDamageRecoveryTimer += Time.deltaTime;
+            fallDamageRecoveryTime -= Time.deltaTime;
         }
         else
         {
-            fallDamageRecoveryTimer = 0f;
+            fallDamageRecoveryTime = 0f;
             hasFallDamage = false;
         }
     }
 
     public bool GetCanRun()
     {
-        return canRun && canRunInternal;
+        return canRun && canRunInternal && !hasFallDamage;
     }
 
     public bool GetCanJump()
@@ -147,11 +154,9 @@ public class PlayerStats : MonoBehaviour
         this.canJump = canJump;
     }
 
-    public void SetFallDamage(float lengthMultiplier)
+    public void SetFallDamage(float fallDamageRecoveryTime)
     {
-        fallDamageRecoveryLength = 1f * lengthMultiplier;
-
-        fallDamageRecoveryTimer = 0f;
+        this.fallDamageRecoveryTime += fallDamageRecoveryTime;
         hasFallDamage = true;
     }
 }

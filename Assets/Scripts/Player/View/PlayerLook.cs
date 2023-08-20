@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class MouseLook : MonoBehaviour
+public class PlayerLook : MonoBehaviour
 {
     public PlayerMovement playerMovement;
     public PlayerStats playerStats;
@@ -29,11 +29,11 @@ public class MouseLook : MonoBehaviour
     {
         if (!isInteracting && !isInInventory)
         {
-            DoMouseLook();
+            MouseLook();
         }
     }
 
-    private void DoMouseLook()
+    private void MouseLook()
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;

@@ -47,6 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transition: {fileID: 5454662292437419493}
   audioManager: {fileID: 0}
+  fadeInTime: 2
+  fadeOutTime: 2
   isSkipped: 0
 --- !u!1 &1888782783320184636
 GameObject:
@@ -102,7 +104,7 @@ Canvas:
   m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
@@ -111,7 +113,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 999
   m_TargetDisplay: 0
 --- !u!222 &2553227717671805292
 CanvasRenderer:

@@ -9,9 +9,9 @@ public class SceneLoader : MonoBehaviour
 
     [Header("Scene Loader Attributes")]
     [Tooltip("Fade in time in seconds. Setting 0 will skip the fade in.")]
-    public float fadeInTime = 1f;
+    public float fadeInTime = 2f;
     [Tooltip("Fade out time in seconds. Setting 0 will skip the fade out.")]
-    public float fadeOutTime = 1f;
+    public float fadeOutTime = 2f;
 
     [Header("Scene Loader Inspector")]
     [ReadOnlyInspector]

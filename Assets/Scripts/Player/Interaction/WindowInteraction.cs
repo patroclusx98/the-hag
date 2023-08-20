@@ -3,8 +3,8 @@
 public class WindowInteraction : MonoBehaviour
 {
     public PlayerStats playerStats;
+    public PlayerLook playerLook;
     public Camera mainCamera;
-    public MouseLook mouseLook;
 
     private WindowInteractable windowObject;
 
@@ -15,7 +15,7 @@ public class WindowInteraction : MonoBehaviour
         {
             if (Input.GetKeyUp(KeyCode.Mouse0) || !IsPlayerNearby())
             {
-                mouseLook.isInteracting = false;
+                playerLook.isInteracting = false;
                 playerStats.canInteract = true;
                 windowObject.isWindowGrabbed = false;
                 windowObject = null;
@@ -76,7 +76,7 @@ public class WindowInteraction : MonoBehaviour
 
             if (!windowObject.isLocked)
             {
-                mouseLook.isInteracting = true;
+                playerLook.isInteracting = true;
                 playerStats.canInteract = false;
                 windowObject.isWindowGrabbed = true;
             }

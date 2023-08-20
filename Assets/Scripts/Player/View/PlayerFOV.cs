@@ -6,7 +6,8 @@ public class PlayerFOV : MonoBehaviour
     public Camera mainCamera;
 
     [Header("FOV Attributes")]
-    public float distortionSensitivity = 3f;
+    public float distortionAmount = 15f;
+    public float distortionSpeed = 3f;
 
     private float defaultFov;
 
@@ -19,15 +20,19 @@ public class PlayerFOV : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (playerMovement.isRunning || playerMovement.verticalVelocity.y < -10f)
+        if (playerMovement.isRunning || playerMovement.verticalVelocity.y < playerMovement.fallDamageTolerance)
         {
-            mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, defaultFov + 15f, distortionSensitivity * Time.deltaTime);
+            mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, defaultFov + distortionAmount, distortionSpeed * Time.deltaTime);
         }
         else
         {
-            if (mainCamera.fieldOfView > 60.01f)
+            if (mainCamera.fieldOfView > defaultFov + 0.1f)
             {
-                mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, defaultFov, distortionSensitivity * Time.deltaTime);
+                mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, defaultFov, distortionSpeed * Time.deltaTime);
+            }
+            else
+            {
+                mainCamera.fieldOfView = defaultFov;
             }
         }
     }
