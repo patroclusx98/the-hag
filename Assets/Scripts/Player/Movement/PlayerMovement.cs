@@ -59,6 +59,8 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         isGrounded = characterController.isGrounded;
+        playerAnimator.SetBool("IsGrounded", isGrounded);
+
         bool isMoving = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D);
 
         /** Player moving **/
@@ -100,12 +102,6 @@ public class PlayerMovement : MonoBehaviour
             isRunning = false;
             didWalkIntoWall = false;
         }
-
-        /** Player animator **/
-        playerAnimator.SetBool("IsGrounded", isGrounded);
-        playerAnimator.SetBool("IsJumping", isJumping);
-        playerAnimator.SetBool("IsCrouching", isCrouching);
-        playerAnimator.SetBool("HasCrouched", hasCrouched);
     }
 
     /** PLAYER MOVEMENT METHODS **/
@@ -213,14 +209,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void InitJump()
     {
-        if (isGrounded && !isJumping && !isClimbing && playerStats.GetCanJump())
+        if (isGrounded && !isJumping && (!isCrouching || hasCrouched) && !isClimbing && playerStats.GetCanJump())
         {
             float playerRadius = characterController.radius * defaultPlayerScale.y;
             float playerJumpHeight = (characterController.height + jumpHeight) * transform.localScale.y - playerRadius;
 
-            if (!Physics.SphereCast(gameObject.transform.position, playerRadius, transform.up, out _, playerJumpHeight * 0.9f, groundMask, QueryTriggerInteraction.Ignore))
+            if (!Physics.SphereCast(gameObject.transform.position, playerRadius * 0.85f, transform.up, out _, playerJumpHeight * 0.9f, groundMask, QueryTriggerInteraction.Ignore))
             {
                 isJumping = true;
+                playerAnimator.SetBool("IsJumping", isJumping);
             }
         }
     }
@@ -236,6 +233,7 @@ public class PlayerMovement : MonoBehaviour
     {
         characterController.stepOffset = defaultStepOffset;
         isJumping = false;
+        playerAnimator.SetBool("IsJumping", isJumping);
     }
 
     /** PLAYER CROUCHING METHODS **/
@@ -247,6 +245,7 @@ public class PlayerMovement : MonoBehaviour
             if (!isCrouching)
             {
                 isCrouching = true;
+                playerAnimator.SetBool("IsCrouching", isCrouching);
                 PlayCrouchingSound();
             }
             else if (hasCrouched)
@@ -254,9 +253,10 @@ public class PlayerMovement : MonoBehaviour
                 float playerRadius = characterController.radius * defaultPlayerScale.y;
                 float playerStandHeight = characterController.height * defaultPlayerScale.y - playerRadius;
 
-                if (!Physics.SphereCast(gameObject.transform.position, playerRadius, transform.up, out _, playerStandHeight, groundMask, QueryTriggerInteraction.Ignore))
+                if (!Physics.SphereCast(gameObject.transform.position, playerRadius * 0.85f, transform.up, out _, playerStandHeight, groundMask, QueryTriggerInteraction.Ignore))
                 {
                     hasCrouched = false;
+                    playerAnimator.SetBool("HasCrouched", hasCrouched);
                     PlayCrouchingSound();
                 }
             }
@@ -266,11 +266,13 @@ public class PlayerMovement : MonoBehaviour
     public void Crouch()
     {
         hasCrouched = true;
+        playerAnimator.SetBool("HasCrouched", hasCrouched);
     }
 
     public void ResetCrouch()
     {
         isCrouching = false;
+        playerAnimator.SetBool("IsCrouching", isCrouching);
     }
 
     /** PLAYER GRAVITY METHODS **/
@@ -282,24 +284,27 @@ public class PlayerMovement : MonoBehaviour
             /** Player is airborne **/
 
             verticalVelocity.y += gravityForce * Time.deltaTime;
+            playerAnimator.SetFloat("VerticalVelocityY", verticalVelocity.y);
         }
         else
         {
             /** Player is on the ground **/
 
-            if (verticalVelocity.y < 0f)
+            if (verticalVelocity.y <= 0f)
             {
-                if (verticalVelocity.y <= impactTolerance)
-                {
-                    PlayLandingSound();
-                }
-
-                if (verticalVelocity.y <= fallDamageTolerance)
+                if (verticalVelocity.y < fallDamageTolerance)
                 {
                     float multiplier = Mathf.Pow(5f, 1f / 3f) / fallDamageTolerance;
                     float fallDamageRecoveryTime = Mathf.Abs(Mathf.Pow(verticalVelocity.y * multiplier, 3f));
 
                     playerStats.SetFallDamage(Mathf.Clamp(fallDamageRecoveryTime, 5f, 15f));
+                    playerAnimator.SetFloat("VerticalVelocityY", verticalVelocity.y);
+                    PlayFallDamageSound();
+                }
+                else if (verticalVelocity.y < impactTolerance)
+                {
+                    playerAnimator.SetFloat("VerticalVelocityY", verticalVelocity.y);
+                    PlayImpactSound();
                 }
 
                 verticalVelocity.y = groundGravityForce;
@@ -418,7 +423,12 @@ public class PlayerMovement : MonoBehaviour
         audioManager.PlayCollectionSound2D("Sound_Player_Crouch", true, 0f);
     }
 
-    private void PlayLandingSound()
+    private void PlayImpactSound()
+    {
+        audioManager.PlayCollectionSound3D("Sound_Step_Run_Dirt", false, 0f, gameObject);
+    }
+
+    private void PlayFallDamageSound()
     {
         audioManager.PlayCollectionSound3D("Sound_Step_Run_Dirt", false, 0f, gameObject);
     }

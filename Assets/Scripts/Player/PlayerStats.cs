@@ -141,7 +141,7 @@ public class PlayerStats : MonoBehaviour
 
     public bool GetCanJump()
     {
-        return canJump && canJumpInternal;
+        return canJump && canJumpInternal && !hasFallDamage;
     }
 
     public void SetCanRun(bool canRun)
