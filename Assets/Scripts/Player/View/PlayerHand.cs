@@ -2,53 +2,25 @@ using UnityEngine;
 
 public class PlayerHand : MonoBehaviour
 {
+    public PlayerMovement playerMovement;
     public PlayerLook playerLook;
-    public ObjectInteraction objectInteraction;
 
-    private Quaternion defaultTransform;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        defaultTransform = gameObject.transform.localRotation;
-    }
+    [Header("Player Hand Attributes")]
+    public float handSwaySpeed = 50f;
+    public float minHandXRotation = -40f;
+    public float maxHandXRotation = 75f;
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (!playerLook.isInteracting && !playerLook.isInInventory)
-        {
-            HandSway();
-        }
+        HandSway();
     }
 
-    void HandSway()
+    private void HandSway()
     {
-        float mouseX = Input.GetAxis("Mouse X") * playerLook.mouseSensitivity;
-        float xMouseRotation = -playerLook.xRotation;
-        float upLimit = objectInteraction.carryingObject ? 75f : 40f;
-        float downLimit = objectInteraction.carryingObject ? -40f : -50f;
+        float headRotationX = Mathf.Clamp(playerLook.headXRotation, minHandXRotation, maxHandXRotation);
+        float headRotationY = playerLook.headYRotation;
 
-        if (xMouseRotation > upLimit)
-        {
-            /** Looking upwards **/
-
-            xMouseRotation -= upLimit;
-        }
-        else if (xMouseRotation < downLimit)
-        {
-            /** Looking downwards **/
-
-            xMouseRotation -= downLimit;
-        }
-        else
-        {
-            /** Looking straight **/
-
-            xMouseRotation = 0f;
-        }
-
-        Quaternion toTransform = defaultTransform * Quaternion.Euler(xMouseRotation, 0f, 0f) * Quaternion.AngleAxis(-mouseX * 1.5f, Vector2.up);
-        gameObject.transform.localRotation = Quaternion.Lerp(gameObject.transform.localRotation, toTransform, 10f * Time.deltaTime);
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(-headRotationX, headRotationY, 0f), handSwaySpeed * Time.deltaTime);
     }
 }

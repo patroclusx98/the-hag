@@ -4,7 +4,6 @@ public class WindowInteraction : MonoBehaviour
 {
     public PlayerStats playerStats;
     public PlayerLook playerLook;
-    public Camera mainCamera;
 
     private WindowInteractable windowObject;
 
@@ -13,62 +12,44 @@ public class WindowInteraction : MonoBehaviour
     {
         if (windowObject && windowObject.isWindowGrabbed)
         {
-            if (Input.GetKeyUp(KeyCode.Mouse0) || !IsPlayerNearby())
+            if (Input.GetKeyUp(KeyCode.Mouse0) || ShouldLetGoOfWindow())
             {
-                playerLook.isInteracting = false;
-                playerStats.canInteract = true;
-                windowObject.isWindowGrabbed = false;
-                windowObject = null;
+                LetGoOfWindow();
+            }
+            else if (Input.GetKey(KeyCode.Mouse0))
+            {
+                SetYPosition();
             }
         }
-
-        if (Input.GetKey(KeyCode.Mouse0))
+        else
         {
-            if (windowObject && windowObject.isWindowGrabbed)
+            if (Input.GetKeyDown(KeyCode.Mouse0) && playerStats.canInteract)
             {
-                windowObject.yPosMotion = windowObject.transform.localPosition.y;
-                windowObject.lastYPosMotion = windowObject.yPosMotion;
-                CalcYPosMotion();
-
-                if (windowObject.lastYPosMotion != windowObject.yPosMotion)
-                {
-                    windowObject.fromPosition = windowObject.transform.localPosition;
-                    windowObject.toPosition = new Vector3(windowObject.fromPosition.x, windowObject.yPosMotion, windowObject.fromPosition.z);
-                    windowObject.transform.localPosition = Vector3.MoveTowards(windowObject.fromPosition, windowObject.toPosition, 1f);
-                }
-            }
-            else
-            {
-                if (playerStats.canInteract && Input.GetKeyDown(KeyCode.Mouse0))
-                {
-                    GrabWindow();
-                }
+                GrabWindow();
             }
         }
     }
 
-    // Check if player is near the window
-    private bool IsPlayerNearby()
+    private void SetYPosition()
     {
-        Vector3 windowOrigin = windowObject.transform.position;
-        Vector3 windowEdgeBottom = windowOrigin - windowObject.transform.up * (windowObject.transform.GetComponent<MeshFilter>().sharedMesh.bounds.size.y - 0.1f);
-        bool isPlayerNearby = Physics.CheckCapsule(windowOrigin, windowEdgeBottom, playerStats.reachDistance - 0.1f, LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
+        float mouseY = Input.GetAxis("Mouse Y") / (windowObject.movementResistance * 100f);
+        float motionChange = 0f;
 
-        return isPlayerNearby;
-    }
+        motionChange += mouseY;
 
-    private void CalcYPosMotion()
-    {
-        float mouseY = Input.GetAxis("Mouse Y") * windowObject.dragResistance;
-        mouseY = windowObject.isPlayerColliding && mouseY < 0f ? 0f : mouseY;
+        if (windowObject.isPlayerColliding)
+        {
+            motionChange = motionChange < 0f ? 0f : motionChange;
+        }
 
-        windowObject.yPosMotion = Mathf.Clamp(windowObject.yPosMotion + mouseY, windowObject.defaultClosedPosition.y, windowObject.defaultClosedPosition.y + windowObject.maxOpeningPosition);
+        windowObject.yPosition += motionChange;
+        playerLook.SetObjectTracking(windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Bottom));
     }
 
     // Check if looking at window and grab it
     private void GrabWindow()
     {
-        bool rayHit = Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Window"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Window"), QueryTriggerInteraction.Ignore);
 
         if (rayHit)
         {
@@ -76,7 +57,6 @@ public class WindowInteraction : MonoBehaviour
 
             if (!windowObject.isLocked)
             {
-                playerLook.isInteracting = true;
                 playerStats.canInteract = false;
                 windowObject.isWindowGrabbed = true;
             }
@@ -86,5 +66,27 @@ public class WindowInteraction : MonoBehaviour
                 windowObject = null;
             }
         }
+    }
+
+    private bool ShouldLetGoOfWindow()
+    {
+        float playerWindowTopDistance = Vector3.Distance(playerLook.transform.position, windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Top));
+        float playerWindowBottomDistance = Vector3.Distance(playerLook.transform.position, windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Bottom));
+
+        if (playerWindowTopDistance > playerStats.reachDistance + 0.1f && playerWindowBottomDistance > playerStats.reachDistance + 0.1f)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void LetGoOfWindow()
+    {
+        playerStats.canInteract = true;
+        playerLook.ResetObjectTracking();
+
+        windowObject.isWindowGrabbed = false;
+        windowObject = null;
     }
 }

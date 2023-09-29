@@ -21,7 +21,7 @@ public class PlayerBobbing : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (playerMovement.IsPlayerMoving() && (Mathf.Abs(playerMovement.moveVelocity.x) > 0.35f || Mathf.Abs(playerMovement.moveVelocity.z) > 0.35f))
+        if (playerMovement.IsPlayerMoving() && (Mathf.Abs(playerMovement.horizontalVelocity.x) > 0.35f || Mathf.Abs(playerMovement.horizontalVelocity.z) > 0.35f))
         {
             /** Player is moving **/
 

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class CrosshairUI : MonoBehaviour
 {
     public PlayerStats playerStats;
-    public Camera mainCamera;
+    public PlayerLook playerLook;
     public RawImage crosshair;
     public RawImage crosshairHand;
     public Image crosshairItem;
@@ -13,7 +13,7 @@ public class CrosshairUI : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        bool rayHit = Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
         Item selectedItem = PlayerInventory.instance != null ? PlayerInventory.instance.selectedItem : null;
 
         if (selectedItem != null)

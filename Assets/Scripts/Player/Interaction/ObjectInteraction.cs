@@ -1,12 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class ObjectInteraction : MonoBehaviour
 {
     public PlayerMovement playerMovement;
     public PlayerStats playerStats;
-    public Camera mainCamera;
     public PlayerLook playerLook;
-    public LayerMask ignoredLayer;
 
     [Header("Interaction Attributes")]
     public float maxObjectCarryWeight = 5f;
@@ -16,21 +15,18 @@ public class ObjectInteraction : MonoBehaviour
     [ReadOnlyInspector]
     public bool isObjectGrabbed;
     [ReadOnlyInspector]
-    public bool carryingObject;
-    [ReadOnlyInspector]
-    public bool carryingHeavyObject;
+    public bool isObjectWithinReach;
 
     private GameObject objectInHand;
-    private Rigidbody objectInHandRB;
+    private Rigidbody objectRBInHand;
 
-    private float defaultDrag;
-    private float defaultAngularDrag;
+    private Transform defaultObjectParent;
+    private float defaultObjectDrag;
+    private float defaultObjectAngularDrag;
     private float defaultPlayerWalkSpeed;
-    private float objDistanceBySize;
-    private Transform defaultParent;
-    private Vector3 defaultScale;
-    private Vector3 lastPosition;
-    private Vector3 lastVelocity;
+
+    private Vector3 lastObjectPosition;
+    private Vector3 lastObjectVelocity;
 
     // Start is called before the first frame update
     private void Start()
@@ -43,62 +39,195 @@ public class ObjectInteraction : MonoBehaviour
     {
         if (isObjectGrabbed)
         {
-            if (Input.GetKeyUp(KeyCode.Mouse0) || !carryingObject)
+            if (Input.GetKeyUp(KeyCode.Mouse0) || ShouldDropObject())
             {
-                if (carryingObject)
-                {
-                    DropObj();
-                }
-
-                isObjectGrabbed = false;
-                playerLook.isInteracting = false;
-                playerStats.canInteract = true;
+                DropObject();
             }
-        }
-
-        if (Input.GetKey(KeyCode.Mouse0))
-        {
-            if (carryingObject)
+            else if (Input.GetKey(KeyCode.Mouse0))
             {
-                if (objectInHandRB.mass <= maxObjectCarryWeight)
+                if (objectRBInHand.mass <= maxObjectCarryWeight)
                 {
                     CarryObject();
-
-                    /** Object rotation in hand **/
-                    if (Input.GetKey(KeyCode.R))
-                    {
-                        playerLook.isInteracting = true;
-
-                        float mouseX = Input.GetAxis("Mouse X");
-                        float mouseY = Input.GetAxis("Mouse Y");
-
-                        objectInHand.transform.Rotate(mainCamera.transform.up, -mouseX, Space.World);
-                        objectInHand.transform.Rotate(mainCamera.transform.right, mouseY, Space.World);
-                    }
-                    else if (Input.GetKeyUp(KeyCode.R))
-                    {
-                        playerLook.isInteracting = false;
-                    }
                 }
                 else
                 {
-                    playerLook.isInteracting = true;
                     DragObject();
                 }
             }
-            else
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Mouse0) && playerStats.canInteract)
             {
-                if (playerStats.canInteract && Input.GetKeyDown(KeyCode.Mouse0))
-                {
-                    PickUpObject();
-                }
+                PickUpObject();
             }
         }
     }
 
-    private bool CheckIfObjUnderPlayer()
+    private bool IsObjectUnderPlayer()
     {
-        if (playerMovement.gameObjectUnderPlayer != null && playerMovement.gameObjectUnderPlayer == objectInHand)
+        return playerMovement.gameObjectUnderPlayer == objectInHand;
+    }
+
+    private void StopObjectForces()
+    {
+        objectRBInHand.velocity = Vector3.zero;
+        objectRBInHand.angularVelocity = Vector3.zero;
+        objectRBInHand.Sleep();
+    }
+
+    private void SetLastObjectVelocity()
+    {
+        float mouseXY = Math.Abs(Input.GetAxis("Mouse X")) + Math.Abs(Input.GetAxis("Mouse Y"));
+        float forceMultiplier = Mathf.Clamp(objectRBInHand.mass, 1f, maxObjectCarryWeight);
+        Vector3 throwDirection = Mathf.Clamp(mouseXY, 1f, 5f) * (objectInHand.transform.position - lastObjectPosition);
+
+        lastObjectVelocity = playerStats.strength * forceMultiplier * throwDirection;
+        lastObjectPosition = objectInHand.transform.position;
+    }
+
+    private void CenterObjectToHand()
+    {
+        if (Vector3.Distance(objectInHand.transform.position, transform.position) > 0.1f)
+        {
+            float forceMultiplier = Mathf.Clamp(objectRBInHand.mass, 1f, maxObjectCarryWeight);
+
+            objectRBInHand.drag = 40f;
+            objectRBInHand.angularDrag = 40f;
+            objectRBInHand.AddForce(objectRBInHand.drag * forceMultiplier * (transform.position - objectInHand.transform.position), ForceMode.Force);
+        }
+        else
+        {
+            objectRBInHand.drag = defaultObjectDrag;
+            objectRBInHand.angularDrag = defaultObjectAngularDrag;
+            StopObjectForces();
+            SetLastObjectVelocity();
+        }
+    }
+
+    private void CarryObject()
+    {
+        CenterObjectToHand();
+
+        /** Rotate object in hand **/
+        if (Input.GetKey(KeyCode.R))
+        {
+            float mouseX = Input.GetAxis("Mouse X");
+            float mouseY = Input.GetAxis("Mouse Y");
+
+            objectInHand.transform.Rotate(transform.up, -mouseX, Space.World);
+            objectInHand.transform.Rotate(transform.right, mouseY, Space.World);
+
+            playerLook.LockMouseLook();
+        }
+        else if (Input.GetKeyUp(KeyCode.R))
+        {
+            playerLook.UnlockMouseLook();
+        }
+
+        /** Throw object away **/
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            float forceMultiplier = Mathf.Clamp(objectRBInHand.mass, 1f, maxObjectCarryWeight);
+            Vector3 throwDirection = playerLook.transform.forward;
+
+            lastObjectVelocity = playerStats.strength * forceMultiplier * throwDirection;
+            DropObject();
+        }
+    }
+
+    private void DragObject()
+    {
+        /** Move object with player **/
+        if (playerMovement.IsPlayerMoving())
+        {
+            Vector3 objectPosition = objectInHand.transform.position;
+            Vector3 toPosition = objectPosition + playerMovement.horizontalVelocity * playerMovement.playerSpeed;
+
+            objectInHand.transform.position = Vector3.Lerp(objectPosition, toPosition, Time.deltaTime);
+        }
+
+        playerLook.SetObjectTracking(objectInHand.transform.position);
+
+        /** Push object away **/
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            float forceMultiplier = Mathf.Clamp(objectRBInHand.mass, 1f, maxObjectDragWeight);
+            Vector3 pushDirection = Quaternion.AngleAxis(90f, Vector3.up) * Vector3.Cross(playerLook.transform.forward, playerLook.transform.up);
+
+            lastObjectVelocity = playerStats.strength * forceMultiplier * pushDirection;
+            DropObject();
+        }
+    }
+
+    // Called once when object is being picked up
+    private void PickUpObject()
+    {
+        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore);
+
+        if (rayHit)
+        {
+            objectInHand = hitInfo.transform.gameObject;
+            objectRBInHand = objectInHand.GetComponent<Rigidbody>();
+
+            if (objectRBInHand != null)
+            {
+                if (objectRBInHand.mass <= maxObjectDragWeight && !IsObjectUnderPlayer())
+                {
+                    defaultObjectParent = objectInHand.transform.parent;
+                    defaultObjectDrag = objectRBInHand.drag;
+                    defaultObjectAngularDrag = objectRBInHand.angularDrag;
+
+                    if (objectRBInHand.mass <= maxObjectCarryWeight)
+                    {
+                        objectInHand.transform.parent = transform;
+                        objectRBInHand.useGravity = false;
+                    }
+                    else
+                    {
+                        playerStats.walkSpeed = playerStats.walkSpeed * maxObjectCarryWeight / objectRBInHand.mass;
+                        playerStats.SetCanJump(false);
+                    }
+
+                    playerStats.SetCanRun(false);
+                    playerStats.canInteract = false;
+
+                    StopObjectForces();
+                    isObjectGrabbed = true;
+                }
+                else
+                {
+                    HintUI.instance.DisplayHintMessage("Object is too heavy!");
+                    objectInHand = null;
+                    objectRBInHand = null;
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Interactable Object does not contain Rigidbody component: " + objectInHand.name);
+                objectInHand = null;
+            }
+        }
+    }
+
+    private bool ShouldDropObject()
+    {
+        // Object is out of reach
+        bool rayHit1 = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo1, playerStats.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore);
+        if ((!rayHit1 || hitInfo1.transform.gameObject != objectInHand) && !isObjectWithinReach)
+        {
+            return true;
+        }
+
+        // Obstruction between hand and object
+        bool rayHit2 = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo2, playerStats.reachDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore);
+        if (rayHit2 && hitInfo2.transform.gameObject != objectInHand)
+        {
+            return true;
+        }
+
+        // Object is under the player
+        if (IsObjectUnderPlayer())
         {
             return true;
         }
@@ -106,197 +235,39 @@ public class ObjectInteraction : MonoBehaviour
         return false;
     }
 
-    private void CheckObjDrop()
+    private void OnTriggerEnter(Collider other)
     {
-        Vector3 cameraPosition = mainCamera.transform.position;
-        Vector3 cameraFacing = mainCamera.transform.forward;
-
-        // Object too heavy
-        if (objectInHandRB.mass > maxObjectCarryWeight && objectInHandRB.mass > maxObjectDragWeight)
-        {
-            HintUI.instance.DisplayHintMessage("Object is too heavy!");
-            DropObj();
-        }
-
-        // Object out of hands
-        bool rayHit = Physics.Raycast(cameraPosition, cameraFacing, out RaycastHit hitInfo, playerStats.reachDistance, ~ignoredLayer, QueryTriggerInteraction.Ignore);
-        if (rayHit && !hitInfo.transform.gameObject.Equals(objectInHand))
-        {
-            DropObj();
-        }
-
-        // Object under player
-        if (CheckIfObjUnderPlayer())
-        {
-            DropObj();
-        }
+        isObjectWithinReach = true;
     }
 
-    private Vector3 GetVelocity()
+    private void OnTriggerExit(Collider other)
     {
-        Vector3 velocity = (objectInHand.transform.position - lastPosition) / Time.deltaTime;
-        lastPosition = objectInHand.transform.position;
-
-        return velocity;
+        isObjectWithinReach = false;
     }
 
-    private Vector3 GetVelocityDirection()
+    private void DropObject()
     {
-        float mouseX = Input.GetAxis("Mouse X");
-        float mouseY = Input.GetAxis("Mouse Y");
+        // Reset object back to defaults
+        objectInHand.transform.parent = defaultObjectParent;
+        objectRBInHand.drag = defaultObjectDrag;
+        objectRBInHand.angularDrag = defaultObjectAngularDrag;
+        objectRBInHand.useGravity = true;
 
-        Vector3 xDirection = objectInHand.transform.position + mainCamera.transform.forward + (mainCamera.transform.right * mouseX);
-        Vector3 yDirection = objectInHand.transform.position + mainCamera.transform.forward + (mainCamera.transform.up * mouseY);
-        Vector3 xyDirection = (xDirection + yDirection) / 2f;
+        // Apply any velocity to the object
+        StopObjectForces();
+        objectRBInHand.AddForce(lastObjectVelocity, ForceMode.Force);
+        lastObjectVelocity = Vector3.zero;
 
-        return xyDirection - objectInHand.transform.position;
-    }
-
-    private void StopObjectForces()
-    {
-        objectInHandRB.velocity = Vector3.zero;
-        objectInHandRB.angularVelocity = Vector3.zero;
-        objectInHandRB.Sleep();
-    }
-
-    private void CenterHandObject()
-    {
-        Vector3 movementVector = Vector3.MoveTowards(objectInHand.transform.position, gameObject.transform.position, 1f);
-
-        if (Vector3.Distance(objectInHand.transform.position, movementVector) > 0.001f)
-        {
-            objectInHandRB.drag = 40f;
-            objectInHandRB.angularDrag = 40f;
-            objectInHandRB.AddForce(9f * objectInHandRB.drag * (movementVector - objectInHand.transform.position), ForceMode.Force);
-        }
-        else
-        {
-            objectInHandRB.drag = defaultDrag;
-            objectInHandRB.angularDrag = defaultAngularDrag;
-            StopObjectForces();
-        }
-    }
-
-    private void CarryObject()
-    {
-        // Get object movement directional velocity
-        GetVelocityDirection();
-
-        // Try to move object to center of camera
-        CenterHandObject();
-        lastVelocity = GetVelocity();
-
-        // If object cannot be held anymore drop it
-        CheckObjDrop();
-
-        // Throw object away
-        if (Input.GetKey(KeyCode.Mouse1))
-        {
-            DropObj();
-            objectInHandRB.AddForce(playerStats.strength * mainCamera.transform.forward);
-        }
-    }
-
-    private void DragObject()
-    {
-        /** Move object with player **/
-
-        Vector3 objPosition = objectInHand.transform.position;
-        Vector3 toPosition = objPosition + playerMovement.moveVelocity * playerMovement.playerSpeed;
-
-        if (playerMovement.IsPlayerMoving())
-        {
-            objectInHand.transform.position = Vector3.Lerp(objPosition, toPosition, Time.deltaTime);
-        }
-
-        // If object cannot be dragged anymore let go
-        CheckObjDrop();
-
-        // Push object away
-        if (Input.GetKey(KeyCode.Mouse1))
-        {
-            DropObj();
-            objectInHandRB.AddForce(10f * playerStats.strength * playerMovement.transform.forward);
-        }
-    }
-
-    private void DropObj()
-    {
-        // If velocity persists, apply that to the object
-        objectInHandRB.AddForce(GetVelocityDirection() * Mathf.Clamp(lastVelocity.magnitude * 2f, 0f, 30f), ForceMode.Force);
-
-        // Reset object back to default
-        objectInHand.transform.parent = defaultParent;
-        objectInHand.layer = LayerMask.NameToLayer("Object");
-        objectInHand.transform.localScale = defaultScale;
-        objectInHandRB.drag = defaultDrag;
-        objectInHandRB.angularDrag = defaultAngularDrag;
-        objectInHandRB.useGravity = true;
-
-        // Reset player hand and stats
-        gameObject.transform.position = gameObject.transform.position - gameObject.transform.forward * objDistanceBySize;
-
-        if (carryingHeavyObject)
-        {
-            playerStats.walkSpeed = defaultPlayerWalkSpeed;
-            playerStats.SetCanJump(true);
-        }
-
+        // Reset player back to defaults
+        playerStats.walkSpeed = defaultPlayerWalkSpeed;
+        playerStats.SetCanJump(true);
         playerStats.SetCanRun(true);
-        carryingObject = false;
-        carryingHeavyObject = false;
-    }
+        playerStats.canInteract = true;
+        playerLook.ResetObjectTracking();
 
-    private void CalcDistanceBySize()
-    {
-        Vector3 objBoundsSize = Vector3.Scale(objectInHand.transform.localScale, objectInHand.GetComponent<MeshFilter>().sharedMesh.bounds.size);
-        objDistanceBySize = Mathf.Clamp(objBoundsSize.magnitude - 0.75f, 0f, 0.4f);
-
-        gameObject.transform.position = gameObject.transform.position + gameObject.transform.forward * objDistanceBySize;
-    }
-
-    // Called once when object is being picked up
-    private void PickUpObject()
-    {
-        if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore))
-        {
-            objectInHand = hitInfo.transform.gameObject;
-            objectInHandRB = objectInHand.GetComponent<Rigidbody>();
-
-            if (objectInHand.CompareTag("Interactable") && objectInHandRB != null)
-            {
-                if (!CheckIfObjUnderPlayer())
-                {
-                    /** Get object defaults **/
-                    defaultParent = objectInHand.transform.parent;
-                    defaultScale = objectInHand.transform.localScale;
-                    defaultDrag = objectInHandRB.drag;
-                    defaultAngularDrag = objectInHandRB.angularDrag;
-
-                    // Set object params
-                    CalcDistanceBySize();
-
-                    if (objectInHandRB.mass <= maxObjectCarryWeight)
-                    {
-                        objectInHand.transform.parent = gameObject.transform;
-                        objectInHandRB.useGravity = false;
-                    }
-                    else
-                    {
-                        playerStats.walkSpeed = playerStats.walkSpeed * 0.7f - (1f - 5f / objectInHandRB.mass);
-                        playerStats.SetCanJump(false);
-                        carryingHeavyObject = true;
-                    }
-
-                    StopObjectForces();
-                    objectInHand.layer = LayerMask.NameToLayer("ObjectCarried");
-
-                    carryingObject = true;
-                    isObjectGrabbed = true;
-                    playerStats.SetCanRun(false);
-                    playerStats.canInteract = false;
-                }
-            }
-        }
+        // Reset object interaction to defaults
+        isObjectGrabbed = false;
+        objectInHand = null;
+        objectRBInHand = null;
     }
 }

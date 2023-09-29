@@ -6,6 +6,10 @@ public class InventoryUI : MonoBehaviour
     public PlayerStats playerStats;
     public PlayerLook playerLook;
 
+    [Header("Inventory UI Inspector")]
+    [ReadOnlyInspector]
+    public bool isInInventory;
+
     private PlayerInventory inventory;
     private InventorySlot[] slots;
 
@@ -21,9 +25,9 @@ public class InventoryUI : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if ((playerStats.canInteract || playerLook.isInInventory) && Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E) && (isInInventory || playerStats.canInteract))
         {
-            ToggleInventory(false);
+            ToggleInventory();
         }
     }
 
@@ -42,9 +46,13 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    public void ToggleInventory(bool isItemSelected)
+    public void ToggleInventory(bool isItemSelected = false)
     {
-        inventoryUI.SetActive(!inventoryUI.activeSelf);
-        playerLook.ToggleInventoryCursor(isItemSelected);
+        isInInventory = !isInInventory;
+        inventoryUI.SetActive(isInInventory);
+
+        playerStats.canInteract = !isInInventory && !isItemSelected;
+        Cursor.lockState = isInInventory ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = isInInventory;
     }
 }

@@ -25,6 +25,8 @@ public class PlayerStats : MonoBehaviour
     public float adrenalineModifier = 2f;
     public bool canRun = true;
     public bool canJump = true;
+
+    [Header("Player Modifier Inspector")]
     [ReadOnlyInspector]
     public bool hasFallDamage;
     [ReadOnlyInspector]

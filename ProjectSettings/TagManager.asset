@@ -18,7 +18,7 @@ TagManager:
   - Player
   - Item
   - Object
-  - ObjectCarried
+  - 
   - 
   - Door
   - Window

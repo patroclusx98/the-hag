@@ -2,12 +2,10 @@
 
 public class ItemInteraction : MonoBehaviour
 {
-    public PlayerMovement playerMovement;
     public PlayerStats playerStats;
-    public Camera mainCamera;
+    public PlayerLook playerLook;
 
     private PlayerInventory inventory;
-    private GameObject itemInHand;
 
     // Start is called before the first frame update
     private void Start()
@@ -24,52 +22,50 @@ public class ItemInteraction : MonoBehaviour
 
             if (selectedItem != null)
             {
-                bool rayHit = Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
-
-                selectedItem.Use(rayHit ? hitInfo.transform.gameObject : null);
-                inventory.selectedItem = null;
-                playerStats.canInteract = true;
+                UseSelectedItem(selectedItem);
             }
-            else
+            else if (playerStats.canInteract)
             {
-                if (playerStats.canInteract)
-                {
-                    PickUpItem();
-                }
+                PickUpItem();
             }
         }
     }
 
+    private void UseSelectedItem(Item selectedItem)
+    {
+        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
+
+        selectedItem.Use(rayHit ? hitInfo.transform.gameObject : null);
+        inventory.selectedItem = null;
+        playerStats.canInteract = true;
+    }
+
     private void PickUpItem()
     {
-        bool rayHit = Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Item"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Item"), QueryTriggerInteraction.Ignore);
 
         if (rayHit)
         {
-            itemInHand = hitInfo.transform.gameObject;
+            ItemInteractable itemObject = hitInfo.transform.gameObject.GetComponent<ItemInteractable>();
+            Item item = itemObject != null ? itemObject.item : null;
 
-            if (itemInHand.CompareTag("Interactable"))
+            if (item != null)
             {
                 if (inventory.HasSpace())
                 {
-                    ItemInteractable itemObjHolder = itemInHand.GetComponent<ItemInteractable>();
-                    Item item = itemObjHolder != null ? itemObjHolder.item : null;
+                    item.usableGameObjects = itemObject.usableGameObjects;
+                    inventory.AddItem(item);
 
-                    if (item != null)
-                    {
-                        item.usableGameObjects = itemObjHolder.usableGameObjects;
-                        inventory.AddItem(item);
-                        Destroy(itemInHand);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("GameObject does not hold an Item object!");
-                    }
+                    Destroy(itemObject);
                 }
                 else
                 {
                     HintUI.instance.DisplayHintMessage("No space in inventory!");
                 }
+            }
+            else
+            {
+                Debug.LogWarning("GameObject does not hold an Item component: " + itemObject.name);
             }
         }
     }

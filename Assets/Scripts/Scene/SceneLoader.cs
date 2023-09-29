@@ -31,19 +31,29 @@ public class SceneLoader : MonoBehaviour
         {
             /** Logo Scene **/
 
+            Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
         else if (SceneManager.GetActiveScene().buildIndex == 1)
         {
             /** Intro Scene **/
 
+            Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
         else if (SceneManager.GetActiveScene().buildIndex == 2)
         {
             /** Menu Scene **/
 
+            Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+        }
+        else if (SceneManager.GetActiveScene().buildIndex == 3)
+        {
+            /** Game Scene **/
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
     }
 

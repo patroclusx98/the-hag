@@ -1,29 +1,23 @@
+using System;
 using UnityEngine;
 
 public class WindowInteractable : MonoBehaviour
 {
+    public enum WindowEdge { Top, Bottom }
+
     [Header("Window Attributes")]
-    public float dragResistance = 0.003f;
-    [Range(0.1f, 2f)]
-    public float maxOpeningPosition = 1f;
-    public bool isLocked = false;
     public Vector3 defaultClosedPosition;
+    public Vector3 maxOpeningPosition;
+    public float movementResistance = 5f;
+    public bool isLocked;
 
     [Header("Window Inspector Basic")]
     [ReadOnlyInspector]
-    public bool isWindowGrabbed = false;
+    public bool isWindowGrabbed;
     [ReadOnlyInspector]
-    public bool isPlayerColliding = false;
-
-    [Header("Window Inspector Advanced")]
+    public bool isPlayerColliding;
     [ReadOnlyInspector]
-    public float yPosMotion;
-    [ReadOnlyInspector]
-    public float lastYPosMotion;
-    [ReadOnlyInspector]
-    public Vector3 fromPosition;
-    [ReadOnlyInspector]
-    public Vector3 toPosition;
+    public float yPosition;
 
     // Reset is called on component add/reset
     private void Reset()
@@ -31,7 +25,7 @@ public class WindowInteractable : MonoBehaviour
         /** Auto set window params **/
         gameObject.tag = "Interactable";
         gameObject.layer = LayerMask.NameToLayer("Window");
-        defaultClosedPosition = gameObject.transform.localPosition;
+        defaultClosedPosition = transform.localPosition;
 
         /** Auto add/reset trigger collider **/
         BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
@@ -39,6 +33,42 @@ public class WindowInteractable : MonoBehaviour
         boxCollider = gameObject.AddComponent<BoxCollider>();
         boxCollider.isTrigger = true;
         boxCollider.size = new Vector3(boxCollider.size.x, boxCollider.size.y + 0.3f, boxCollider.size.z);
+    }
+
+    // Start is called before the first frame update
+    private void Start()
+    {
+        yPosition = transform.localPosition.y;
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+        ClampYPosition();
+
+        Vector3 toPosition = new Vector3(transform.localPosition.x, yPosition, transform.localPosition.z);
+        transform.localPosition = Vector3.Lerp(transform.localPosition, toPosition, Time.deltaTime * 5f);
+    }
+
+    public Vector3 GetWindowEdge(WindowEdge windowEdge)
+    {
+        switch (windowEdge)
+        {
+            case WindowEdge.Top:
+                {
+                    return transform.position + transform.up * (transform.GetComponent<MeshFilter>().sharedMesh.bounds.extents.y - 0.05f);
+                }
+            default:
+            case WindowEdge.Bottom:
+                {
+                    return transform.position - transform.up * (transform.GetComponent<MeshFilter>().sharedMesh.bounds.extents.y - 0.05f);
+                }
+        }
+    }
+
+    private void ClampYPosition()
+    {
+        yPosition = Math.Clamp(yPosition, defaultClosedPosition.y, maxOpeningPosition.y);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -55,17 +85,5 @@ public class WindowInteractable : MonoBehaviour
         {
             isPlayerColliding = false;
         }
-    }
-
-    /** EVENT HANDLERS **/
-
-    public void EventLockWindow()
-    {
-        isLocked = true;
-    }
-
-    public void EventUnlockWindow()
-    {
-        isLocked = false;
     }
 }

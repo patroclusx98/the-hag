@@ -2,10 +2,10 @@
 
 public class PlayerMovement : MonoBehaviour
 {
+    public PlayerStats playerStats;
+    public PlayerLook playerLook;
     public CharacterController characterController;
     public Animator playerAnimator;
-    public PlayerStats playerStats;
-    public Camera mainCamera;
     public AudioManager audioManager;
 
     [Header("Player Movement Attributes")]
@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Player Gravity Attributes")]
     public float gravityForce = -25f;
-    public float groundGravityForce = -4f;
+    public float groundedGravityForce = -4f;
     public float impactTolerance = -7.5f;
     public float fallDamageTolerance = -15f;
 
@@ -24,7 +24,7 @@ public class PlayerMovement : MonoBehaviour
     [ReadOnlyInspector]
     public float playerSpeed;
     [ReadOnlyInspector]
-    public Vector3 moveVelocity;
+    public Vector3 horizontalVelocity;
     [ReadOnlyInspector]
     public Vector3 verticalVelocity;
     [ReadOnlyInspector]
@@ -40,20 +40,12 @@ public class PlayerMovement : MonoBehaviour
     [ReadOnlyInspector]
     public bool isCrouching;
     [ReadOnlyInspector]
+    public bool hasCrouched;
+    [ReadOnlyInspector]
     public GameObject gameObjectUnderPlayer;
 
-    private Vector3 defaultPlayerScale;
-    private Vector3 moveDirectionOnWallCollision;
-    private bool hasCrouched;
+    private Vector3 directionOfWallCollision;
     private bool didWalkIntoWall;
-    private float defaultStepOffset;
-
-    // Start is called before the first frame update
-    private void Start()
-    {
-        defaultPlayerScale = gameObject.transform.localScale;
-        defaultStepOffset = characterController.stepOffset;
-    }
 
     // Update is called once per frame
     private void Update()
@@ -78,7 +70,7 @@ public class PlayerMovement : MonoBehaviour
         /** Player jumping **/
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            InitJump();
+            Jump();
         }
 
         /** Player crouching **/
@@ -96,11 +88,10 @@ public class PlayerMovement : MonoBehaviour
         /** Player idle **/
         if (!isMoving)
         {
-            moveVelocity.Set(0f, 0f, 0f);
+            horizontalVelocity.Set(0f, 0f, 0f);
             playerSpeed = 0f;
             isWalking = false;
             isRunning = false;
-            didWalkIntoWall = false;
         }
     }
 
@@ -114,22 +105,22 @@ public class PlayerMovement : MonoBehaviour
     private void Move()
     {
         float walkX = Input.GetAxis("Horizontal");
-        float walkZ = Input.GetAxis("Vertical");
+        float walkY = Input.GetAxis("Vertical");
 
         if (isGrounded)
         {
-            moveVelocity = gameObject.transform.right * walkX + gameObject.transform.forward * walkZ;
+            horizontalVelocity = gameObject.transform.forward * walkY + gameObject.transform.right * walkX;
 
             /** Strafe running speed modulation **/
-            if (walkX != 0f && walkZ != 0f)
+            if (walkY != 0f && walkX != 0f)
             {
-                moveVelocity *= 0.71f;
+                horizontalVelocity *= 0.71f;
             }
         }
 
         if (!didWalkIntoWall)
         {
-            if (Input.GetKey(KeyCode.LeftShift) && walkZ > 0f && !isCrouching && playerStats.GetCanRun())
+            if (Input.GetKey(KeyCode.LeftShift) && walkY > 0f && !isCrouching && playerStats.GetCanRun())
             {
                 /** Player running **/
 
@@ -160,11 +151,11 @@ public class PlayerMovement : MonoBehaviour
                 PlayWalkSound();
             }
 
-            characterController.Move(playerSpeed * Time.deltaTime * moveVelocity);
+            characterController.Move(playerSpeed * Time.deltaTime * horizontalVelocity);
         }
         else
         {
-            if (isJumping || isCrouching || Vector3.Dot(moveDirectionOnWallCollision, moveVelocity) < wallHitTolerance)
+            if (isJumping || isCrouching || Vector3.Dot(directionOfWallCollision, horizontalVelocity) < wallHitTolerance)
             {
                 /** Player no longer hits wall **/
 
@@ -172,7 +163,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                /** PLayer still hits wall **/
+                /** Player still hits wall **/
 
                 playerSpeed = 0f;
                 isRunning = false;
@@ -184,9 +175,9 @@ public class PlayerMovement : MonoBehaviour
     private void Climb()
     {
         float walkX = Input.GetAxis("Horizontal");
-        float walkZ = Input.GetAxis("Vertical");
+        float walkY = Input.GetAxis("Vertical");
 
-        moveVelocity = gameObject.transform.up * walkZ + gameObject.transform.right * walkX;
+        horizontalVelocity = gameObject.transform.up * walkY + gameObject.transform.right * walkX;
 
         if (playerStats.hasFallDamage)
         {
@@ -197,43 +188,30 @@ public class PlayerMovement : MonoBehaviour
             playerSpeed = playerStats.climbSpeed;
         }
 
-        if ((!isGrounded && walkZ > 0f) || (isGrounded && walkZ < 0f))
+        if ((!isGrounded && walkY > 0f) || (isGrounded && walkY < 0f))
         {
-            moveVelocity += gameObject.transform.forward * walkZ;
+            horizontalVelocity += gameObject.transform.forward * walkY;
         }
 
-        characterController.Move(playerSpeed * Time.deltaTime * moveVelocity);
+        characterController.Move(playerSpeed * Time.deltaTime * horizontalVelocity);
     }
 
     /** PLAYER JUMPING METHODS **/
 
-    private void InitJump()
+    private void Jump()
     {
         if (isGrounded && !isJumping && (!isCrouching || hasCrouched) && !isClimbing && playerStats.GetCanJump())
         {
-            float playerRadius = characterController.radius * defaultPlayerScale.y;
+            float playerRadius = characterController.radius * transform.localScale.y;
             float playerJumpHeight = (characterController.height + jumpHeight) * transform.localScale.y - playerRadius;
 
             if (!Physics.SphereCast(gameObject.transform.position, playerRadius * 0.85f, transform.up, out _, playerJumpHeight * 0.9f, groundMask, QueryTriggerInteraction.Ignore))
             {
                 isJumping = true;
                 playerAnimator.SetBool("IsJumping", isJumping);
+                PlayJumpingSound();
             }
         }
-    }
-
-    public void Jump()
-    {
-        characterController.stepOffset = 0f;
-        verticalVelocity.y = Mathf.Sqrt(-1f * jumpHeight * gravityForce);
-        PlayJumpingSound();
-    }
-
-    public void ResetJump()
-    {
-        characterController.stepOffset = defaultStepOffset;
-        isJumping = false;
-        playerAnimator.SetBool("IsJumping", isJumping);
     }
 
     /** PLAYER CROUCHING METHODS **/
@@ -250,8 +228,8 @@ public class PlayerMovement : MonoBehaviour
             }
             else if (hasCrouched)
             {
-                float playerRadius = characterController.radius * defaultPlayerScale.y;
-                float playerStandHeight = characterController.height * defaultPlayerScale.y - playerRadius;
+                float playerRadius = characterController.radius * transform.localScale.y;
+                float playerStandHeight = characterController.height * transform.localScale.y - playerRadius;
 
                 if (!Physics.SphereCast(gameObject.transform.position, playerRadius * 0.85f, transform.up, out _, playerStandHeight, groundMask, QueryTriggerInteraction.Ignore))
                 {
@@ -261,18 +239,6 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
-    }
-
-    public void Crouch()
-    {
-        hasCrouched = true;
-        playerAnimator.SetBool("HasCrouched", hasCrouched);
-    }
-
-    public void ResetCrouch()
-    {
-        isCrouching = false;
-        playerAnimator.SetBool("IsCrouching", isCrouching);
     }
 
     /** PLAYER GRAVITY METHODS **/
@@ -307,7 +273,7 @@ public class PlayerMovement : MonoBehaviour
                     PlayImpactSound();
                 }
 
-                verticalVelocity.y = groundGravityForce;
+                verticalVelocity.y = groundedGravityForce;
             }
         }
 
@@ -354,7 +320,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Calculate push direction from move direction
-        // Only push objects along X and Y
+        // Only push objects along X and Z
         Vector3 pushDirection = new Vector3(hit.moveDirection.x, 0f, hit.moveDirection.z);
 
         // Apply the push
@@ -366,8 +332,8 @@ public class PlayerMovement : MonoBehaviour
     //Returns true if player is walking into a wall
     private void CheckForWallHit(ControllerColliderHit hit)
     {
-        //If collided object is being pushed than do not stop the player
-        if (hit.collider.gameObject.layer == LayerMask.NameToLayer("ObjectCarried") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Door"))
+        // Ignore objects
+        if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Object"))
         {
             return;
         }
@@ -375,7 +341,7 @@ public class PlayerMovement : MonoBehaviour
         //Compare surface normal to direction of movement when colliding
         if (Vector3.Dot(hit.moveDirection, hit.normal) < -wallHitTolerance)
         {
-            moveDirectionOnWallCollision = hit.moveDirection;
+            directionOfWallCollision = hit.moveDirection;
             didWalkIntoWall = true;
         }
     }
@@ -395,7 +361,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayWalkSound()
     {
-        if (isGrounded && !isCrouching && moveVelocity.magnitude > 0.35f)
+        if (isGrounded && !isCrouching && horizontalVelocity.magnitude > 0.35f)
         {
             float baseSpeed = 1f;
             float stepSpeed = Mathf.Clamp(baseSpeed / playerSpeed, 0.4f, 0.75f);
@@ -406,7 +372,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayRunSound()
     {
-        if (isGrounded && moveVelocity.magnitude > 0.35f)
+        if (isGrounded && horizontalVelocity.magnitude > 0.35f)
         {
             audioManager.PlayCollectionSound3D("Sound_Step_Run_Dirt", true, 0.3f, gameObject);
         }

@@ -5,31 +5,39 @@ public class PlayerLook : MonoBehaviour
     public PlayerMovement playerMovement;
     public PlayerStats playerStats;
 
-    [Header("Mouse Attributes")]
+    [Header("Player Look Attributes")]
     [Range(0.3f, 3f)]
     public float mouseSensitivity = 1f;
+    public float minHeadXRotation = -70f;
+    public float maxHeadXRotation = 85f;
+    public float headYRotationLimit = 130f;
+    public float backLookSpeed = 15f;
+    public float objectTrackSpeed = 8f;
 
-    [Header("Mouse Inspector")]
+    [Header("Player Look Inspector")]
     [ReadOnlyInspector]
-    public bool isInteracting;
+    public bool isMouseLookEnabled = true;
     [ReadOnlyInspector]
-    public bool isInInventory;
+    public bool isLookingBack;
     [ReadOnlyInspector]
-    public float xRotation;
+    public bool isTrackingObject;
+    [ReadOnlyInspector]
+    public float headXRotation;
+    [ReadOnlyInspector]
+    public float headYRotation;
 
-    // Start is called before the first frame update
-    private void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
+    private Quaternion objectTrackingLookRotation;
 
     // Update is called once per frame
     private void Update()
     {
-        if (!isInteracting && !isInInventory)
+        if (isMouseLookEnabled)
         {
             MouseLook();
+        }
+        else if (isTrackingObject)
+        {
+            TrackObject();
         }
     }
 
@@ -38,36 +46,82 @@ public class PlayerLook : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        if (mouseX != 0 || mouseY != 0)
+        if (Input.GetKey(KeyCode.Mouse4))
         {
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -85f, 70f);
-
-            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-            playerMovement.transform.Rotate(Vector3.up * mouseX);
-        }
-    }
-
-    public void ToggleInventoryCursor(bool isItemSelected)
-    {
-        isInInventory = !isInInventory;
-
-        if (isInInventory)
-        {
+            isLookingBack = true;
             playerStats.canInteract = false;
 
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.Euler(0f, -headYRotationLimit, 0f), backLookSpeed * Time.deltaTime);
+
+            headXRotation = 0f;
+            headYRotation = -(360f - transform.localEulerAngles.y);
         }
         else
         {
-            if (!isItemSelected)
+            if (!isLookingBack)
             {
-                playerStats.canInteract = true;
-            }
+                headXRotation = Mathf.Clamp(headXRotation + mouseY, minHeadXRotation, maxHeadXRotation);
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+                transform.localRotation = Quaternion.Euler(-headXRotation, 0f, 0f);
+                playerMovement.transform.Rotate(playerMovement.transform.up * mouseX);
+            }
+            else
+            {
+                if (Quaternion.Angle(transform.localRotation, Quaternion.Euler(0f, 0f, 0f)) > 0f)
+                {
+                    transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.Euler(0f, 0f, 0f), backLookSpeed * Time.deltaTime);
+                    headYRotation = -(360f - transform.localEulerAngles.y);
+                }
+                else
+                {
+                    headYRotation = 0f;
+                    playerStats.canInteract = true;
+                    isLookingBack = false;
+                }
+            }
         }
+    }
+
+    private void TrackObject()
+    {
+        float objectTrackingLookXRotation = objectTrackingLookRotation.eulerAngles.x;
+
+        if (objectTrackingLookXRotation >= 180f)
+        {
+            objectTrackingLookXRotation = Mathf.Clamp(360f - objectTrackingLookXRotation, minHeadXRotation, maxHeadXRotation);
+        }
+        else
+        {
+            objectTrackingLookXRotation = Mathf.Clamp(-objectTrackingLookXRotation, minHeadXRotation, maxHeadXRotation);
+        }
+
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(-objectTrackingLookXRotation, 0f, 0f), objectTrackSpeed * Time.deltaTime);
+        playerMovement.transform.rotation = Quaternion.Lerp(playerMovement.transform.rotation, Quaternion.Euler(0f, objectTrackingLookRotation.eulerAngles.y, 0f), objectTrackSpeed * Time.deltaTime);
+
+        headXRotation = transform.localEulerAngles.x >= 180f ? 360f - transform.localEulerAngles.x : -transform.localEulerAngles.x;
+    }
+
+    public void LockMouseLook()
+    {
+        isMouseLookEnabled = false;
+    }
+
+    public void UnlockMouseLook()
+    {
+        isMouseLookEnabled = true;
+    }
+
+    public void SetObjectTracking(Vector3 objectTrackingPoint)
+    {
+        objectTrackingLookRotation = Quaternion.LookRotation(objectTrackingPoint - transform.position);
+        isMouseLookEnabled = false;
+        isTrackingObject = true;
+    }
+
+    public void ResetObjectTracking()
+    {
+        objectTrackingLookRotation = default;
+        isMouseLookEnabled = true;
+        isTrackingObject = false;
     }
 }
