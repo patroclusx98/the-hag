@@ -11,7 +11,12 @@ public class Item : ScriptableObject
     [HideInInspector]
     public List<GameObject> usableGameObjects = new List<GameObject>();
 
-    public virtual bool Use(GameObject hoveredObject)
+    /// <summary>
+    /// Defines the logic of which an item can be used by
+    /// </summary>
+    /// <param name="gameObject">Game object to use the item on</param>
+    /// <returns>True if the item was successfully used</returns>
+    public virtual bool Use(GameObject gameObject)
     {
         if (usableGameObjects.Count == 0)
         {
@@ -23,9 +28,9 @@ public class Item : ScriptableObject
         {
             /** Item needs a game object to be used on **/
 
-            if (hoveredObject != null)
+            if (gameObject != null)
             {
-                if (usableGameObjects.Contains(hoveredObject))
+                if (usableGameObjects.Contains(gameObject))
                 {
                     return true;
                 }

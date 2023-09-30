@@ -4,11 +4,11 @@
 
 public class ItemKey : Item
 {
-    public override bool Use(GameObject hoveredObject)
+    public override bool Use(GameObject gameObject)
     {
-        if (base.Use(hoveredObject))
+        if (base.Use(gameObject))
         {
-            if (hoveredObject.TryGetComponent<DoorInteractable>(out var doorObject))
+            if (gameObject.TryGetComponent<DoorInteractable>(out var doorObject))
             {
                 doorObject.isLocked = false;
                 PlayerInventory.instance.RemoveItem(this);
