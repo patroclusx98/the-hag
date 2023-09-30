@@ -33,9 +33,8 @@ public class InventorySlot : MonoBehaviour
             else
             {
                 PlayerInventory.instance.selectedItem = item;
+                GetComponentInParent<InventoryUI>().ToggleInventory(true);
             }
-
-            GetComponentInParent<InventoryUI>().ToggleInventory(true);
         }
     }
 }
