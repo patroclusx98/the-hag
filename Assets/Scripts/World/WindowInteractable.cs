@@ -22,12 +22,12 @@ public class WindowInteractable : MonoBehaviour
     // Reset is called on component add/reset
     private void Reset()
     {
-        /** Auto set window params **/
+        /** Automatically set game object parameters **/
         gameObject.tag = "Interactable";
         gameObject.layer = LayerMask.NameToLayer("Window");
         defaultClosedPosition = transform.localPosition;
 
-        /** Auto add/reset trigger collider **/
+        /** Automatically add a trigger collider component to the game object **/
         BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
         if (boxCollider) DestroyImmediate(boxCollider);
         boxCollider = gameObject.AddComponent<BoxCollider>();
@@ -46,10 +46,17 @@ public class WindowInteractable : MonoBehaviour
     {
         ClampYPosition();
 
+        /** Translate game object's Y position to new Y position **/
         Vector3 toPosition = new Vector3(transform.localPosition.x, yPosition, transform.localPosition.z);
         transform.localPosition = Vector3.Lerp(transform.localPosition, toPosition, Time.deltaTime * 5f);
     }
 
+    /// <summary>
+    /// Calculates and returns the position of the specified edge of the window
+    /// It is offset from the window's origin position
+    /// </summary>
+    /// <param name="windowEdge">The edge to return</param>
+    /// <returns>Vector3 of the edge position</returns>
     public Vector3 GetWindowEdge(WindowEdge windowEdge)
     {
         switch (windowEdge)
@@ -66,11 +73,17 @@ public class WindowInteractable : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Clamps the Y position of the window to it's defined min and max Y positions
+    /// </summary>
     private void ClampYPosition()
     {
         yPosition = Math.Clamp(yPosition, defaultClosedPosition.y, maxOpeningPosition.y);
     }
 
+    /// <summary>
+    /// Runs when the player's collider enters the window's trigger collider
+    /// </summary>
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -79,6 +92,10 @@ public class WindowInteractable : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Runs when the player's collider leaves the window's trigger collider
+    /// </summary>
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))

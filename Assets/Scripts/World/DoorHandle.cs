@@ -8,7 +8,7 @@ public class DoorHandle : MonoBehaviour
     // Reset is called on component add/reset
     private void Reset()
     {
-        /** Auto add animator **/
+        /** Automatically add an Animator component **/
         Animator animator = gameObject.GetComponent<Animator>();
         if (!animator) gameObject.AddComponent<Animator>();
     }
@@ -19,6 +19,9 @@ public class DoorHandle : MonoBehaviour
         doorHandleAnimator = gameObject.GetComponent<Animator>();
     }
 
+    /// <summary>
+    /// Resets the door handle parameters for the door handle animator
+    /// </summary>
     public void ResetDoorHandleAnimation()
     {
         if (doorObject.isLeftSided)

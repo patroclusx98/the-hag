@@ -3,8 +3,8 @@
 public class Climbable : MonoBehaviour
 {
     [Header("Climbable Attributes")]
-    [Range(0f, -1f)]
-    public float faceAwayTolerance = -0.5f;
+    [Range(0f, 1f)]
+    public float faceAwayTolerance = 0.5f;
 
     private PlayerMovement playerMovement;
     private bool canClimb;
@@ -20,7 +20,7 @@ public class Climbable : MonoBehaviour
     {
         if (canClimb)
         {
-            if (CheckFacing())
+            if (IsPlayerFacingClimbableObject())
             {
                 playerMovement.isClimbing = true;
             }
@@ -31,16 +31,22 @@ public class Climbable : MonoBehaviour
         }
     }
 
-    // Check if player is facing the climbable object within the allowed tolerance
-    private bool CheckFacing()
+    /// <summary>
+    /// Checks if the player is facing the climbable object
+    /// </summary>
+    /// <returns>True if facing is within the allowed tolerance</returns>
+    private bool IsPlayerFacingClimbableObject()
     {
+        Vector3 playerFacing = playerMovement.transform.right;
         Vector3 objectFacing = -gameObject.transform.right;
-        Vector3 cameraFacing = Camera.main.transform.right;
-        float facingDotProduct = Vector3.Dot(cameraFacing, objectFacing);
+        float facingDotProduct = Vector3.Dot(playerFacing, objectFacing);
 
-        return facingDotProduct > faceAwayTolerance;
+        return facingDotProduct > -faceAwayTolerance;
     }
 
+    /// <summary>
+    /// Runs when the player's collider enters the climbable object's trigger collider
+    /// </summary>
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -49,6 +55,9 @@ public class Climbable : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Runs when the player's collider leaves the climbable object's trigger collider
+    /// </summary>
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))

@@ -23,12 +23,12 @@ public class DoorInteractable : MonoBehaviour
     // Reset is called on component add/reset
     private void Reset()
     {
-        /** Auto set door params **/
+        /** Automatically set game object parameters **/
         gameObject.tag = "Interactable";
         gameObject.layer = LayerMask.NameToLayer("Door");
         defaultClosedRotation = transform.localRotation;
 
-        /** Auto add/reset trigger collider **/
+        /** Automatically add a trigger collider component to the game object **/
         BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
         if (boxCollider) DestroyImmediate(boxCollider);
         boxCollider = gameObject.AddComponent<BoxCollider>();
@@ -53,7 +53,7 @@ public class DoorInteractable : MonoBehaviour
             transform.localRotation = Quaternion.Slerp(transform.localRotation, toRotation, Time.deltaTime * 2f);
         }
 
-        /** Auto close door if slightly open **/
+        /** Automatically close the door if it's slightly open **/
         if (!isDoorGrabbed && !IsDoorClosed() && GetAnglesToClosedRotation() <= 0.6f)
         {
             yRotation = defaultClosedRotation.eulerAngles.y;
@@ -61,6 +61,12 @@ public class DoorInteractable : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Calculates and returns the position of the specified edge of the door
+    /// It is offset from the door's origin position
+    /// </summary>
+    /// <param name="doorEdge">The edge to return</param>
+    /// <returns>Vector3 of the edge position</returns>
     public Vector3 GetDoorEdge(DoorEdge doorEdge)
     {
         switch (doorEdge)
@@ -88,15 +94,17 @@ public class DoorInteractable : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates the angle between current rotation and closed rotation
+    /// Calculates the angle between the current rotation and the closed rotation
     /// </summary>
-    /// <returns>Angle between current rotation and closed rotation</returns>
+    /// <returns>Angle between the current rotation and closed rotation</returns>
     public float GetAnglesToClosedRotation()
     {
         return Quaternion.Angle(transform.localRotation, defaultClosedRotation);
     }
 
-    // Clamps rotation to min and max door openings
+    /// <summary>
+    /// Clamps the Y rotation of the door to it's defined min and max Y rotations
+    /// </summary>
     private void ClampYRotation()
     {
         Quaternion toRotation = Quaternion.Euler(transform.localEulerAngles.x, yRotation, transform.localEulerAngles.z);
@@ -115,6 +123,9 @@ public class DoorInteractable : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Runs when the player's collider enters the door's trigger collider
+    /// </summary>
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -123,6 +134,9 @@ public class DoorInteractable : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Runs when the player's collider leaves the door's trigger collider
+    /// </summary>
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -131,6 +145,9 @@ public class DoorInteractable : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Plays the optionally attached door handle animation if the door is fully closed
+    /// </summary>
     public void PlayDoorHandleAnimation()
     {
         if (doorHandleAnimator != null && IsDoorClosed())

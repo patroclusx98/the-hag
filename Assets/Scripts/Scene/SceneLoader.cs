@@ -20,6 +20,7 @@ public class SceneLoader : MonoBehaviour
     //Awake is called on script load
     private void Awake()
     {
+        /** Set the fade time parameters on the transition's animator **/
         transition.SetFloat("FadeInTime", 1f / (fadeInTime > 0f ? fadeInTime : 0.0001f));
         transition.SetFloat("FadeOutTime", 1f / (fadeOutTime > 0f ? fadeOutTime : 0.0001f));
     }
@@ -58,7 +59,7 @@ public class SceneLoader : MonoBehaviour
     }
 
     /// <summary>
-    /// Loads the next scene with the cross-fade transition
+    /// Loads the next scene from the currently active scene
     /// </summary>
     public void LoadNextScene()
     {
@@ -74,6 +75,12 @@ public class SceneLoader : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Coroutine to load a game scene by it's build index
+    /// <para>Automatically fades all audio, and triggers the defined transition</para>
+    /// </summary>
+    /// <param name="sceneIndex">The game scene's build index</param>
+    /// <returns>IEnumerator of the coroutine</returns>
     private IEnumerator LoadSceneCR(int sceneIndex)
     {
         audioManager.FadeOutAllAudio(fadeOutTime);

@@ -40,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
     [ReadOnlyInspector]
     public bool isCrouching;
     [ReadOnlyInspector]
-    public bool hasCrouched;
+    public bool hasFullyCrouched;
     [ReadOnlyInspector]
     public GameObject gameObjectUnderPlayer;
 
@@ -200,7 +200,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (isGrounded && !isJumping && (!isCrouching || hasCrouched) && !isClimbing && playerStats.GetCanJump())
+        if (isGrounded && !isJumping && (!isCrouching || hasFullyCrouched) && !isClimbing && playerStats.GetCanJump())
         {
             float playerRadius = characterController.radius * transform.localScale.y;
             float playerJumpHeight = (characterController.height + jumpHeight) * transform.localScale.y - playerRadius;
@@ -226,15 +226,15 @@ public class PlayerMovement : MonoBehaviour
                 playerAnimator.SetBool("IsCrouching", isCrouching);
                 PlayCrouchingSound();
             }
-            else if (hasCrouched)
+            else if (hasFullyCrouched)
             {
                 float playerRadius = characterController.radius * transform.localScale.y;
                 float playerStandHeight = characterController.height * transform.localScale.y - playerRadius;
 
                 if (!Physics.SphereCast(gameObject.transform.position, playerRadius * 0.85f, transform.up, out _, playerStandHeight, groundMask, QueryTriggerInteraction.Ignore))
                 {
-                    hasCrouched = false;
-                    playerAnimator.SetBool("HasCrouched", hasCrouched);
+                    hasFullyCrouched = false;
+                    playerAnimator.SetBool("HasFullyCrouched", hasFullyCrouched);
                     PlayCrouchingSound();
                 }
             }

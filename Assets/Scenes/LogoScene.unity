@@ -518,6 +518,14 @@ PrefabInstance:
       propertyPath: audioManager
       value: 
       objectReference: {fileID: 243889561}
+    - target: {fileID: 1529449330274610178, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
+      propertyPath: audioManagers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1529449330274610178, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
+      propertyPath: audioManagers.Array.data[0]
+      value: 
+      objectReference: {fileID: 243889561}
     - target: {fileID: 1888782782682934728, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
       propertyPath: m_Name
       value: SceneLoader

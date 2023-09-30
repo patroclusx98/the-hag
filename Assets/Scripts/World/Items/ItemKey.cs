@@ -8,8 +8,7 @@ public class ItemKey : Item
     {
         if (base.Use(hoveredObject))
         {
-            hoveredObject.TryGetComponent<DoorInteractable>(out var doorObject);
-            if (doorObject != null)
+            if (hoveredObject.TryGetComponent<DoorInteractable>(out var doorObject))
             {
                 doorObject.isLocked = false;
                 PlayerInventory.instance.RemoveItem(this);

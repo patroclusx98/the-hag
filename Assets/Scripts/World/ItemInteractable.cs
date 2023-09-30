@@ -9,7 +9,7 @@ public class ItemInteractable : MonoBehaviour
     // Reset is called on component add/reset
     private void Reset()
     {
-        /** Auto set item object params **/
+        /** Automatically set game object parameters **/
         gameObject.tag = "Interactable";
         gameObject.layer = LayerMask.NameToLayer("Item");
     }
