@@ -9,7 +9,7 @@ public class Item : ScriptableObject
     public Sprite icon = null;
 
     [HideInInspector]
-    public List<GameObject> usableGameObjects = new List<GameObject>();
+    public List<GameObject> usableGameObjects;
 
     /// <summary>
     /// Defines the logic of which an item can be used by

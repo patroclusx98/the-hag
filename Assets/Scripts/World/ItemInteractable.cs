@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class ItemInteractable : MonoBehaviour
 {
     public Item item;
-    public List<GameObject> usableGameObjects = new List<GameObject>();
+    public List<GameObject> usableGameObjects;
 
     // Reset is called on component add/reset
     private void Reset()

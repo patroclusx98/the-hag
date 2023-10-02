@@ -7,7 +7,7 @@ public class PlayerInventory : MonoBehaviour
 
     [Header("Inventory Attributes")]
     public int maxSpace = 8;
-    public List<Item> itemsList = new List<Item>();
+    public List<Item> itemsList;
 
     [Header("Inventory Inspector")]
     [ReadOnlyInspector]
