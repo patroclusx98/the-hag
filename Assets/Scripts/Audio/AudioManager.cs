@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
     [Header("Audio Manager Attributes")]
-    public AudioMusic[] musics;
-    public AudioSound[] sounds;
-    public AudioCollection[] soundCollections;
+    public List<Audio> musicList;
+    public List<Audio> soundList;
+    public List<AudioCollection> soundCollectionList;
 
     private AudioMixer audioMixer;
     private AudioMixerGroup soundAudioGroup;
@@ -21,47 +21,51 @@ public class AudioManager : MonoBehaviour
         soundAudioGroup = audioMixer.FindMatchingGroups("Master/Sound")[0];
         musicAudioGroup = audioMixer.FindMatchingGroups("Master/Music")[0];
 
-        foreach (AudioMusic m in musics)
+        /** **/
+        foreach (Audio music in musicList)
         {
-            m.source = gameObject.AddComponent<AudioSource>();
-            m.source.clip = m.audioClip;
-            m.source.outputAudioMixerGroup = musicAudioGroup;
-
-            m.source.volume = m.volume * 0.5f;
-            m.source.pitch = m.pitch;
-            m.source.loop = m.loop;
-            m.source.playOnAwake = m.playOnAwake;
-
-            m.source.dopplerLevel = 0f;
+            music.source = gameObject.AddComponent<AudioSource>();
+            music.source.clip = music.audioClip;
+            music.source.outputAudioMixerGroup = musicAudioGroup;
+            music.source.volume = music.volume;
+            music.source.pitch = music.pitch;
+            music.source.loop = music.loop;
+            music.source.playOnAwake = music.playOnAwake;
+            music.source.spatialBlend = music.spatialBlend;
+            music.source.maxDistance = music.maxDistance;
+            music.source.dopplerLevel = music.dopplerLevel;
         }
 
-        foreach (AudioSound s in sounds)
+        /** **/
+        foreach (Audio sound in soundList)
         {
-            s.source = gameObject.AddComponent<AudioSource>();
-            s.source.clip = s.audioClip;
-            s.source.outputAudioMixerGroup = soundAudioGroup;
-
-            s.source.volume = s.volume * 0.5f;
-            s.source.pitch = s.pitch;
-            s.source.loop = s.loop;
-            s.source.playOnAwake = s.playOnAwake;
-
-            s.source.dopplerLevel = 0.05f;
+            sound.source = gameObject.AddComponent<AudioSource>();
+            sound.source.clip = sound.audioClip;
+            sound.source.outputAudioMixerGroup = soundAudioGroup;
+            sound.source.volume = sound.volume;
+            sound.source.pitch = sound.pitch;
+            sound.source.loop = sound.loop;
+            sound.source.playOnAwake = sound.playOnAwake;
+            sound.source.spatialBlend = sound.spatialBlend;
+            sound.source.maxDistance = sound.maxDistance;
+            sound.source.dopplerLevel = sound.dopplerLevel;
         }
 
-        foreach (AudioCollection sc in soundCollections)
+        /** **/
+        foreach (AudioCollection soundCollection in soundCollectionList)
         {
-            for (int i = 0; i < sc.audioClips.Length; i++)
+            for (int i = 0; i < soundCollection.audioClips.Count; i++)
             {
-                sc.sources.Add(gameObject.AddComponent<AudioSource>());
-                sc.sources[i].clip = sc.audioClips[i];
-                sc.sources[i].outputAudioMixerGroup = soundAudioGroup;
-
-                sc.sources[i].volume = sc.volume * 0.5f;
-                sc.sources[i].pitch = sc.pitch;
-                sc.sources[i].playOnAwake = false;
-
-                sc.sources[i].dopplerLevel = 0.05f;
+                soundCollection.sources.Add(gameObject.AddComponent<AudioSource>());
+                soundCollection.sources[i].clip = soundCollection.audioClips[i];
+                soundCollection.sources[i].outputAudioMixerGroup = soundAudioGroup;
+                soundCollection.sources[i].volume = soundCollection.volume;
+                soundCollection.sources[i].pitch = soundCollection.pitch;
+                soundCollection.sources[i].loop = false;
+                soundCollection.sources[i].playOnAwake = false;
+                soundCollection.sources[i].spatialBlend = soundCollection.spatialBlend;
+                soundCollection.sources[i].maxDistance = soundCollection.maxDistance;
+                soundCollection.sources[i].dopplerLevel = soundCollection.dopplerLevel;
             }
         }
     }
@@ -69,47 +73,101 @@ public class AudioManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Play all onAwake music
-        foreach (AudioMusic music in musics)
+        /** Play all onAwake music **/
+        foreach (Audio music in musicList)
         {
             if (music.source.playOnAwake)
             {
-                PlayMusic(music.musicName);
+                PlayMusic(music.name);
             }
         }
 
-        // Play all onAwake sounds
-        foreach (AudioSound sound in sounds)
+        /** Play all onAwake sounds **/
+        foreach (Audio sound in soundList)
         {
             if (sound.source.playOnAwake)
             {
-                PlaySound2D(sound.soundName, false, 0f);
+                PlaySound(sound.name, false, 0f);
             }
         }
     }
 
-    /** SOUND 2D METHODS **/
+    /** MUSIC METHODS **/
 
-    public void PlaySound2D(string soundName, bool canOverlap, float frequencyTime)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public bool IsMusicPlaying()
     {
-        AudioSound s = Array.Find(sounds, sound => sound.soundName == soundName);
+        return musicList.Find((music) => music.source.isPlaying) != null;
+    }
 
-        if (s != null)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="musicName"></param>
+    public void PlayMusic(string musicName)
+    {
+        Audio music = musicList.Find((music) => music.name == musicName);
+
+        if (music != null)
         {
-            if (frequencyTime == 0f || FrequencyTimer.GetInstance(soundName, gameObject).GetStartPhase(canOverlap ? frequencyTime : frequencyTime + s.audioClip.length))
+            if (!music.source.isPlaying)
+            {
+                if (!IsMusicPlaying())
+                {
+                    music.source.Play();
+                }
+                else
+                {
+                    SwapMusic(music.source, 3f);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Could not find music to play: " + musicName);
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void StopMusic()
+    {
+        Audio music = musicList.Find((music) => music.source.isPlaying);
+        music?.source.Stop();
+    }
+
+    /** SOUND METHODS **/
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="soundName"></param>
+    /// <param name="canOverlap"></param>
+    /// <param name="frequencyTime"></param>
+    public void PlaySound(string soundName, bool canOverlap = false, float frequencyTime = 0f)
+    {
+        Audio sound = soundList.Find((sound) => sound.name == soundName);
+
+        if (sound != null)
+        {
+            if (frequencyTime == 0f || ObjectTimer.StartTimer(soundName, gameObject, canOverlap ? frequencyTime : frequencyTime + sound.audioClip.length))
             {
                 if (!canOverlap)
                 {
-                    if (!s.source.isPlaying)
+                    if (!sound.source.isPlaying)
                     {
-                        s.source.Play();
+                        sound.source.Play();
                     }
                 }
                 else
                 {
-                    if (!s.source.loop)
+                    if (!sound.source.loop)
                     {
-                        s.source.PlayOneShot(s.audioClip);
+                        sound.source.PlayOneShot(sound.audioClip);
                     }
                     else
                     {
@@ -124,15 +182,19 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void StopSound2D(string soundName)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="soundName"></param>
+    public void StopSound(string soundName)
     {
-        AudioSound s = Array.Find(sounds, sound => sound.soundName == soundName);
+        Audio sound = soundList.Find((sound) => sound.name == soundName);
 
-        if (s != null)
+        if (sound != null)
         {
-            if (s.source.isPlaying)
+            if (sound.source.isPlaying)
             {
-                s.source.Stop();
+                sound.source.Stop();
             }
         }
         else
@@ -141,304 +203,53 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlayCollectionSound2D(string soundCollectionName, bool canOverlap, float frequencyTime)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="soundCollectionName"></param>
+    /// <param name="canOverlap"></param>
+    /// <param name="frequencyTime"></param>
+    public void PlayCollectionSound(string soundCollectionName, bool canOverlap = false, float frequencyTime = 0f)
     {
-        AudioCollection sc = Array.Find(soundCollections, soundCollection => soundCollection.collectionName == soundCollectionName);
+        AudioCollection soundCollection = soundCollectionList.Find((soundCollection) => soundCollection.name == soundCollectionName);
 
-        if (sc != null)
+        if (soundCollection != null)
         {
-            int collectionLength = sc.sources.ToArray().Length;
-            int randomSource = UnityEngine.Random.Range(0, collectionLength);
-            AudioSource scSource = sc.sources[randomSource];
+            AudioSource soundCollectionSource = null;
 
-            while (sc.lastSourcePlayed == scSource)
+            while (!soundCollectionSource || soundCollectionSource == soundCollection.lastSourcePlayed)
             {
-                randomSource = UnityEngine.Random.Range(0, collectionLength);
-                scSource = sc.sources[randomSource];
+                int collectionLength = soundCollection.sources.Count;
+                int randomSourceIndex = UnityEngine.Random.Range(0, collectionLength);
+                soundCollectionSource = soundCollection.sources[randomSourceIndex];
             }
 
-            if (frequencyTime == 0f || FrequencyTimer.GetInstance(soundCollectionName, gameObject).GetStartPhase(canOverlap ? frequencyTime : frequencyTime + scSource.clip.length))
+            if (frequencyTime == 0f || ObjectTimer.StartTimer(soundCollectionName, gameObject, canOverlap ? frequencyTime : frequencyTime + soundCollectionSource.clip.length))
             {
                 if (!canOverlap)
                 {
-                    bool scSourceIsPlaying = Array.Find(sc.sources.ToArray(), scSource => scSource.isPlaying) != null;
+                    bool isSoundCollectionSourcePlaying = soundCollection.sources.Find((soundCollectionSource) => soundCollectionSource.isPlaying) != null;
 
-                    if (!scSourceIsPlaying)
+                    if (!isSoundCollectionSourcePlaying)
                     {
-                        scSource.Play();
-                        sc.lastSourcePlayed = scSource;
+                        soundCollectionSource.Play();
+                        soundCollection.lastSourcePlayed = soundCollectionSource;
                     }
                 }
                 else
                 {
-                    scSource.PlayOneShot(scSource.clip);
-                    sc.lastSourcePlayed = scSource;
+                    soundCollectionSource.PlayOneShot(soundCollectionSource.clip);
+                    soundCollection.lastSourcePlayed = soundCollectionSource;
                 }
             }
         }
         else
         {
             Debug.LogWarning("Could not find sound collection to play: " + soundCollectionName);
-        }
-    }
-
-    public void StopSoundCollection2D(string soundCollectionName)
-    {
-        AudioCollection sc = Array.Find(soundCollections, soundCollection => soundCollection.collectionName == soundCollectionName);
-
-        if (sc != null)
-        {
-            foreach (AudioSource scSource in sc.sources)
-            {
-                if (scSource.isPlaying)
-                {
-                    scSource.Stop();
-                }
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Could not find sound collection to stop: " + soundCollectionName);
-        }
-    }
-
-    /** SOUND 3D METHODS **/
-
-    public void PlaySound3D(string soundName, bool canOverlap, float frequencyTime, GameObject gameObject)
-    {
-        AudioSound s = Array.Find(sounds, sound => sound.soundName == soundName);
-
-        if (s != null)
-        {
-            if (frequencyTime == 0f || FrequencyTimer.GetInstance(soundName, gameObject).GetStartPhase(canOverlap ? frequencyTime : frequencyTime + s.audioClip.length))
-            {
-                AudioSource objSSource = Array.Find(gameObject.GetComponents<AudioSource>(), objSource => objSource.clip == s.source.clip);
-
-                if (objSSource == null)
-                {
-                    objSSource = gameObject.AddComponent<AudioSource>();
-                    objSSource.clip = s.audioClip;
-                    objSSource.outputAudioMixerGroup = soundAudioGroup;
-
-                    objSSource.volume = s.volume * 0.5f;
-                    objSSource.pitch = s.pitch;
-                    objSSource.loop = s.loop;
-                    objSSource.spatialBlend = s.spatialBlend;
-                    objSSource.maxDistance = s.maxDistance;
-
-                    objSSource.playOnAwake = false;
-                    objSSource.dopplerLevel = 0.05f;
-                }
-
-                if (!canOverlap)
-                {
-                    if (!objSSource.isPlaying)
-                    {
-                        objSSource.Play();
-                    }
-                }
-                else
-                {
-                    if (!objSSource.loop)
-                    {
-                        objSSource.PlayOneShot(objSSource.clip);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("Loop sounds cannot be overlapped: " + soundName);
-                    }
-                }
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Could not find sound to play: " + soundName);
-        }
-    }
-
-    public void StopSound3D(string soundName, GameObject gameObject)
-    {
-        AudioSound s = Array.Find(sounds, sound => sound.soundName == soundName);
-
-        if (s != null)
-        {
-            AudioSource objSSource = Array.Find(gameObject.GetComponents<AudioSource>(), objSource => objSource.clip == s.source.clip);
-
-            if (objSSource != null)
-            {
-                if (objSSource.isPlaying)
-                {
-                    objSSource.Stop();
-                }
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Could not find sound to stop: " + soundName);
-        }
-    }
-
-    public void PlayCollectionSound3D(string soundCollectionName, bool canOverlap, float frequencyTime, GameObject gameObject)
-    {
-        AudioCollection sc = Array.Find(soundCollections, sound => sound.collectionName == soundCollectionName);
-
-        if (sc != null)
-        {
-            int collectionLength = sc.sources.ToArray().Length;
-            int randomSource = UnityEngine.Random.Range(0, collectionLength);
-            AudioSource scSource = sc.sources[randomSource];
-
-            while (sc.lastSourcePlayed == scSource)
-            {
-                randomSource = UnityEngine.Random.Range(0, collectionLength);
-                scSource = sc.sources[randomSource];
-            }
-
-            if (frequencyTime == 0f || FrequencyTimer.GetInstance(soundCollectionName, gameObject).GetStartPhase(canOverlap ? frequencyTime : frequencyTime + scSource.clip.length))
-            {
-                AudioSource objSCSource = Array.Find(gameObject.GetComponents<AudioSource>(), objSource => objSource.clip == scSource.clip);
-
-                if (objSCSource == null)
-                {
-                    objSCSource = gameObject.AddComponent<AudioSource>();
-                    objSCSource.clip = scSource.clip;
-                    objSCSource.outputAudioMixerGroup = soundAudioGroup;
-
-                    objSCSource.volume = scSource.volume * 0.5f;
-                    objSCSource.pitch = scSource.pitch;
-                    objSCSource.spatialBlend = scSource.spatialBlend;
-                    objSCSource.maxDistance = scSource.maxDistance;
-
-                    objSCSource.playOnAwake = false;
-                    objSCSource.dopplerLevel = 0.05f;
-                }
-
-                if (!canOverlap)
-                {
-                    bool objSCSourceIsPlaying = Array.Find(
-                        gameObject.GetComponents<AudioSource>(), objSource => objSource.isPlaying && Array.Find(sc.sources.ToArray(), scSource => objSource.clip == scSource.clip) != null
-                    ) != null;
-
-                    if (!objSCSourceIsPlaying)
-                    {
-                        objSCSource.Play();
-                        sc.lastSourcePlayed = scSource;
-                    }
-                }
-                else
-                {
-                    objSCSource.PlayOneShot(objSCSource.clip);
-                    sc.lastSourcePlayed = scSource;
-                }
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Could not find sound collection to play: " + soundCollectionName);
-        }
-    }
-
-    public void StopSoundCollection3D(string soundCollectionName, GameObject gameObject)
-    {
-        AudioCollection sc = Array.Find(soundCollections, soundCollection => soundCollection.collectionName == soundCollectionName);
-
-        if (sc != null)
-        {
-            foreach (AudioSource objSCSource in gameObject.GetComponents<AudioSource>())
-            {
-                bool objSCSourceIsPlaying = objSCSource.isPlaying && Array.Find(sc.sources.ToArray(), objSources => objSources.clip == objSCSource.clip) != null;
-
-                if (objSCSourceIsPlaying)
-                {
-                    objSCSource.Stop();
-                }
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Could not find sound collection to stop: " + soundCollectionName);
-        }
-    }
-
-    /** MUSIC METHODS **/
-
-    // Returns true if any music is playing in the background
-    private bool IsMusicPlaying()
-    {
-        foreach (AudioMusic m in musics)
-        {
-            if (m.source.isPlaying)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public void PlayMusic(string musicName)
-    {
-        AudioMusic m = Array.Find(musics, music => music.musicName == musicName);
-
-        if (m != null)
-        {
-            if (!m.source.isPlaying)
-            {
-                if (!IsMusicPlaying())
-                {
-                    m.source.Play();
-                }
-                else
-                {
-                    SwapMusic(m.source, 3f);
-                }
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Could not find music to play: " + musicName);
-        }
-    }
-
-    public void StopMusic(string musicName)
-    {
-        AudioMusic m = Array.Find(musics, music => music.musicName == musicName);
-
-        if (m != null)
-        {
-            if (m.source.isPlaying)
-            {
-                m.source.Stop();
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Could not find music to stop: " + musicName);
         }
     }
 
     /** AUDIO FADE METHODS **/
-
-    /// <summary>
-    /// Fades out the specified 2D sound
-    /// </summary>
-    /// <param name="soundName">The name of the sound as defined in the Audio Manager instance</param>
-    /// <param name="fadeTime">Fade out time in seconds</param>
-    public void FadeOutSound2D(string soundName, float fadeTime)
-    {
-        StartCoroutine(FadeOutSound2DCR(soundName, fadeTime));
-    }
-
-    /// <summary>
-    /// Fades out the specified 3D sound
-    /// </summary>
-    /// <param name="soundName">The name of the sound as defined in the Audio Manager instance</param>
-    /// <param name="fadeTime">Fade out time in seconds</param>
-    /// <param name="gameObject">GameObject the sound is attached to</param>
-    public void FadeOutSound3D(string soundName, float fadeTime, GameObject gameObject)
-    {
-        StartCoroutine(FadeOutSound3DCR(soundName, fadeTime, gameObject));
-    }
 
     /// <summary>
     /// Fades out the currently playing music
@@ -454,9 +265,19 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     /// <param name="musicSource">The source of the new music to play</param>
     /// <param name="swapTime">Swap cross-fade time in seconds</param>
-    public void SwapMusic(AudioSource musicSource, float swapTime)
+    private void SwapMusic(AudioSource musicSource, float swapTime)
     {
         StartCoroutine(SwapMusicCR(musicSource, swapTime));
+    }
+
+    /// <summary>
+    /// Fades out the specified 2D sound
+    /// </summary>
+    /// <param name="soundName">The name of the sound as defined in the Audio Manager instance</param>
+    /// <param name="fadeTime">Fade out time in seconds</param>
+    public void FadeOutSound(string soundName, float fadeTime)
+    {
+        StartCoroutine(FadeOutSoundCR(soundName, fadeTime));
     }
 
     /// <summary>
@@ -480,80 +301,23 @@ public class AudioManager : MonoBehaviour
 
     /** AUDIO FADE COROUTINES **/
 
-    private IEnumerator FadeOutSound2DCR(string soundName, float fadeTime)
-    {
-        AudioSound s = Array.Find(sounds, sound => sound.soundName == soundName);
-
-        if (s != null)
-        {
-            if (s.source.isPlaying)
-            {
-                float startVolume = s.source.volume;
-
-                while (fadeTime > 0f && s.source.volume > 0)
-                {
-                    s.source.volume -= startVolume * Time.deltaTime / fadeTime;
-
-                    yield return null;
-                }
-
-                s.source.Stop();
-                s.source.volume = startVolume;
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Could not find sound to fade out: " + soundName);
-        }
-    }
-
-    private IEnumerator FadeOutSound3DCR(string soundName, float fadeTime, GameObject gameObject)
-    {
-        AudioSound s = Array.Find(sounds, sound => sound.soundName == soundName);
-
-        if (s != null)
-        {
-            AudioSource objS = Array.Find(gameObject.GetComponents<AudioSource>(), objSound => objSound.clip == s.source.clip);
-
-            if (objS != null && objS.isPlaying)
-            {
-                float startVolume = objS.volume;
-
-                while (fadeTime > 0f && objS.volume > 0)
-                {
-                    objS.volume -= startVolume * Time.deltaTime / fadeTime;
-
-                    yield return null;
-                }
-
-                objS.Stop();
-                objS.volume = startVolume;
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Could not find sound to fade out: " + soundName);
-        }
-    }
-
     private IEnumerator FadeOutMusicCR(float fadeTime)
     {
-        foreach (AudioMusic m in musics)
+        Audio music = musicList.Find((music) => music.source.isPlaying);
+
+        if (music != null)
         {
-            if (m.source.isPlaying)
+            float defaultVolume = music.source.volume;
+
+            while (fadeTime > 0f && music.source.volume > 0f)
             {
-                float startVolume = m.source.volume;
+                music.source.volume -= defaultVolume * Time.deltaTime / fadeTime;
 
-                while (fadeTime > 0f && m.source.volume > 0)
-                {
-                    m.source.volume -= startVolume * Time.deltaTime / fadeTime;
-
-                    yield return null;
-                }
-
-                m.source.Stop();
-                m.source.volume = startVolume;
+                yield return null;
             }
+
+            music.source.Stop();
+            music.source.volume = defaultVolume;
         }
     }
 
@@ -566,24 +330,46 @@ public class AudioManager : MonoBehaviour
         musicSource.Play();
     }
 
+    private IEnumerator FadeOutSoundCR(string soundName, float fadeTime)
+    {
+        Audio sound = soundList.Find((sound) => sound.name == soundName);
+
+        if (sound != null)
+        {
+            if (sound.source.isPlaying)
+            {
+                float defaultVolume = sound.source.volume;
+
+                while (fadeTime > 0f && sound.source.volume > 0f)
+                {
+                    sound.source.volume -= defaultVolume * Time.deltaTime / fadeTime;
+
+                    yield return null;
+                }
+
+                sound.source.Stop();
+                sound.source.volume = defaultVolume;
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Could not find sound to fade out: " + soundName);
+        }
+    }
+
     private IEnumerator FadeOutAllSoundCR(float fadeTime)
     {
-        float currentTime = 0f;
-        AudioSource[] allAudioSources = FindObjectsOfType<AudioSource>();
+        audioMixer.GetFloat("SoundVolume", out float defaultVolume);
 
-        audioMixer.GetFloat("SoundVolume", out float currentVol);
-        currentVol = Mathf.Pow(10, currentVol / 20f);
-
-        while (currentTime < fadeTime)
+        while (fadeTime > 0f && audioMixer.GetFloat("SoundVolume", out float currentVolume) && currentVolume > -80f)
         {
-            currentTime += Time.deltaTime;
-            float newVol = Mathf.Lerp(currentVol, 0.0001f, currentTime / fadeTime);
-            audioMixer.SetFloat("SoundVolume", Mathf.Log10(newVol) * 20f);
+            currentVolume -= defaultVolume * Time.deltaTime / fadeTime;
+            audioMixer.SetFloat("SoundVolume", currentVolume);
 
             yield return null;
         }
 
-        foreach (AudioSource audioSource in allAudioSources)
+        foreach (AudioSource audioSource in FindObjectsOfType<AudioSource>())
         {
             if (audioSource.outputAudioMixerGroup.name == "Sound" && audioSource.isPlaying)
             {
@@ -591,6 +377,6 @@ public class AudioManager : MonoBehaviour
             }
         }
 
-        audioMixer.SetFloat("SoundVolume", 0f);
+        audioMixer.SetFloat("SoundVolume", defaultVolume);
     }
 }

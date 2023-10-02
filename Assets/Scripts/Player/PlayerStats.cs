@@ -119,7 +119,7 @@ public class PlayerStats : MonoBehaviour
         /** Player tired sound play **/
         if (playerStamina < 40f)
         {
-            audioManager.PlayCollectionSound2D("Sound_Player_Breath", false, 0.5f);
+            audioManager.PlayCollectionSound("Sound_Player_Breath", false, 0.5f);
         }
     }
 

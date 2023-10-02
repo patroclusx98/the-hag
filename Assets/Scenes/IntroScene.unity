@@ -847,16 +847,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a67da77098e533e4d9ec88bfc5ab7b0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musics:
-  - musicName: Intro_Music_Main
+  musicList:
+  - name: Intro_Music
     audioClip: {fileID: 8300000, guid: 30d1c4a90a4f08849b519220497f8d52, type: 3}
-    volume: 0.6
+    volume: 0.5
     pitch: 1
     loop: 0
     playOnAwake: 1
+    spatialBlend: 0
+    maxDistance: 0
+    dopplerLevel: 0
     source: {fileID: 0}
-  sounds: []
-  soundCollections: []
+  soundList: []
+  soundCollectionList: []
 --- !u!4 &1455733658210714170
 Transform:
   m_ObjectHideFlags: 0

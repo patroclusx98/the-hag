@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public class AudioSound
+public class Audio
 {
-    [Header("Sound Attributes")]
-    public string soundName;
+    [Header("Base Attributes")]
+    public string name;
     public AudioClip audioClip;
 
     [Header("Audio Attributes")]
     [Range(0f, 1f)]
     public float volume;
-    [Range(0.1f, 3f)]
+    [Range(-3f, 3f)]
     public float pitch;
     public bool loop;
     public bool playOnAwake;
@@ -18,8 +18,10 @@ public class AudioSound
     [Header("3D Audio Attributes")]
     [Range(0f, 1f)]
     public float spatialBlend;
-    [Range(1f, 30f)]
+    [Range(1f, 500f)]
     public float maxDistance;
+    [Range(0f, 5f)]
+    public float dopplerLevel;
 
     [HideInInspector]
     public AudioSource source;

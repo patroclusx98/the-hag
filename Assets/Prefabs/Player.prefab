@@ -1149,75 +1149,71 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a67da77098e533e4d9ec88bfc5ab7b0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musics: []
-  sounds:
-  - soundName: Sound_Player_Slide
-    audioClip: {fileID: 8300000, guid: 2855898fe4cbb5443824dad07229641f, type: 3}
-    volume: 0.3
-    pitch: 1
-    loop: 1
-    playOnAwake: 0
+  musicList: []
+  soundList: []
+  soundCollectionList:
+  - name: Sound_Player_Jump
+    audioClips:
+    - {fileID: 8300000, guid: 24fdc465c7225184d978f763efbd82ec, type: 3}
+    - {fileID: 8300000, guid: 640e83a3d6b823744bc2f14d06d46add, type: 3}
+    - {fileID: 8300000, guid: 66a951de3f6babc4c91760fc86b31d63, type: 3}
+    volume: 0.5
+    pitch: 0
     spatialBlend: 0
     maxDistance: 0
-    source: {fileID: 0}
-  soundCollections:
-  - collectionName: Sound_Step_Walk_Dirt
+    dopplerLevel: 0
+    sources: []
+    lastSourcePlayed: {fileID: 0}
+  - name: Sound_Player_Crouch
+    audioClips:
+    - {fileID: 8300000, guid: 4acdb1af8f6aadb4f9083008890a2ca9, type: 3}
+    - {fileID: 8300000, guid: 2fd84037ffe4a2e4fbfa5916369ff1a0, type: 3}
+    - {fileID: 8300000, guid: 07dfee9bbc5cbf8488159985a16633a4, type: 3}
+    volume: 0.5
+    pitch: 0
+    spatialBlend: 0
+    maxDistance: 0
+    dopplerLevel: 0
+    sources: []
+    lastSourcePlayed: {fileID: 0}
+  - name: Sound_Player_Breath
+    audioClips:
+    - {fileID: 8300000, guid: f87b8b0fe6633d348a816e4a0b13a7ee, type: 3}
+    - {fileID: 8300000, guid: 8e08b801cab168f4caf3bce62a337ac4, type: 3}
+    - {fileID: 8300000, guid: 48bd05099ae01664481fe7cc18242019, type: 3}
+    volume: 0.5
+    pitch: 0
+    spatialBlend: 0
+    maxDistance: 0
+    dopplerLevel: 0
+    sources: []
+    lastSourcePlayed: {fileID: 0}
+  - name: Sound_Step_Walk_Dirt
     audioClips:
     - {fileID: 8300000, guid: 7e413ae9aea681648836028c71ec28fc, type: 3}
     - {fileID: 8300000, guid: 0b97a7786ae2df44788571f5b21e97c2, type: 3}
     - {fileID: 8300000, guid: 5e95971f10949ab44adf66a31c904ccc, type: 3}
     - {fileID: 8300000, guid: fbdb9f7676a1a424cbedbbb2b1b59d4d, type: 3}
     - {fileID: 8300000, guid: a08093ea505235249ab78343d0b55ad7, type: 3}
-    volume: 0.2
-    pitch: 1
+    volume: 0.5
+    pitch: 0
     spatialBlend: 0
     maxDistance: 0
+    dopplerLevel: 0
     sources: []
     lastSourcePlayed: {fileID: 0}
-  - collectionName: Sound_Step_Run_Dirt
+  - name: Sound_Step_Run_Dirt
     audioClips:
     - {fileID: 8300000, guid: d0458ba291049544aa55a0094d5ef696, type: 3}
     - {fileID: 8300000, guid: 9704e51177f856c4c9f2c73d922878ce, type: 3}
     - {fileID: 8300000, guid: 34ce3c8549cd88242b898f5cd83c9094, type: 3}
     - {fileID: 8300000, guid: 6a8e4ded52894d3469f0396e81151b32, type: 3}
     - {fileID: 8300000, guid: a04209d33f705ab4d9c643db8be597da, type: 3}
-    volume: 0.3
-    pitch: 1
+    volume: 0.5
+    pitch: 0
     spatialBlend: 0
     maxDistance: 0
-    sources: []
-    lastSourcePlayed: {fileID: 0}
-  - collectionName: Sound_Player_Jump
-    audioClips:
-    - {fileID: 8300000, guid: 24fdc465c7225184d978f763efbd82ec, type: 3}
-    - {fileID: 8300000, guid: 640e83a3d6b823744bc2f14d06d46add, type: 3}
-    - {fileID: 8300000, guid: 66a951de3f6babc4c91760fc86b31d63, type: 3}
-    volume: 0.6
-    pitch: 1
-    spatialBlend: 0
-    maxDistance: 0
-    sources: []
-    lastSourcePlayed: {fileID: 0}
-  - collectionName: Sound_Player_Crouch
-    audioClips:
-    - {fileID: 8300000, guid: 4acdb1af8f6aadb4f9083008890a2ca9, type: 3}
-    - {fileID: 8300000, guid: 2fd84037ffe4a2e4fbfa5916369ff1a0, type: 3}
-    - {fileID: 8300000, guid: 07dfee9bbc5cbf8488159985a16633a4, type: 3}
-    volume: 0.3
-    pitch: 1
-    spatialBlend: 0
-    maxDistance: 0
-    sources: []
-    lastSourcePlayed: {fileID: 0}
-  - collectionName: Sound_Player_Breath
-    audioClips:
-    - {fileID: 8300000, guid: f87b8b0fe6633d348a816e4a0b13a7ee, type: 3}
-    - {fileID: 8300000, guid: 8e08b801cab168f4caf3bce62a337ac4, type: 3}
-    - {fileID: 8300000, guid: 48bd05099ae01664481fe7cc18242019, type: 3}
-    volume: 0.1
-    pitch: 1
-    spatialBlend: 0
-    maxDistance: 0
+    dopplerLevel: 0
     sources: []
     lastSourcePlayed: {fileID: 0}
 --- !u!1 &5889948593647792300
@@ -1395,7 +1391,7 @@ MonoBehaviour:
   isClimbing: 0
   isJumping: 0
   isCrouching: 0
-  hasCrouched: 0
+  hasFullyCrouched: 0
   gameObjectUnderPlayer: {fileID: 0}
 --- !u!114 &8564613683319249854
 MonoBehaviour:

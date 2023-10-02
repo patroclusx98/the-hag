@@ -561,25 +561,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a67da77098e533e4d9ec88bfc5ab7b0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musics:
-  - musicName: Menu_Music_Main
+  musicList:
+  - name: Main_Menu_Music
     audioClip: {fileID: 8300000, guid: a204e317464b34743a7e03aee24e016a, type: 3}
-    volume: 0.4
+    volume: 0.5
     pitch: 1
     loop: 1
     playOnAwake: 1
+    spatialBlend: 0
+    maxDistance: 0
+    dopplerLevel: 0
     source: {fileID: 0}
-  sounds:
-  - soundName: Menu_Sound_Start
+  soundList:
+  - name: Menu_Sound_Start
     audioClip: {fileID: 8300000, guid: 1d26ad1aed5731b439cfc9f4a471330d, type: 3}
     volume: 0.8
-    pitch: 0.8
+    pitch: 1
     loop: 0
     playOnAwake: 0
     spatialBlend: 0
     maxDistance: 0
+    dopplerLevel: 0
     source: {fileID: 0}
-  soundCollections: []
+  soundCollectionList: []
 --- !u!4 &972039537
 Transform:
   m_ObjectHideFlags: 0

@@ -366,7 +366,7 @@ public class PlayerMovement : MonoBehaviour
             float baseSpeed = 1f;
             float stepSpeed = Mathf.Clamp(baseSpeed / playerSpeed, 0.4f, 0.75f);
 
-            audioManager.PlayCollectionSound3D("Sound_Step_Walk_Dirt", true, stepSpeed, gameObject);
+            audioManager.PlayCollectionSound("Sound_Step_Walk_Dirt", true, stepSpeed);
         }
     }
 
@@ -374,28 +374,28 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded && horizontalVelocity.magnitude > 0.35f)
         {
-            audioManager.PlayCollectionSound3D("Sound_Step_Run_Dirt", true, 0.3f, gameObject);
+            audioManager.PlayCollectionSound("Sound_Step_Run_Dirt", true, 0.3f);
         }
 
     }
 
     private void PlayJumpingSound()
     {
-        audioManager.PlayCollectionSound3D("Sound_Player_Jump", true, 0f, gameObject);
+        audioManager.PlayCollectionSound("Sound_Player_Jump", true, 0f);
     }
 
     private void PlayCrouchingSound()
     {
-        audioManager.PlayCollectionSound2D("Sound_Player_Crouch", true, 0f);
+        audioManager.PlayCollectionSound("Sound_Player_Crouch", true, 0f);
     }
 
     private void PlayImpactSound()
     {
-        audioManager.PlayCollectionSound3D("Sound_Step_Run_Dirt", false, 0f, gameObject);
+        audioManager.PlayCollectionSound("Sound_Step_Run_Dirt", false, 0f);
     }
 
     private void PlayFallDamageSound()
     {
-        audioManager.PlayCollectionSound3D("Sound_Step_Run_Dirt", false, 0f, gameObject);
+        audioManager.PlayCollectionSound("Sound_Step_Run_Dirt", false, 0f);
     }
 }

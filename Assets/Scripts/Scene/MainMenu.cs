@@ -7,7 +7,7 @@ public class MainMenu : MonoBehaviour
 
     public void StartGame()
     {
-        audioManager.PlaySound2D("Menu_Sound_Start", false, 0f);
+        audioManager.PlaySound("Menu_Sound_Start");
         sceneLoader.LoadNextScene();
     }
 

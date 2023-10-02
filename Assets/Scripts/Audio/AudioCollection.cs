@@ -4,21 +4,23 @@ using UnityEngine;
 [System.Serializable]
 public class AudioCollection
 {
-    [Header("Collection Attributes")]
-    public string collectionName;
-    public AudioClip[] audioClips;
+    [Header("Base Attributes")]
+    public string name;
+    public List<AudioClip> audioClips;
 
     [Header("Audio Attributes")]
     [Range(0f, 1f)]
     public float volume;
-    [Range(0.1f, 3f)]
+    [Range(-3f, 3f)]
     public float pitch;
 
     [Header("3D Audio Attributes")]
     [Range(0f, 1f)]
     public float spatialBlend;
-    [Range(1f, 30f)]
+    [Range(1f, 500f)]
     public float maxDistance;
+    [Range(0f, 5f)]
+    public float dopplerLevel;
 
     [HideInInspector]
     public List<AudioSource> sources;
