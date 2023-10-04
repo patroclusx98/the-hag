@@ -10,16 +10,16 @@ public class InventoryUI : MonoBehaviour
     [ReadOnlyInspector]
     public bool isInInventory;
 
-    private PlayerInventory inventory;
-    private InventorySlot[] slots;
+    private PlayerInventory playerInventory;
+    private InventorySlot[] inventorySlots;
 
     // Start is called before the first frame update
     private void Start()
     {
-        inventory = PlayerInventory.instance;
-        inventory.onItemChangedCallback += UpdateUI;
+        playerInventory = PlayerInventory.instance;
+        playerInventory.onInventoryChange += UpdateInventoryUI;
 
-        slots = inventoryUI.GetComponentsInChildren<InventorySlot>();
+        inventorySlots = inventoryUI.GetComponentsInChildren<InventorySlot>();
     }
 
     // Update is called once per frame
@@ -31,28 +31,48 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    private void UpdateUI()
+    /// <summary>
+    /// Updates the inventory slots when the inventory changes
+    /// </summary>
+    private void UpdateInventoryUI()
     {
-        for (int i = 0; i < slots.Length; i++)
+        for (int i = 0; i < inventorySlots.Length; i++)
         {
-            if (i < inventory.itemsList.Count)
+            if (i < playerInventory.itemsList.Count)
             {
-                slots[i].AddItem(inventory.itemsList[i]);
+                inventorySlots[i].AddItem(playerInventory.itemsList[i]);
             }
             else
             {
-                slots[i].ClearSlot();
+                inventorySlots[i].ClearSlot();
             }
         }
     }
 
-    public void ToggleInventory(bool isItemSelected = false)
+    /// <summary>
+    /// Toggles the inventory on or off
+    /// </summary>
+    public void ToggleInventory()
     {
         isInInventory = !isInInventory;
-        inventoryUI.SetActive(isInInventory);
 
-        playerStats.canInteract = !isInInventory && !isItemSelected;
-        Cursor.lockState = isInInventory ? CursorLockMode.None : CursorLockMode.Locked;
-        Cursor.visible = isInInventory;
+        if (isInInventory)
+        {
+            inventoryUI.SetActive(true);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            playerStats.canInteract = false;
+            playerLook.LockMouseLook();
+        }
+        else
+        {
+            inventoryUI.SetActive(false);
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            playerStats.canInteract = !playerInventory.selectedItem;
+            playerLook.UnlockMouseLook();
+        }
     }
 }

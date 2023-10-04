@@ -13,40 +13,66 @@ public class PlayerInventory : MonoBehaviour
     [ReadOnlyInspector]
     public Item selectedItem;
 
-    public delegate void OnItemChanged();
-    public OnItemChanged onItemChangedCallback;
+    public delegate void OnInventoryChange();
+    public OnInventoryChange onInventoryChange;
 
     // Awake is called on script load
     private void Awake()
     {
         /** Singleton instance **/
-
-        if (instance != null)
+        if (!instance)
+        {
+            instance = this;
+        }
+        else
         {
             Debug.LogWarning("More than one instance of Player Inventory is found!");
         }
-
-        instance = this;
     }
 
+    /// <summary>
+    /// Checks if there are any free spaces in the inventory
+    /// </summary>
+    /// <returns>True if inventory has free space</returns>
+    public bool HasSpace()
+    {
+        return itemsList.Count < maxSpace;
+    }
+
+    /// <summary>
+    /// Adds the given item to the inventory
+    /// </summary>
+    /// <param name="itemObject">The item object to add to the inventory</param>
     public void AddItem(Item itemObject)
     {
         itemsList.Add(itemObject);
-        onItemChangedCallback?.Invoke();
+        onInventoryChange?.Invoke();
     }
 
+    /// <summary>
+    /// Removes the given item from the inventory
+    /// </summary>
+    /// <param name="itemObject">The item object to remove from the inventory</param>
     public void RemoveItem(Item itemObject)
     {
         itemsList.Remove(itemObject);
-        onItemChangedCallback?.Invoke();
+        onInventoryChange?.Invoke();
     }
 
-    public void RemoveAll()
+    /// <summary>
+    /// Removes all of the items from the inventory
+    /// </summary>
+    public void RemoveAllItems()
     {
         itemsList.Clear();
-        onItemChangedCallback?.Invoke();
+        onInventoryChange?.Invoke();
     }
 
+    /// <summary>
+    /// Gets the item object in the inventory by it's index
+    /// </summary>
+    /// <param name="index">The inventory index of the item</param>
+    /// <returns>The item object if found, otherwise null</returns>
     public Item GetItem(int index)
     {
         if (itemsList.Count > index)
@@ -59,10 +85,5 @@ public class PlayerInventory : MonoBehaviour
 
             return null;
         }
-    }
-
-    public bool HasSpace()
-    {
-        return itemsList.Count < maxSpace;
     }
 }

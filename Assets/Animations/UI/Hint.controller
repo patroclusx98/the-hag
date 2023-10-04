@@ -51,7 +51,7 @@ AnimatorState:
   m_Motion: {fileID: 7400000, guid: 89a0f872dc465cc46961d1f3ac7b52a3, type: 2}
   m_Tag: 
   m_SpeedParameter: 
-  m_MirrorParameter: ShowHint
+  m_MirrorParameter: SetShowHint
   m_CycleOffsetParameter: 
   m_TimeParameter: HintMotionTime
 --- !u!1107 &-2101159462901626758
@@ -88,7 +88,7 @@ AnimatorController:
   m_Name: Hint
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: ShowHint
+  - m_Name: SetShowHint
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -116,7 +116,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: ShowHint
+    m_ConditionEvent: SetShowHint
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 0}
@@ -141,7 +141,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: ShowHint
+    m_ConditionEvent: SetShowHint
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -7774059921188350745}

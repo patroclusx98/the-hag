@@ -1,14 +1,27 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class CrosshairUI : MonoBehaviour
 {
     public PlayerStats playerStats;
     public PlayerLook playerLook;
-    public RawImage crosshair;
-    public RawImage crosshairHand;
-    public Image crosshairItem;
-    public Animator crosshairItemAnimator;
+    public Image crosshairImage;
+    public Animator crosshairAnimator;
+
+    [Header("Crosshair Sprites")]
+    public Crosshair[] crosshairList;
+
+    private Dictionary<string, Crosshair> crosshairDict = new Dictionary<string, Crosshair>();
+
+    // Awake is called on script load
+    private void Awake()
+    {
+        foreach (Crosshair crosshair in crosshairList)
+        {
+            crosshairDict.Add(crosshair.name, crosshair);
+        }
+    }
 
     // Update is called once per frame
     private void Update()
@@ -20,41 +33,39 @@ public class CrosshairUI : MonoBehaviour
         {
             /** Active item selection from inventory **/
 
-            crosshair.enabled = false;
-            crosshairHand.enabled = false;
+            /** Set crosshair to the selected item **/
+            crosshairImage.sprite = selectedItem.icon;
+            crosshairImage.transform.localScale = Vector3.one * selectedItem.iconScale;
 
-            crosshairItem.enabled = true;
-            crosshairItem.sprite = selectedItem.icon;
-
+            /** Set crosshair pulsing animation based on player look objects **/
             if (rayHit && hitInfo.transform.CompareTag("Interactable"))
             {
-                crosshairItemAnimator.SetBool("PulseCrosshairItem", true);
+                crosshairAnimator.SetBool("SetPulseCrosshair", true);
             }
             else
             {
-                crosshairItemAnimator.SetBool("PulseCrosshairItem", false);
+                crosshairAnimator.SetBool("SetPulseCrosshair", false);
             }
         }
         else
         {
             /** No active item selection from inventory **/
 
-            if (crosshairItem.enabled)
-            {
-                crosshairItemAnimator.SetBool("PulseCrosshairItem", false);
-                crosshairItem.enabled = false;
-            }
+            Crosshair crosshair;
+            crosshairAnimator.SetBool("SetPulseCrosshair", false);
 
+            /** Set crosshair based on player look objects **/
             if (playerStats.canInteract && rayHit && hitInfo.transform.CompareTag("Interactable"))
             {
-                crosshair.enabled = false;
-                crosshairHand.enabled = true;
+                crosshair = crosshairDict["crosshair_hand"];
             }
             else
             {
-                crosshair.enabled = true;
-                crosshairHand.enabled = false;
+                crosshair = crosshairDict["crosshair"];
             }
+
+            crosshairImage.sprite = crosshair.sprite;
+            crosshairImage.transform.localScale = Vector3.one * crosshair.scale;
         }
     }
 }

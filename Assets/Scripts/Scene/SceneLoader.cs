@@ -25,8 +25,8 @@ public class SceneLoader : MonoBehaviour
         transition.SetFloat("FadeOutTime", 1f / (fadeOutTime > 0f ? fadeOutTime : 0.0001f));
     }
 
-    // Update is called once per frame
-    private void Update()
+    // Start is called before the first frame update
+    private void Start()
     {
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {

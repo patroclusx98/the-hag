@@ -56,7 +56,7 @@ public class ItemInteraction : MonoBehaviour
                     item.usableGameObjects = itemObject.usableGameObjects;
                     inventory.AddItem(item);
 
-                    Destroy(itemObject);
+                    Destroy(itemObject.gameObject);
                 }
                 else
                 {

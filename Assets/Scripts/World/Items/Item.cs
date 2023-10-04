@@ -7,6 +7,8 @@ public class Item : ScriptableObject
 {
     new public string name = "New Item";
     public Sprite icon = null;
+    [Range(0.01f, 10f)]
+    public float iconScale = 1f;
 
     [HideInInspector]
     public List<GameObject> usableGameObjects;
