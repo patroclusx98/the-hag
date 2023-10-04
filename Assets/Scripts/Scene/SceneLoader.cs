@@ -15,7 +15,7 @@ public class SceneLoader : MonoBehaviour
 
     [Header("Scene Loader Inspector")]
     [ReadOnlyInspector]
-    public bool isSkipped = false;
+    public bool isSceneSkipped = false;
 
     //Awake is called on script load
     private void Awake()
@@ -59,7 +59,7 @@ public class SceneLoader : MonoBehaviour
     }
 
     /// <summary>
-    /// Loads the next scene from the currently active scene
+    /// Loads the next scene in line from the currently active scene
     /// </summary>
     public void LoadNextScene()
     {
@@ -80,7 +80,7 @@ public class SceneLoader : MonoBehaviour
     /// <para>Automatically fades all audio, and triggers the defined transition</para>
     /// </summary>
     /// <param name="sceneIndex">The game scene's build index</param>
-    /// <returns>IEnumerator of the coroutine</returns>
+    /// <returns>IEnumerator routine</returns>
     private IEnumerator LoadSceneCR(int sceneIndex)
     {
         audioManager.FadeOutAllAudio(fadeOutTime);

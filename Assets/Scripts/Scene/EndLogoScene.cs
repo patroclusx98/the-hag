@@ -16,9 +16,9 @@ public class EndLogoScene : MonoBehaviour
     private void Update()
     {
         /** Skip the logo scene **/
-        if (Input.GetKeyDown(KeyCode.Space) && !sceneLoader.isSkipped)
+        if (Input.GetKeyDown(KeyCode.Space) && !sceneLoader.isSceneSkipped)
         {
-            sceneLoader.isSkipped = true;
+            sceneLoader.isSceneSkipped = true;
             EndVideo(videoPlayer);
         }
     }

@@ -53,7 +53,7 @@ public class WindowInteractable : MonoBehaviour
 
     /// <summary>
     /// Calculates and returns the position of the specified edge of the window
-    /// It is offset from the window's origin position
+    /// <para>It is offset from the window's origin position</para>
     /// </summary>
     /// <param name="windowEdge">The edge to return</param>
     /// <returns>Vector3 of the edge position</returns>

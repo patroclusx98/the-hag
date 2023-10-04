@@ -376,26 +376,25 @@ public class PlayerMovement : MonoBehaviour
         {
             audioManager.PlayCollectionSound("Sound_Step_Run_Dirt", true, 0.3f);
         }
-
     }
 
     private void PlayJumpingSound()
     {
-        audioManager.PlayCollectionSound("Sound_Player_Jump", true, 0f);
+        audioManager.PlayCollectionSound("Sound_Player_Jump", true);
     }
 
     private void PlayCrouchingSound()
     {
-        audioManager.PlayCollectionSound("Sound_Player_Crouch", true, 0f);
+        audioManager.PlayCollectionSound("Sound_Player_Crouch", true);
     }
 
     private void PlayImpactSound()
     {
-        audioManager.PlayCollectionSound("Sound_Step_Run_Dirt", false, 0f);
+        audioManager.PlayCollectionSound("Sound_Step_Run_Dirt");
     }
 
     private void PlayFallDamageSound()
     {
-        audioManager.PlayCollectionSound("Sound_Step_Run_Dirt", false, 0f);
+        audioManager.PlayCollectionSound("Sound_Step_Run_Dirt");
     }
 }

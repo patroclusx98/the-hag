@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour
 
     public void OpenSettings()
     {
-        Debug.LogWarning("Not implemented!");
+        Debug.LogWarning("Not yet implemented!");
     }
 
     public void ExitGame()

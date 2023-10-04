@@ -7,6 +7,7 @@ public class PlayerAnimation : MonoBehaviour
 
     /// <summary>
     /// Adds upwards vertical velocity to the player
+    /// <para>This is used by the player animator</para>
     /// </summary>
     public void SetJump()
     {
@@ -15,6 +16,7 @@ public class PlayerAnimation : MonoBehaviour
 
     /// <summary>
     /// Resets the jump parameters for the player and player animator
+    /// <para>This is used by the player animator</para>
     /// </summary>
     public void ResetJump()
     {
@@ -24,6 +26,7 @@ public class PlayerAnimation : MonoBehaviour
 
     /// <summary>
     /// Sets the crouch parameters for the player and player animator
+    /// <para>This is used by the player animator</para>
     /// </summary>
     public void SetCrouch()
     {
@@ -33,6 +36,7 @@ public class PlayerAnimation : MonoBehaviour
 
     /// <summary>
     /// Resets the crouch parameters for the player and player animator
+    /// <para>This is used by the player animator</para>
     /// </summary>
     public void ResetCrouch()
     {

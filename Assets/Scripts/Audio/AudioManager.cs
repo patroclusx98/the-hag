@@ -18,10 +18,10 @@ public class AudioManager : MonoBehaviour
     void Awake()
     {
         audioMixer = Resources.Load<AudioMixer>("MasterAudioMixer");
-        soundAudioGroup = audioMixer.FindMatchingGroups("Master/Sound")[0];
         musicAudioGroup = audioMixer.FindMatchingGroups("Master/Music")[0];
+        soundAudioGroup = audioMixer.FindMatchingGroups("Master/Sound")[0];
 
-        /** **/
+        /** Initialise all music audio sources **/
         foreach (Audio music in musicList)
         {
             music.source = gameObject.AddComponent<AudioSource>();
@@ -36,7 +36,7 @@ public class AudioManager : MonoBehaviour
             music.source.dopplerLevel = music.dopplerLevel;
         }
 
-        /** **/
+        /** Initialise all sound audio sources **/
         foreach (Audio sound in soundList)
         {
             sound.source = gameObject.AddComponent<AudioSource>();
@@ -51,7 +51,7 @@ public class AudioManager : MonoBehaviour
             sound.source.dopplerLevel = sound.dopplerLevel;
         }
 
-        /** **/
+        /** Initialise all sound collection audio sources **/
         foreach (AudioCollection soundCollection in soundCollectionList)
         {
             for (int i = 0; i < soundCollection.audioClips.Count; i++)
@@ -73,21 +73,21 @@ public class AudioManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        /** Play all onAwake music **/
+        /** Play all playOnAwake music **/
         foreach (Audio music in musicList)
         {
             if (music.source.playOnAwake)
             {
-                PlayMusic(music.name);
+                music.source.Play();
             }
         }
 
-        /** Play all onAwake sounds **/
+        /** Play all playOnAwake sounds **/
         foreach (Audio sound in soundList)
         {
             if (sound.source.playOnAwake)
             {
-                PlaySound(sound.name, false, 0f);
+                sound.source.Play();
             }
         }
     }
@@ -95,18 +95,19 @@ public class AudioManager : MonoBehaviour
     /** MUSIC METHODS **/
 
     /// <summary>
-    /// 
+    /// Checks if any music is playing at the audio manager instance
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if any music is playing at the audio manager instance</returns>
     public bool IsMusicPlaying()
     {
-        return musicList.Find((music) => music.source.isPlaying) != null;
+        return musicList.Exists((music) => music.source.isPlaying);
     }
 
     /// <summary>
-    /// 
+    /// Plays the specified music at the audio manager instance
+    /// <para>Only one music can play per audio manager instance, if one is already playing it will be swapped to the new one</para>
     /// </summary>
-    /// <param name="musicName"></param>
+    /// <param name="musicName">The name of the music as defined within the audio manager instance</param>
     public void PlayMusic(string musicName)
     {
         Audio music = musicList.Find((music) => music.name == musicName);
@@ -121,7 +122,7 @@ public class AudioManager : MonoBehaviour
                 }
                 else
                 {
-                    SwapMusic(music.source, 3f);
+                    StartCoroutine(SwapMusicCR(music.source, 3f));
                 }
             }
         }
@@ -132,7 +133,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Stops the currently playing music at the audio manager instance
     /// </summary>
     public void StopMusic()
     {
@@ -143,11 +144,17 @@ public class AudioManager : MonoBehaviour
     /** SOUND METHODS **/
 
     /// <summary>
-    /// 
+    /// Plays the specified sound at the audio manager instance
     /// </summary>
-    /// <param name="soundName"></param>
-    /// <param name="canOverlap"></param>
-    /// <param name="frequencyTime"></param>
+    /// <param name="soundName">The name of the sound as defined within the audio manager instance</param>
+    /// <param name="canOverlap">
+    /// Allows the audio to overlap with itself if played multiple times
+    /// <para>Otherwise it waits for the sound to finish playing first before playing it again</para>
+    /// </param>
+    /// <param name="frequencyTime">
+    /// Frequency time in seconds, determines how much time should pass between frequent plays
+    /// <para>If the audio can't overlap it's audio clip length will be automatically added to frequency time</para>
+    /// </param>
     public void PlaySound(string soundName, bool canOverlap = false, float frequencyTime = 0f)
     {
         Audio sound = soundList.Find((sound) => sound.name == soundName);
@@ -183,9 +190,9 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Stops the defined sound at the audio manager instance
     /// </summary>
-    /// <param name="soundName"></param>
+    /// <param name="soundName">The name of the sound as defined within the audio manager instance</param>
     public void StopSound(string soundName)
     {
         Audio sound = soundList.Find((sound) => sound.name == soundName);
@@ -204,12 +211,22 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Plays a random sound from the specified sound collection at the audio manager instance
     /// </summary>
-    /// <param name="soundCollectionName"></param>
-    /// <param name="canOverlap"></param>
-    /// <param name="frequencyTime"></param>
-    public void PlayCollectionSound(string soundCollectionName, bool canOverlap = false, float frequencyTime = 0f)
+    /// <param name="soundCollectionName">The name of the sound collection as defined within the audio manager instance</param>
+    /// <param name="canOverlap">
+    /// Allows the audio to overlap with itself if played multiple times
+    /// <para>Otherwise it waits for the sound to finish playing first before playing it again</para>
+    /// </param>
+    /// <param name="frequencyTime">
+    /// Frequency time in seconds, determines how much time should pass between frequent plays
+    /// <para>If the audio can't overlap it's audio clip length will be automatically added to frequency time</para>
+    /// </param>
+    /// <param name="canRepeatSameSound">
+    /// Allows the same sound clip to play multiple times in a row
+    /// <para>Otherwise the same sound clip will never play twice in a row</para>
+    /// </param>
+    public void PlayCollectionSound(string soundCollectionName, bool canOverlap = false, float frequencyTime = 0f, bool canRepeatSameSound = false)
     {
         AudioCollection soundCollection = soundCollectionList.Find((soundCollection) => soundCollection.name == soundCollectionName);
 
@@ -217,10 +234,10 @@ public class AudioManager : MonoBehaviour
         {
             AudioSource soundCollectionSource = null;
 
-            while (!soundCollectionSource || soundCollectionSource == soundCollection.lastSourcePlayed)
+            while (!soundCollectionSource || (!canRepeatSameSound && soundCollectionSource == soundCollection.lastSourcePlayed))
             {
                 int collectionLength = soundCollection.sources.Count;
-                int randomSourceIndex = UnityEngine.Random.Range(0, collectionLength);
+                int randomSourceIndex = Random.Range(0, collectionLength);
                 soundCollectionSource = soundCollection.sources[randomSourceIndex];
             }
 
@@ -228,9 +245,9 @@ public class AudioManager : MonoBehaviour
             {
                 if (!canOverlap)
                 {
-                    bool isSoundCollectionSourcePlaying = soundCollection.sources.Find((soundCollectionSource) => soundCollectionSource.isPlaying) != null;
+                    bool isSoundCollectionPlaying = soundCollection.sources.Exists((soundCollectionSource) => soundCollectionSource.isPlaying);
 
-                    if (!isSoundCollectionSourcePlaying)
+                    if (!isSoundCollectionPlaying)
                     {
                         soundCollectionSource.Play();
                         soundCollection.lastSourcePlayed = soundCollectionSource;
@@ -252,7 +269,7 @@ public class AudioManager : MonoBehaviour
     /** AUDIO FADE METHODS **/
 
     /// <summary>
-    /// Fades out the currently playing music
+    /// Fades out the currently playing music at the audio manager instance
     /// </summary>
     /// <param name="fadeTime">Fade out time in seconds</param>
     public void FadeOutMusic(float fadeTime)
@@ -261,19 +278,18 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Swaps the currently playing music to a new music with a transition
+    /// Fades out all playing music for all audio manager instances
     /// </summary>
-    /// <param name="musicSource">The source of the new music to play</param>
-    /// <param name="swapTime">Swap cross-fade time in seconds</param>
-    private void SwapMusic(AudioSource musicSource, float swapTime)
+    /// <param name="fadeTime">Fade out time in seconds</param>
+    public void FadeOutAllMusic(float fadeTime)
     {
-        StartCoroutine(SwapMusicCR(musicSource, swapTime));
+        StartCoroutine(FadeOutAllMusicCR(fadeTime));
     }
 
     /// <summary>
-    /// Fades out the specified 2D sound
+    /// Fades out the specified sound at the audio manager instance
     /// </summary>
-    /// <param name="soundName">The name of the sound as defined in the Audio Manager instance</param>
+    /// <param name="soundName">The name of the sound as defined in the audio manager instance</param>
     /// <param name="fadeTime">Fade out time in seconds</param>
     public void FadeOutSound(string soundName, float fadeTime)
     {
@@ -281,7 +297,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Fades out all currently playing sounds
+    /// Fades out all playing sounds for all audio manager instances
     /// </summary>
     /// <param name="fadeTime">Fade out time in seconds</param>
     public void FadeOutAllSound(float fadeTime)
@@ -290,12 +306,12 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Fades out all currently playing audio
+    /// Fades out all playing audio for all audio manager instances
     /// </summary>
     /// <param name="fadeTime">Fade out time in seconds</param>
     public void FadeOutAllAudio(float fadeTime)
     {
-        StartCoroutine(FadeOutMusicCR(fadeTime));
+        StartCoroutine(FadeOutAllMusicCR(fadeTime));
         StartCoroutine(FadeOutAllSoundCR(fadeTime));
     }
 
@@ -328,6 +344,29 @@ public class AudioManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         musicSource.Play();
+    }
+
+    private IEnumerator FadeOutAllMusicCR(float fadeTime)
+    {
+        audioMixer.GetFloat("MusicVolume", out float defaultVolume);
+
+        while (fadeTime > 0f && audioMixer.GetFloat("MusicVolume", out float currentVolume) && currentVolume > -80f)
+        {
+            currentVolume -= defaultVolume * Time.deltaTime / fadeTime;
+            audioMixer.SetFloat("MusicVolume", currentVolume);
+
+            yield return null;
+        }
+
+        foreach (AudioSource audioSource in FindObjectsOfType<AudioSource>())
+        {
+            if (audioSource.outputAudioMixerGroup.name == "Music")
+            {
+                audioSource.Stop();
+            }
+        }
+
+        audioMixer.SetFloat("MusicVolume", defaultVolume);
     }
 
     private IEnumerator FadeOutSoundCR(string soundName, float fadeTime)
@@ -371,7 +410,7 @@ public class AudioManager : MonoBehaviour
 
         foreach (AudioSource audioSource in FindObjectsOfType<AudioSource>())
         {
-            if (audioSource.outputAudioMixerGroup.name == "Sound" && audioSource.isPlaying)
+            if (audioSource.outputAudioMixerGroup.name == "Sound")
             {
                 audioSource.Stop();
             }

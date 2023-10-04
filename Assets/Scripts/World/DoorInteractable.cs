@@ -49,6 +49,7 @@ public class DoorInteractable : MonoBehaviour
         {
             ClampYRotation();
 
+            /** Rotate game object's Y rotation to new Y rotation **/
             Quaternion toRotation = Quaternion.Euler(transform.localEulerAngles.x, yRotation, transform.localEulerAngles.z);
             transform.localRotation = Quaternion.Slerp(transform.localRotation, toRotation, Time.deltaTime * 2f);
         }
@@ -63,7 +64,7 @@ public class DoorInteractable : MonoBehaviour
 
     /// <summary>
     /// Calculates and returns the position of the specified edge of the door
-    /// It is offset from the door's origin position
+    /// <para>It is offset from the door's origin position</para>
     /// </summary>
     /// <param name="doorEdge">The edge to return</param>
     /// <returns>Vector3 of the edge position</returns>
@@ -146,7 +147,7 @@ public class DoorInteractable : MonoBehaviour
     }
 
     /// <summary>
-    /// Plays the optionally attached door handle animation if the door is fully closed
+    /// Plays the attached door handle animation if the door is fully closed
     /// </summary>
     public void PlayDoorHandleAnimation()
     {
