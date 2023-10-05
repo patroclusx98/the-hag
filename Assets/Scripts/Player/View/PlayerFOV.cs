@@ -22,11 +22,16 @@ public class PlayerFOV : MonoBehaviour
     {
         if ((playerMovement.isRunning && playerMovement.horizontalVelocity.magnitude > 0.5f) || playerMovement.verticalVelocity.y < playerMovement.fallDamageTolerance)
         {
+            /** Player is running or falling **/
+
             mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, defaultFov + distortionAmount, distortionSpeed * Time.deltaTime);
         }
         else
         {
-            if (mainCamera.fieldOfView > defaultFov + 0.1f)
+            /** Player is not running and not falling **/
+
+            /** Reset the main camera's fov **/
+            if (mainCamera.fieldOfView > defaultFov + 0.01f)
             {
                 mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, defaultFov, distortionSpeed * Time.deltaTime);
             }

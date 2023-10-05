@@ -6,7 +6,7 @@ public class PlayerBobbing : MonoBehaviour
 
     [Header("Bobbing Attributes")]
     public float bobbingAmount = 0.03f;
-    public float walkingBobbingSpeed = 12.5f;
+    public float walkingBobbingSpeed = 6f;
     public float runningBobbingSpeed = 18f;
 
     private Vector3 defaultPos;
@@ -25,16 +25,17 @@ public class PlayerBobbing : MonoBehaviour
         {
             /** Player is moving **/
 
-            float bobbingSpeed = playerMovement.isRunning ? runningBobbingSpeed : walkingBobbingSpeed * playerMovement.playerSpeed * 0.5f;
+            float bobbingSpeed = playerMovement.isRunning ? runningBobbingSpeed : walkingBobbingSpeed * playerMovement.playerSpeed;
 
+            /** Update the main camera's X and Y position to mimic bobbing **/
             timer += Time.deltaTime * bobbingSpeed;
-            transform.localPosition = new Vector3(transform.localPosition.x, defaultPos.y + Mathf.Sin(timer) * bobbingAmount, transform.localPosition.z);
-            transform.localPosition = new Vector3(defaultPos.x + Mathf.Sin(timer * 0.5f) * bobbingAmount, transform.localPosition.y, transform.localPosition.z);
+            transform.localPosition = new Vector3(defaultPos.x + Mathf.Sin(timer * 0.5f) * bobbingAmount, defaultPos.y + Mathf.Sin(timer) * bobbingAmount, transform.localPosition.z);
         }
         else
         {
             /** Player is idle **/
 
+            /** Reset the main camera's X and Y position to default **/
             if (Vector3.Distance(transform.localPosition, defaultPos) > 0.00001f)
             {
                 transform.localPosition = Vector3.Lerp(transform.localPosition, defaultPos, Time.deltaTime * runningBobbingSpeed);

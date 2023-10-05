@@ -16,6 +16,10 @@ public class PlayerHand : MonoBehaviour
         HandSway();
     }
 
+    /// <summary>
+    /// Rotates the player's hand to follow the rotation of the player's head
+    /// <para>This is to ensure player interactions follow changes of the player head's rotation</para>
+    /// </summary>
     private void HandSway()
     {
         float headRotationX = Mathf.Clamp(playerLook.headXRotation, minHandXRotation, maxHandXRotation);

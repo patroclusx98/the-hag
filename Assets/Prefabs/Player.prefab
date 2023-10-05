@@ -109,7 +109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerMovement: {fileID: 1755306950607223515}
   bobbingAmount: 0.03
-  walkingBobbingSpeed: 12.5
+  walkingBobbingSpeed: 6
   runningBobbingSpeed: 18
 --- !u!114 &5475967937527560785
 MonoBehaviour:

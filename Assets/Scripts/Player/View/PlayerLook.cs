@@ -18,7 +18,7 @@ public class PlayerLook : MonoBehaviour
     [ReadOnlyInspector]
     public bool isMouseLookEnabled = true;
     [ReadOnlyInspector]
-    public bool isLookingBack;
+    public bool isLookingBackwards;
     [ReadOnlyInspector]
     public bool isTrackingObject;
     [ReadOnlyInspector]
@@ -41,6 +41,9 @@ public class PlayerLook : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Rotates the player's head and body based on mouse inputs
+    /// </summary>
     private void MouseLook()
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
@@ -48,7 +51,9 @@ public class PlayerLook : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Mouse4))
         {
-            isLookingBack = true;
+            /** Player is looking backwards **/
+
+            isLookingBackwards = true;
             playerStats.canInteract = false;
 
             transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.Euler(0f, -headYRotationLimit, 0f), backLookSpeed * Time.deltaTime);
@@ -58,8 +63,10 @@ public class PlayerLook : MonoBehaviour
         }
         else
         {
-            if (!isLookingBack)
+            if (!isLookingBackwards)
             {
+                /** Player is looking forwards **/
+
                 headXRotation = Mathf.Clamp(headXRotation + mouseY, minHeadXRotation, maxHeadXRotation);
 
                 transform.localRotation = Quaternion.Euler(-headXRotation, 0f, 0f);
@@ -67,6 +74,8 @@ public class PlayerLook : MonoBehaviour
             }
             else
             {
+                /** Player is returning to look forwards **/
+
                 if (Quaternion.Angle(transform.localRotation, Quaternion.Euler(0f, 0f, 0f)) > 0f)
                 {
                     transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.Euler(0f, 0f, 0f), backLookSpeed * Time.deltaTime);
@@ -76,16 +85,20 @@ public class PlayerLook : MonoBehaviour
                 {
                     headYRotation = 0f;
                     playerStats.canInteract = true;
-                    isLookingBack = false;
+                    isLookingBackwards = false;
                 }
             }
         }
     }
 
+    /// <summary>
+    /// Rotates the player's head and body to constantly focus in the given look rotation
+    /// </summary>
     private void TrackObject()
     {
         float objectTrackingLookXRotation = objectTrackingLookRotation.eulerAngles.x;
 
+        /** Clamp head's X rotation **/
         if (objectTrackingLookXRotation >= 180f)
         {
             objectTrackingLookXRotation = Mathf.Clamp(360f - objectTrackingLookXRotation, minHeadXRotation, maxHeadXRotation);
@@ -101,16 +114,27 @@ public class PlayerLook : MonoBehaviour
         headXRotation = transform.localEulerAngles.x >= 180f ? 360f - transform.localEulerAngles.x : -transform.localEulerAngles.x;
     }
 
+    /// <summary>
+    /// Locks mouse input based player rotations
+    /// </summary>
     public void LockMouseLook()
     {
         isMouseLookEnabled = false;
     }
 
+    /// <summary>
+    /// Unlocks mouse input based player rotations
+    /// </summary>
     public void UnlockMouseLook()
     {
         isMouseLookEnabled = true;
     }
 
+    /// <summary>
+    /// Sets the tracking look rotation based on the given tracking point
+    /// <para>This locks mouse input based player rotations</para>
+    /// </summary>
+    /// <param name="objectTrackingPoint">The object's point to track</param>
     public void SetObjectTracking(Vector3 objectTrackingPoint)
     {
         objectTrackingLookRotation = Quaternion.LookRotation(objectTrackingPoint - transform.position);
@@ -118,6 +142,10 @@ public class PlayerLook : MonoBehaviour
         isTrackingObject = true;
     }
 
+    /// <summary>
+    /// Resets the tracking look rotation
+    /// <para>This unlocks mouse input based player rotations</para>
+    /// </summary>
     public void ResetObjectTracking()
     {
         objectTrackingLookRotation = default;
