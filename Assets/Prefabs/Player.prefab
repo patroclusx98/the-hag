@@ -1467,7 +1467,7 @@ MonoBehaviour:
   backLookSpeed: 15
   objectTrackSpeed: 8
   isMouseLookEnabled: 1
-  isLookingBack: 0
+  isLookingBackwards: 0
   isTrackingObject: 0
   headXRotation: 0
   headYRotation: 0
@@ -1542,7 +1542,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.3
+  m_Radius: 0.35
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &748413458743038046
 PrefabInstance:

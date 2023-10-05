@@ -42,6 +42,20 @@ public class PlayerLook : MonoBehaviour
     }
 
     /// <summary>
+    /// Converts the 0°/360° euler angles to -180°/180° euler angles
+    /// </summary>
+    /// <param name="eulerAngles">The euler angles to convert</param>
+    /// <returns>Vector3 of the converted euler angles</returns>
+    private Vector3 ConvertEulerAngles(Vector3 eulerAngles)
+    {
+        float xRotation = eulerAngles.x >= 180f ? 360f - eulerAngles.x : -eulerAngles.x;
+        float yRotation = eulerAngles.y >= 180f ? eulerAngles.y - 360f : eulerAngles.y;
+        float zRotation = eulerAngles.z >= 180f ? 360f - eulerAngles.z : -eulerAngles.z;
+
+        return new Vector3(xRotation, yRotation, zRotation);
+    }
+
+    /// <summary>
     /// Rotates the player's head and body based on mouse inputs
     /// </summary>
     private void MouseLook()
@@ -58,8 +72,8 @@ public class PlayerLook : MonoBehaviour
 
             transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.Euler(0f, -headYRotationLimit, 0f), backLookSpeed * Time.deltaTime);
 
-            headXRotation = 0f;
-            headYRotation = -(360f - transform.localEulerAngles.y);
+            headXRotation = ConvertEulerAngles(transform.localEulerAngles).x;
+            headYRotation = ConvertEulerAngles(transform.localEulerAngles).y;
         }
         else
         {
@@ -79,11 +93,15 @@ public class PlayerLook : MonoBehaviour
                 if (Quaternion.Angle(transform.localRotation, Quaternion.Euler(0f, 0f, 0f)) > 0f)
                 {
                     transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.Euler(0f, 0f, 0f), backLookSpeed * Time.deltaTime);
-                    headYRotation = -(360f - transform.localEulerAngles.y);
+
+                    headXRotation = ConvertEulerAngles(transform.localEulerAngles).x;
+                    headYRotation = ConvertEulerAngles(transform.localEulerAngles).y;
                 }
                 else
                 {
+                    headXRotation = 0f;
                     headYRotation = 0f;
+
                     playerStats.canInteract = true;
                     isLookingBackwards = false;
                 }
@@ -96,22 +114,15 @@ public class PlayerLook : MonoBehaviour
     /// </summary>
     private void TrackObject()
     {
-        float objectTrackingLookXRotation = objectTrackingLookRotation.eulerAngles.x;
+        float objectTrackingLookXRotation = ConvertEulerAngles(objectTrackingLookRotation.eulerAngles).x;
+        float objectTrackingLookYRotation = ConvertEulerAngles(objectTrackingLookRotation.eulerAngles).y;
 
-        /** Clamp head's X rotation **/
-        if (objectTrackingLookXRotation >= 180f)
-        {
-            objectTrackingLookXRotation = Mathf.Clamp(360f - objectTrackingLookXRotation, minHeadXRotation, maxHeadXRotation);
-        }
-        else
-        {
-            objectTrackingLookXRotation = Mathf.Clamp(-objectTrackingLookXRotation, minHeadXRotation, maxHeadXRotation);
-        }
+        objectTrackingLookXRotation = Mathf.Clamp(objectTrackingLookXRotation, minHeadXRotation, maxHeadXRotation);
 
         transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(-objectTrackingLookXRotation, 0f, 0f), objectTrackSpeed * Time.deltaTime);
-        playerMovement.transform.rotation = Quaternion.Lerp(playerMovement.transform.rotation, Quaternion.Euler(0f, objectTrackingLookRotation.eulerAngles.y, 0f), objectTrackSpeed * Time.deltaTime);
+        playerMovement.transform.rotation = Quaternion.Lerp(playerMovement.transform.rotation, Quaternion.Euler(0f, objectTrackingLookYRotation, 0f), objectTrackSpeed * Time.deltaTime);
 
-        headXRotation = transform.localEulerAngles.x >= 180f ? 360f - transform.localEulerAngles.x : -transform.localEulerAngles.x;
+        headXRotation = ConvertEulerAngles(transform.localEulerAngles).x;
     }
 
     /// <summary>

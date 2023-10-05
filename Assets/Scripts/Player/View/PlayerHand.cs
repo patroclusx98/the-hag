@@ -22,9 +22,9 @@ public class PlayerHand : MonoBehaviour
     /// </summary>
     private void HandSway()
     {
-        float headRotationX = Mathf.Clamp(playerLook.headXRotation, minHandXRotation, maxHandXRotation);
-        float headRotationY = playerLook.headYRotation;
+        float handRotationX = Mathf.Clamp(playerLook.headXRotation, minHandXRotation, maxHandXRotation);
+        float handRotationY = playerLook.headYRotation;
 
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(-headRotationX, headRotationY, 0f), handSwaySpeed * Time.deltaTime);
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(-handRotationX, handRotationY, 0f), handSwaySpeed * Time.deltaTime);
     }
 }
