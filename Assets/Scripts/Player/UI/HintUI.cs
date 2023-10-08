@@ -27,10 +27,10 @@ public class HintUI : MonoBehaviour
     /// <param name="hintMessage">The hint message to display</param>
     public void DisplayHintMessage(string hintMessage)
     {
-        if (!hintAnimator.GetBool("SetShowHint"))
+        if (!hintAnimator.GetBool("ShowHint"))
         {
             tmpText.text = hintMessage;
-            hintAnimator.SetBool("SetShowHint", true);
+            hintAnimator.SetBool("ShowHint", true);
         }
     }
 
@@ -41,6 +41,6 @@ public class HintUI : MonoBehaviour
     public void ResetHintDisplay()
     {
         tmpText.text = "";
-        hintAnimator.SetBool("SetShowHint", false);
+        hintAnimator.SetBool("ShowHint", false);
     }
 }

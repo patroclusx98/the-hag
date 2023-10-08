@@ -2,7 +2,7 @@
 
 public class WindowInteraction : MonoBehaviour
 {
-    public PlayerStats playerStats;
+    public Player player;
     public PlayerLook playerLook;
 
     private WindowInteractable windowObject;
@@ -23,7 +23,7 @@ public class WindowInteraction : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.Mouse0) && playerStats.canInteract)
+            if (Input.GetKeyDown(KeyCode.Mouse0) && player.CanInteract())
             {
                 GrabWindow();
             }
@@ -46,10 +46,9 @@ public class WindowInteraction : MonoBehaviour
         playerLook.SetObjectTracking(windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Bottom));
     }
 
-    // Check if looking at window and grab it
     private void GrabWindow()
     {
-        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Window"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Window"), QueryTriggerInteraction.Ignore);
 
         if (rayHit)
         {
@@ -57,7 +56,7 @@ public class WindowInteraction : MonoBehaviour
 
             if (!windowObject.isLocked)
             {
-                playerStats.canInteract = false;
+                player.modifiers[Player.Modifier.Interacting] = Player.Interaction.Window;
                 windowObject.isWindowGrabbed = true;
             }
             else
@@ -73,7 +72,12 @@ public class WindowInteraction : MonoBehaviour
         float playerWindowTopDistance = Vector3.Distance(playerLook.transform.position, windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Top));
         float playerWindowBottomDistance = Vector3.Distance(playerLook.transform.position, windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Bottom));
 
-        if (playerWindowTopDistance > playerStats.reachDistance + 0.1f && playerWindowBottomDistance > playerStats.reachDistance + 0.1f)
+        if (playerWindowTopDistance > player.reachDistance + 0.1f && playerWindowBottomDistance > player.reachDistance + 0.1f)
+        {
+            return true;
+        }
+
+        if (!player.CanInteractWith(Player.Interaction.Window))
         {
             return true;
         }
@@ -83,7 +87,11 @@ public class WindowInteraction : MonoBehaviour
 
     private void LetGoOfWindow()
     {
-        playerStats.canInteract = true;
+        if (player.CanEndInteractionWith(Player.Interaction.Window))
+        {
+            player.modifiers.Remove(Player.Modifier.Interacting);
+        }
+
         playerLook.ResetObjectTracking();
 
         windowObject.isWindowGrabbed = false;

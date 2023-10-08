@@ -2,8 +2,7 @@
 
 public class DoorInteraction : MonoBehaviour
 {
-    public PlayerMovement playerMovement;
-    public PlayerStats playerStats;
+    public Player player;
     public PlayerLook playerLook;
 
     private DoorInteractable doorObject;
@@ -26,7 +25,7 @@ public class DoorInteraction : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.Mouse0) && playerStats.canInteract)
+            if (Input.GetKeyDown(KeyCode.Mouse0) && player.CanInteract())
             {
                 GrabDoor();
             }
@@ -74,10 +73,9 @@ public class DoorInteraction : MonoBehaviour
         playerLook.SetObjectTracking(doorObject.GetDoorEdge(DoorInteractable.DoorEdge.Right));
     }
 
-    // Check if looking at door and grab it
     private void GrabDoor()
     {
-        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Door"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Door"), QueryTriggerInteraction.Ignore);
 
         if (rayHit)
         {
@@ -85,10 +83,10 @@ public class DoorInteraction : MonoBehaviour
 
             if (!doorObject.isLocked)
             {
-                doorObject.PlayDoorHandleAnimation();
-
-                playerStats.canInteract = false;
+                player.modifiers[Player.Modifier.Interacting] = Player.Interaction.Door;
                 doorObject.isDoorGrabbed = true;
+
+                doorObject.PlayDoorHandleAnimation();
             }
             else
             {
@@ -103,7 +101,12 @@ public class DoorInteraction : MonoBehaviour
         float playerDoorLeftDistance = Vector3.Distance(playerLook.transform.position, doorObject.GetDoorEdge(DoorInteractable.DoorEdge.Left));
         float playerDoorRightDistance = Vector3.Distance(playerLook.transform.position, doorObject.GetDoorEdge(DoorInteractable.DoorEdge.Right));
 
-        if (playerDoorLeftDistance > playerStats.reachDistance + 0.1f && playerDoorRightDistance > playerStats.reachDistance + 0.1f)
+        if (playerDoorLeftDistance > player.reachDistance + 0.1f && playerDoorRightDistance > player.reachDistance + 0.1f)
+        {
+            return true;
+        }
+
+        if (!player.CanInteractWith(Player.Interaction.Door))
         {
             return true;
         }
@@ -113,7 +116,11 @@ public class DoorInteraction : MonoBehaviour
 
     private void LetGoOfDoor()
     {
-        playerStats.canInteract = true;
+        if (player.CanEndInteractionWith(Player.Interaction.Door))
+        {
+            player.modifiers.Remove(Player.Modifier.Interacting);
+        }
+
         playerLook.ResetObjectTracking();
 
         doorObject.isDoorGrabbed = false;

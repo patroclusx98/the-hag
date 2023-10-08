@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class CrosshairUI : MonoBehaviour
 {
-    public PlayerStats playerStats;
+    public Player player;
     public PlayerLook playerLook;
     public Image crosshairImage;
     public Animator crosshairAnimator;
@@ -26,7 +26,7 @@ public class CrosshairUI : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
         Item selectedItem = PlayerInventory.instance != null ? PlayerInventory.instance.selectedItem : null;
 
         if (selectedItem != null)
@@ -40,11 +40,11 @@ public class CrosshairUI : MonoBehaviour
             /** Set crosshair pulsing animation based on player look objects **/
             if (rayHit && hitInfo.transform.CompareTag("Interactable"))
             {
-                crosshairAnimator.SetBool("SetPulseCrosshair", true);
+                crosshairAnimator.SetBool("PulseCrosshair", true);
             }
             else
             {
-                crosshairAnimator.SetBool("SetPulseCrosshair", false);
+                crosshairAnimator.SetBool("PulseCrosshair", false);
             }
         }
         else
@@ -52,10 +52,10 @@ public class CrosshairUI : MonoBehaviour
             /** No active item selection from inventory **/
 
             Crosshair crosshair;
-            crosshairAnimator.SetBool("SetPulseCrosshair", false);
+            crosshairAnimator.SetBool("PulseCrosshair", false);
 
-            /** Set crosshair based on player look objects **/
-            if (playerStats.canInteract && rayHit && hitInfo.transform.CompareTag("Interactable"))
+            /** Set crosshair based on player's ability to interact with the object being looked at **/
+            if (rayHit && hitInfo.transform.CompareTag("Interactable") && player.CanInteract())
             {
                 crosshair = crosshairDict["crosshair_hand"];
             }

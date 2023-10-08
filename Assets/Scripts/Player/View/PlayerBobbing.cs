@@ -2,7 +2,7 @@
 
 public class PlayerBobbing : MonoBehaviour
 {
-    public PlayerMovement playerMovement;
+    public Player player;
 
     [Header("Bobbing Attributes")]
     public float bobbingAmount = 0.03f;
@@ -21,11 +21,11 @@ public class PlayerBobbing : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (playerMovement.IsPlayerMoving() && (Mathf.Abs(playerMovement.horizontalVelocity.x) > 0.35f || Mathf.Abs(playerMovement.horizontalVelocity.z) > 0.35f))
+        if (player.IsMoving() && (Mathf.Abs(player.horizontalVelocity.x) > 0.35f || Mathf.Abs(player.horizontalVelocity.z) > 0.35f))
         {
             /** Player is moving **/
 
-            float bobbingSpeed = playerMovement.isRunning ? runningBobbingSpeed : walkingBobbingSpeed * playerMovement.playerSpeed;
+            float bobbingSpeed = player.isRunning ? runningBobbingSpeed : walkingBobbingSpeed * player.movementSpeed;
 
             /** Update the main camera's X and Y position to mimic bobbing **/
             timer += Time.deltaTime * bobbingSpeed;

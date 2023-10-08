@@ -2,7 +2,7 @@
 
 public class ItemInteraction : MonoBehaviour
 {
-    public PlayerStats playerStats;
+    public Player player;
     public PlayerLook playerLook;
 
     private PlayerInventory inventory;
@@ -20,11 +20,11 @@ public class ItemInteraction : MonoBehaviour
         {
             Item selectedItem = inventory != null ? inventory.selectedItem : null;
 
-            if (selectedItem != null)
+            if (selectedItem != null && player.CanInteractWith(Player.Interaction.Item))
             {
                 UseSelectedItem(selectedItem);
             }
-            else if (playerStats.canInteract)
+            else if (player.CanInteract())
             {
                 PickUpItem();
             }
@@ -33,16 +33,17 @@ public class ItemInteraction : MonoBehaviour
 
     private void UseSelectedItem(Item selectedItem)
     {
-        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
 
         selectedItem.Use(rayHit ? hitInfo.transform.gameObject : null);
         inventory.selectedItem = null;
-        playerStats.canInteract = true;
+
+        player.modifiers.Remove(Player.Modifier.Interacting);
     }
 
     private void PickUpItem()
     {
-        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Item"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Item"), QueryTriggerInteraction.Ignore);
 
         if (rayHit)
         {

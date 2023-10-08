@@ -6,13 +6,13 @@ public class Climbable : MonoBehaviour
     [Range(0f, 1f)]
     public float faceAwayTolerance = 0.5f;
 
-    private PlayerMovement playerMovement;
+    private Player player;
     private bool canClimb;
 
     // Start is called before the first frame update
     private void Start()
     {
-        playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
     }
 
     // Update is called once per frame
@@ -22,11 +22,11 @@ public class Climbable : MonoBehaviour
         {
             if (IsPlayerFacingClimbableObject())
             {
-                playerMovement.isClimbing = true;
+                player.isClimbing = true;
             }
             else
             {
-                playerMovement.isClimbing = false;
+                player.isClimbing = false;
             }
         }
     }
@@ -37,7 +37,7 @@ public class Climbable : MonoBehaviour
     /// <returns>True if facing is within the allowed tolerance</returns>
     private bool IsPlayerFacingClimbableObject()
     {
-        Vector3 playerFacing = playerMovement.transform.right;
+        Vector3 playerFacing = player.transform.right;
         Vector3 objectFacing = -gameObject.transform.right;
         float facingDotProduct = Vector3.Dot(playerFacing, objectFacing);
 
@@ -63,7 +63,7 @@ public class Climbable : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             canClimb = false;
-            playerMovement.isClimbing = false;
+            player.isClimbing = false;
         }
     }
 }

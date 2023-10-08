@@ -2,13 +2,13 @@
 
 public class InventoryUI : MonoBehaviour
 {
-    public GameObject inventoryUI;
-    public PlayerStats playerStats;
+    public Player player;
     public PlayerLook playerLook;
+    public GameObject inventoryUI;
 
     [Header("Inventory UI Inspector")]
     [ReadOnlyInspector]
-    public bool isInInventory;
+    public bool isInventoryOpen;
 
     private PlayerInventory playerInventory;
     private InventorySlot[] inventorySlots;
@@ -25,7 +25,7 @@ public class InventoryUI : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && (isInInventory || playerStats.canInteract))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             ToggleInventory();
         }
@@ -54,15 +54,15 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     public void ToggleInventory()
     {
-        isInInventory = !isInInventory;
+        isInventoryOpen = !isInventoryOpen;
 
-        if (isInInventory)
+        if (isInventoryOpen)
         {
             inventoryUI.SetActive(true);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
-            playerStats.canInteract = false;
+            player.modifiers[Player.Modifier.Interacting] = Player.Interaction.Inventory;
             playerLook.LockMouseLook();
         }
         else
@@ -71,7 +71,15 @@ public class InventoryUI : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
-            playerStats.canInteract = !playerInventory.selectedItem;
+            if (playerInventory.selectedItem)
+            {
+                player.modifiers[Player.Modifier.Interacting] = Player.Interaction.Item;
+            }
+            else
+            {
+                player.modifiers.Remove(Player.Modifier.Interacting);
+            }
+
             playerLook.UnlockMouseLook();
         }
     }

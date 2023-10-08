@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class ObjectInteraction : MonoBehaviour
 {
-    public PlayerMovement playerMovement;
-    public PlayerStats playerStats;
+    public Player player;
     public PlayerLook playerLook;
 
     [Header("Interaction Attributes")]
@@ -31,7 +30,7 @@ public class ObjectInteraction : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        defaultPlayerWalkSpeed = playerStats.walkSpeed;
+        defaultPlayerWalkSpeed = player.walkSpeed;
     }
 
     // Update is called once per frame
@@ -57,7 +56,7 @@ public class ObjectInteraction : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.Mouse0) && playerStats.canInteract)
+            if (Input.GetKeyDown(KeyCode.Mouse0) && player.CanInteract())
             {
                 PickUpObject();
             }
@@ -66,7 +65,7 @@ public class ObjectInteraction : MonoBehaviour
 
     private bool IsObjectUnderPlayer()
     {
-        return playerMovement.gameObjectUnderPlayer == objectInHand;
+        return player.gameObjectUnderPlayer == objectInHand;
     }
 
     private void StopObjectForces()
@@ -82,7 +81,7 @@ public class ObjectInteraction : MonoBehaviour
         float forceMultiplier = Mathf.Clamp(objectRBInHand.mass, 1f, maxObjectCarryWeight);
         Vector3 throwDirection = Mathf.Clamp(mouseXY, 1f, 5f) * (objectInHand.transform.position - lastObjectPosition);
 
-        lastObjectVelocity = playerStats.strength * forceMultiplier * throwDirection;
+        lastObjectVelocity = player.strength * forceMultiplier * throwDirection;
         lastObjectPosition = objectInHand.transform.position;
     }
 
@@ -131,7 +130,7 @@ public class ObjectInteraction : MonoBehaviour
             float forceMultiplier = Mathf.Clamp(objectRBInHand.mass, 1f, maxObjectCarryWeight);
             Vector3 throwDirection = playerLook.transform.forward;
 
-            lastObjectVelocity = playerStats.strength * forceMultiplier * throwDirection;
+            lastObjectVelocity = player.strength * forceMultiplier * throwDirection;
             DropObject();
         }
     }
@@ -139,10 +138,10 @@ public class ObjectInteraction : MonoBehaviour
     private void DragObject()
     {
         /** Move object with player **/
-        if (playerMovement.IsPlayerMoving())
+        if (player.IsMoving())
         {
             Vector3 objectPosition = objectInHand.transform.position;
-            Vector3 toPosition = objectPosition + playerMovement.horizontalVelocity * playerMovement.playerSpeed;
+            Vector3 toPosition = objectPosition + player.horizontalVelocity * player.movementSpeed;
 
             objectInHand.transform.position = Vector3.Lerp(objectPosition, toPosition, Time.deltaTime);
         }
@@ -155,7 +154,7 @@ public class ObjectInteraction : MonoBehaviour
             float forceMultiplier = Mathf.Clamp(objectRBInHand.mass, 1f, maxObjectDragWeight);
             Vector3 pushDirection = Quaternion.AngleAxis(90f, Vector3.up) * Vector3.Cross(playerLook.transform.forward, playerLook.transform.up);
 
-            lastObjectVelocity = playerStats.strength * forceMultiplier * pushDirection;
+            lastObjectVelocity = player.strength * forceMultiplier * pushDirection;
             DropObject();
         }
     }
@@ -163,7 +162,7 @@ public class ObjectInteraction : MonoBehaviour
     // Called once when object is being picked up
     private void PickUpObject()
     {
-        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, playerStats.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore);
 
         if (rayHit)
         {
@@ -185,12 +184,12 @@ public class ObjectInteraction : MonoBehaviour
                     }
                     else
                     {
-                        playerStats.walkSpeed = playerStats.walkSpeed * maxObjectCarryWeight / objectRBInHand.mass;
-                        playerStats.SetCanJump(false);
+                        player.walkSpeed = player.walkSpeed * maxObjectCarryWeight / objectRBInHand.mass;
+                        player.modifiers[Player.Modifier.DisableJump] = null;
                     }
 
-                    playerStats.SetCanRun(false);
-                    playerStats.canInteract = false;
+                    player.modifiers[Player.Modifier.DisableRun] = null;
+                    player.modifiers[Player.Modifier.Interacting] = Player.Interaction.Object;
 
                     StopObjectForces();
                     isObjectGrabbed = true;
@@ -213,14 +212,14 @@ public class ObjectInteraction : MonoBehaviour
     private bool ShouldDropObject()
     {
         // Object is out of reach
-        bool rayHit1 = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo1, playerStats.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore);
+        bool rayHit1 = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo1, player.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore);
         if ((!rayHit1 || hitInfo1.transform.gameObject != objectInHand) && !isObjectWithinReach)
         {
             return true;
         }
 
         // Obstruction between hand and object
-        bool rayHit2 = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo2, playerStats.reachDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore);
+        bool rayHit2 = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo2, player.reachDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore);
         if (rayHit2 && hitInfo2.transform.gameObject != objectInHand)
         {
             return true;
@@ -228,6 +227,11 @@ public class ObjectInteraction : MonoBehaviour
 
         // Object is under the player
         if (IsObjectUnderPlayer())
+        {
+            return true;
+        }
+
+        if (!player.CanInteractWith(Player.Interaction.Object))
         {
             return true;
         }
@@ -259,10 +263,15 @@ public class ObjectInteraction : MonoBehaviour
         lastObjectVelocity = Vector3.zero;
 
         // Reset player back to defaults
-        playerStats.walkSpeed = defaultPlayerWalkSpeed;
-        playerStats.SetCanJump(true);
-        playerStats.SetCanRun(true);
-        playerStats.canInteract = true;
+        player.walkSpeed = defaultPlayerWalkSpeed;
+        player.modifiers.Remove(Player.Modifier.DisableJump);
+        player.modifiers.Remove(Player.Modifier.DisableRun);
+
+        if (player.CanEndInteractionWith(Player.Interaction.Object))
+        {
+            player.modifiers.Remove(Player.Modifier.Interacting);
+        }
+
         playerLook.ResetObjectTracking();
 
         // Reset object interaction to defaults

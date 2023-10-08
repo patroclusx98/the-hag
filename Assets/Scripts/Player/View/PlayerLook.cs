@@ -2,8 +2,7 @@
 
 public class PlayerLook : MonoBehaviour
 {
-    public PlayerMovement playerMovement;
-    public PlayerStats playerStats;
+    public Player player;
 
     [Header("Player Look Attributes")]
     [Range(0.3f, 3f)]
@@ -31,7 +30,7 @@ public class PlayerLook : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (isMouseLookEnabled)
+        if (isMouseLookEnabled && !isTrackingObject)
         {
             MouseLook();
         }
@@ -68,7 +67,6 @@ public class PlayerLook : MonoBehaviour
             /** Player is looking backwards **/
 
             isLookingBackwards = true;
-            playerStats.canInteract = false;
 
             transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.Euler(0f, -headYRotationLimit, 0f), backLookSpeed * Time.deltaTime);
 
@@ -84,7 +82,7 @@ public class PlayerLook : MonoBehaviour
                 headXRotation = Mathf.Clamp(headXRotation + mouseY, minHeadXRotation, maxHeadXRotation);
 
                 transform.localRotation = Quaternion.Euler(-headXRotation, 0f, 0f);
-                playerMovement.transform.Rotate(playerMovement.transform.up * mouseX);
+                player.transform.Rotate(player.transform.up * mouseX);
             }
             else
             {
@@ -102,7 +100,6 @@ public class PlayerLook : MonoBehaviour
                     headXRotation = 0f;
                     headYRotation = 0f;
 
-                    playerStats.canInteract = true;
                     isLookingBackwards = false;
                 }
             }
@@ -120,7 +117,7 @@ public class PlayerLook : MonoBehaviour
         objectTrackingLookXRotation = Mathf.Clamp(objectTrackingLookXRotation, minHeadXRotation, maxHeadXRotation);
 
         transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(-objectTrackingLookXRotation, 0f, 0f), objectTrackSpeed * Time.deltaTime);
-        playerMovement.transform.rotation = Quaternion.Lerp(playerMovement.transform.rotation, Quaternion.Euler(0f, objectTrackingLookYRotation, 0f), objectTrackSpeed * Time.deltaTime);
+        player.transform.rotation = Quaternion.Lerp(player.transform.rotation, Quaternion.Euler(0f, objectTrackingLookYRotation, 0f), objectTrackSpeed * Time.deltaTime);
 
         headXRotation = ConvertEulerAngles(transform.localEulerAngles).x;
     }
@@ -143,24 +140,20 @@ public class PlayerLook : MonoBehaviour
 
     /// <summary>
     /// Sets the tracking look rotation based on the given tracking point
-    /// <para>This locks mouse input based player rotations</para>
     /// </summary>
     /// <param name="objectTrackingPoint">The object's point to track</param>
     public void SetObjectTracking(Vector3 objectTrackingPoint)
     {
         objectTrackingLookRotation = Quaternion.LookRotation(objectTrackingPoint - transform.position);
-        isMouseLookEnabled = false;
         isTrackingObject = true;
     }
 
     /// <summary>
     /// Resets the tracking look rotation
-    /// <para>This unlocks mouse input based player rotations</para>
     /// </summary>
     public void ResetObjectTracking()
     {
         objectTrackingLookRotation = default;
-        isMouseLookEnabled = true;
         isTrackingObject = false;
     }
 }

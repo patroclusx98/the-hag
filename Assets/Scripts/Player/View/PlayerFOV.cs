@@ -2,7 +2,7 @@
 
 public class PlayerFOV : MonoBehaviour
 {
-    public PlayerMovement playerMovement;
+    public Player player;
     public Camera mainCamera;
 
     [Header("FOV Attributes")]
@@ -20,7 +20,7 @@ public class PlayerFOV : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if ((playerMovement.isRunning && playerMovement.horizontalVelocity.magnitude > 0.5f) || playerMovement.verticalVelocity.y < playerMovement.fallDamageTolerance)
+        if ((player.isRunning && player.horizontalVelocity.magnitude > 0.5f) || player.verticalVelocity.y < player.fallDamageTolerance)
         {
             /** Player is running or falling **/
 

@@ -107,7 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3133b644bdcb6d4449b249ca96c16ed7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerMovement: {fileID: 1755306950607223515}
+  player: {fileID: 1755306950607223515}
   bobbingAmount: 0.03
   walkingBobbingSpeed: 6
   runningBobbingSpeed: 18
@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67625abc0fd06044d8c270ebfaab86e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerMovement: {fileID: 1755306950607223515}
+  player: {fileID: 1755306950607223515}
   mainCamera: {fileID: 1035780550566297922}
   distortionAmount: 15
   distortionSpeed: 3
@@ -303,7 +303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82ebe18dcac6b6e44acb0be558cfec7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerStats: {fileID: 8564613683319249854}
+  player: {fileID: 1755306950607223515}
   playerLook: {fileID: 4568815448272455741}
   crosshairImage: {fileID: 8929825419382150335}
   crosshairAnimator: {fileID: 1067133363045932358}
@@ -817,10 +817,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f021b88e0ba33043a9b8fc35024d490, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventoryUI: {fileID: 2820606061637937760}
-  playerStats: {fileID: 8564613683319249854}
+  player: {fileID: 1755306950607223515}
   playerLook: {fileID: 4568815448272455741}
-  isInInventory: 0
+  inventoryUI: {fileID: 2820606061637937760}
+  isInventoryOpen: 0
 --- !u!1 &4473027181923756376
 GameObject:
   m_ObjectHideFlags: 0
@@ -869,7 +869,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2810b40179583f4ab9c5ae42bb00d14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerMovement: {fileID: 1755306950607223515}
+  player: {fileID: 1755306950607223515}
   playerLook: {fileID: 4568815448272455741}
   handSwaySpeed: 50
   minHandXRotation: -40
@@ -886,7 +886,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae7cfdea1714fd14db553122550f8bc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerStats: {fileID: 8564613683319249854}
+  player: {fileID: 1755306950607223515}
   playerLook: {fileID: 4568815448272455741}
 --- !u!114 &2490876588959872049
 MonoBehaviour:
@@ -900,8 +900,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f358fb88baad904284f47527c9dbfed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerMovement: {fileID: 1755306950607223515}
-  playerStats: {fileID: 8564613683319249854}
+  player: {fileID: 1755306950607223515}
   playerLook: {fileID: 4568815448272455741}
 --- !u!114 &3035890309762473529
 MonoBehaviour:
@@ -915,7 +914,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 783ac08c5a3cab44097ba85c2d382f9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerStats: {fileID: 8564613683319249854}
+  player: {fileID: 1755306950607223515}
   playerLook: {fileID: 4568815448272455741}
 --- !u!1 &4670340367100720387
 GameObject:
@@ -1255,7 +1254,6 @@ GameObject:
   - component: {fileID: 1466138878430753235}
   - component: {fileID: 1920329321462561598}
   - component: {fileID: 1755306950607223515}
-  - component: {fileID: 8564613683319249854}
   - component: {fileID: 3204379434068678920}
   - component: {fileID: 5737116750361777335}
   m_Layer: 9
@@ -1323,22 +1321,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2be4ecff76dea0e4ab3e95bc582f3020, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerStats: {fileID: 8564613683319249854}
-  playerLook: {fileID: 4568815448272455741}
   characterController: {fileID: 1920329321462561598}
-  playerAnimator: {fileID: 3204379434068678920}
+  playerAnimator: {fileID: 5737116750361777335}
+  playerLook: {fileID: 4568815448272455741}
   audioManager: {fileID: 963350845234296948}
   groundMask:
     serializedVersion: 2
     m_Bits: 52225
   jumpHeight: 1
-  wallHitTolerance: 0.8
   maxObjectPushWeight: 5
-  gravityForce: -25
-  groundedGravityForce: -4
+  wallHitTolerance: 0.8
+  gravityForce: 25
   impactTolerance: -7.5
   fallDamageTolerance: -15
-  playerSpeed: 0
+  reachDistance: 1.1
+  strength: 180
+  walkSpeed: 2
+  sprintSpeed: 4
+  climbSpeed: 1
+  stamina: 100
+  staminaChangeSpeed: 10
+  movementSpeed: 0
   horizontalVelocity: {x: 0, y: 0, z: 0}
   verticalVelocity: {x: 0, y: 0, z: 0}
   isGrounded: 0
@@ -1349,35 +1352,6 @@ MonoBehaviour:
   isCrouching: 0
   hasFullyCrouched: 0
   gameObjectUnderPlayer: {fileID: 0}
---- !u!114 &8564613683319249854
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6152443437296766147}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b4af05b43fb4a0408d56e560330d4ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerMovement: {fileID: 1755306950607223515}
-  audioManager: {fileID: 963350845234296948}
-  canInteract: 1
-  reachDistance: 1.1
-  strength: 180
-  walkSpeed: 2
-  sprintSpeed: 4
-  climbSpeed: 1
-  isStaminaEnabled: 1
-  playerStamina: 100
-  staminaChangeSpeed: 10
-  isAdrenalineOn: 0
-  adrenalineModifier: 2
-  canRun: 1
-  canJump: 1
-  hasFallDamage: 0
-  fallDamageRecoveryTime: 0
 --- !u!95 &3204379434068678920
 Animator:
   serializedVersion: 5
@@ -1412,7 +1386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerAnimator: {fileID: 3204379434068678920}
-  playerMovement: {fileID: 1755306950607223515}
+  player: {fileID: 1755306950607223515}
 --- !u!1 &6303809692897288192
 GameObject:
   m_ObjectHideFlags: 0
@@ -1458,8 +1432,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd12b8b582269b0499e857809a21d21a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerMovement: {fileID: 1755306950607223515}
-  playerStats: {fileID: 8564613683319249854}
+  player: {fileID: 1755306950607223515}
   mouseSensitivity: 1
   minHeadXRotation: -70
   maxHeadXRotation: 85
@@ -1480,8 +1453,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6194487000753741640}
-  - component: {fileID: 3097186480321382016}
   - component: {fileID: 982795028459852761}
+  - component: {fileID: 3097186480321382016}
   m_Layer: 9
   m_Name: ObjectCarrier
   m_TagString: Untagged
@@ -1504,25 +1477,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7360220721183747992}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3097186480321382016
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8374075057805537511}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 237f7524a7c5ff840852a0c6fefde4b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerMovement: {fileID: 1755306950607223515}
-  playerStats: {fileID: 8564613683319249854}
-  playerLook: {fileID: 4568815448272455741}
-  maxObjectCarryWeight: 5
-  maxObjectDragWeight: 15
-  isObjectGrabbed: 0
-  isObjectWithinReach: 0
 --- !u!135 &982795028459852761
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1544,6 +1498,24 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.35
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3097186480321382016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8374075057805537511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 237f7524a7c5ff840852a0c6fefde4b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1755306950607223515}
+  playerLook: {fileID: 4568815448272455741}
+  maxObjectCarryWeight: 5
+  maxObjectDragWeight: 15
+  isObjectGrabbed: 0
+  isObjectWithinReach: 0
 --- !u!1001 &748413458743038046
 PrefabInstance:
   m_ObjectHideFlags: 0

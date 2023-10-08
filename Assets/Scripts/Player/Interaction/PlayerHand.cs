@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerHand : MonoBehaviour
 {
-    public PlayerMovement playerMovement;
+    public Player player;
     public PlayerLook playerLook;
 
     [Header("Player Hand Attributes")]
