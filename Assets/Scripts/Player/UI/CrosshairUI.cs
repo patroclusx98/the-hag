@@ -12,7 +12,14 @@ public class CrosshairUI : MonoBehaviour
     [Header("Crosshair Sprites")]
     public Crosshair[] crosshairList;
 
+    private PlayerInventory playerInventory;
     private Dictionary<string, Crosshair> crosshairDict = new Dictionary<string, Crosshair>();
+
+    // Start is called before the first frame update
+    private void Start()
+    {
+        playerInventory = PlayerInventory.instance;
+    }
 
     // Awake is called on script load
     private void Awake()
@@ -27,15 +34,14 @@ public class CrosshairUI : MonoBehaviour
     private void Update()
     {
         bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
-        Item selectedItem = PlayerInventory.instance != null ? PlayerInventory.instance.selectedItem : null;
 
-        if (selectedItem != null)
+        if (playerInventory != null && playerInventory.selectedItem != null)
         {
             /** Active item selection from inventory **/
 
             /** Set crosshair to the selected item **/
-            crosshairImage.sprite = selectedItem.icon;
-            crosshairImage.transform.localScale = Vector3.one * selectedItem.iconScale;
+            crosshairImage.sprite = playerInventory.selectedItem.icon;
+            crosshairImage.transform.localScale = Vector3.one * playerInventory.selectedItem.iconScale;
 
             /** Set crosshair pulsing animation based on player look objects **/
             if (rayHit && hitInfo.transform.CompareTag("Interactable"))

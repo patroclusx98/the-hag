@@ -5,75 +5,58 @@ public class PlayerAnimator : MonoBehaviour
     public Animator playerAnimator;
     public Player player;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="isGrounded"></param>
+    // Called by the player class
     public void SetIsGrounded(bool isGrounded)
     {
+        player.isGrounded = isGrounded;
         playerAnimator.SetBool("IsGrounded", isGrounded);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="impactVelocity"></param>
+    // Called by the player class
     public void SetImpactVelocity(float impactVelocity)
     {
         playerAnimator.SetFloat("ImpactVelocity", impactVelocity);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    // Called by the player class
     public void SetJumping()
     {
+        player.isJumping = true;
         playerAnimator.SetBool("IsJumping", true);
     }
 
-    /// <summary>
-    /// Resets the jump parameters for the player and player animator
-    /// <para>This is called by the player animator</para>
-    /// </summary>
+    // Called by the player animation event
     public void ResetJumping()
     {
         player.isJumping = false;
         playerAnimator.SetBool("IsJumping", false);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    // Called by the player class
     public void SetCrouching()
     {
+        player.isCrouching = true;
         playerAnimator.SetBool("IsCrouching", true);
     }
 
-    /// <summary>
-    /// Resets the crouch parameters for the player and player animator
-    /// <para>This is called by the player animator</para>
-    /// </summary>
-    public void ResetCrouching()
-    {
-        player.isCrouching = false;
-        playerAnimator.SetBool("IsCrouching", false);
-    }
-
-    /// <summary>
-    /// 
-    /// <para>This is called by the player animator</para>
-    /// </summary>
+    // Called by the player animation event
     public void SetFullyCrouched()
     {
         player.hasFullyCrouched = true;
         playerAnimator.SetBool("HasFullyCrouched", true);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    // Called by the player animation event
+    public void ResetCrouching()
+    {
+        player.isCrouching = false;
+        playerAnimator.SetBool("IsCrouching", false);
+    }
+
+    // Called by the player class
     public void ResetFullyCrouched()
     {
+        player.hasFullyCrouched = false;
         playerAnimator.SetBool("HasFullyCrouched", false);
     }
 }

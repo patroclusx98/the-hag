@@ -21,6 +21,7 @@ public class DoorInteraction : MonoBehaviour
             else if (Input.GetKey(KeyCode.Mouse0))
             {
                 SetYRotation();
+                playerLook.SetObjectTracking(doorObject.GetDoorEdge(DoorInteractable.DoorEdge.Right));
             }
         }
         else
@@ -32,6 +33,10 @@ public class DoorInteraction : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets the facing and angle dot products to determine which side of the door the player is facing 
+    /// along with the angle between the player and the doors surface
+    /// </summary>
     private void SetDotProducts()
     {
         Vector3 doorForwardVector = doorObject.transform.forward;
@@ -42,6 +47,9 @@ public class DoorInteraction : MonoBehaviour
         angleDotProduct = Vector3.Dot(playerLookForwardVector, doorCrossVector);
     }
 
+    /// <summary>
+    /// Sets the doors's Y rotation based on mouse inputs and the player's facing towards the door
+    /// </summary>
     private void SetYRotation()
     {
         float mouseX = Input.GetAxis("Mouse X") / doorObject.movementResistance;
@@ -50,11 +58,13 @@ public class DoorInteraction : MonoBehaviour
 
         SetDotProducts();
 
+        /** Forwards and backwards mouse movements **/
         if (Mathf.Abs(angleDotProduct) < 0.8f)
         {
             motionChange += facingDotProduct < 0f ? mouseY : -mouseY;
         }
 
+        /** Side to side mouse movements **/
         if (angleDotProduct > 0.4f)
         {
             motionChange += -mouseX;
@@ -64,15 +74,18 @@ public class DoorInteraction : MonoBehaviour
             motionChange += mouseX;
         }
 
+        /** Restrict movement towards the player if the player is colliding with the door **/
         if (doorObject.isPlayerColliding)
         {
             motionChange = (facingDotProduct < 0f && motionChange < 0f) ? 0f : (facingDotProduct > 0f && motionChange > 0f) ? 0f : motionChange;
         }
 
         doorObject.yRotation += doorObject.isLeftSided ? -motionChange : motionChange;
-        playerLook.SetObjectTracking(doorObject.GetDoorEdge(DoorInteractable.DoorEdge.Right));
     }
 
+    /// <summary>
+    /// Attempts to grab the door the player is looking at
+    /// </summary>
     private void GrabDoor()
     {
         bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Door"), QueryTriggerInteraction.Ignore);
@@ -96,16 +109,22 @@ public class DoorInteraction : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Checks if the door should be let go based on certain conditions
+    /// </summary>
+    /// <returns>True if the door should be let go</returns>
     private bool ShouldLetGoOfDoor()
     {
         float playerDoorLeftDistance = Vector3.Distance(playerLook.transform.position, doorObject.GetDoorEdge(DoorInteractable.DoorEdge.Left));
         float playerDoorRightDistance = Vector3.Distance(playerLook.transform.position, doorObject.GetDoorEdge(DoorInteractable.DoorEdge.Right));
 
+        /** Player is too far from the door **/
         if (playerDoorLeftDistance > player.reachDistance + 0.1f && playerDoorRightDistance > player.reachDistance + 0.1f)
         {
             return true;
         }
 
+        /** Player can no longer interact with the door **/
         if (!player.CanInteractWith(Player.Interaction.Door))
         {
             return true;
@@ -114,6 +133,9 @@ public class DoorInteraction : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Lets go of the door the player is currently interacting with
+    /// </summary>
     private void LetGoOfDoor()
     {
         if (player.CanEndInteractionWith(Player.Interaction.Door))

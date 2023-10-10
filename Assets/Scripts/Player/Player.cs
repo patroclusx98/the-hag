@@ -67,8 +67,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        isGrounded = characterController.isGrounded;
-        playerAnimator.SetIsGrounded(isGrounded);
+        playerAnimator.SetIsGrounded(characterController.isGrounded);
 
         bool isMoving = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D);
 
@@ -266,8 +265,8 @@ public class Player : MonoBehaviour
 
         if (!Physics.SphereCast(gameObject.transform.position, playerRadius * 0.85f, transform.up, out _, playerJumpHeight * 0.9f, groundMask, QueryTriggerInteraction.Ignore))
         {
-            isJumping = true;
             playerAnimator.SetJumping();
+            verticalVelocity.y = Mathf.Sqrt(gravityForce) * jumpHeight;
 
             if (modifiers.TryGetValue(Modifier.AdrenalineBoost, out dynamic adrenalineModifier))
             {
@@ -282,11 +281,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void ApplyJumpVelocity()
-    {
-        verticalVelocity.y = Mathf.Sqrt(gravityForce) * jumpHeight;
-    }
-
     /** PLAYER CROUCHING METHODS **/
 
     public bool CanCrouch()
@@ -299,7 +293,6 @@ public class Player : MonoBehaviour
     {
         if (!isCrouching)
         {
-            isCrouching = true;
             playerAnimator.SetCrouching();
 
             PlayCrouchingSound();
@@ -311,7 +304,6 @@ public class Player : MonoBehaviour
 
             if (!Physics.SphereCast(gameObject.transform.position, playerRadius * 0.85f, transform.up, out _, playerStandHeight, groundMask, QueryTriggerInteraction.Ignore))
             {
-                hasFullyCrouched = false;
                 playerAnimator.ResetFullyCrouched();
 
                 PlayCrouchingSound();

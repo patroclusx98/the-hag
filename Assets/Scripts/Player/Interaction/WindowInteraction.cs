@@ -19,6 +19,7 @@ public class WindowInteraction : MonoBehaviour
             else if (Input.GetKey(KeyCode.Mouse0))
             {
                 SetYPosition();
+                playerLook.SetObjectTracking(windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Bottom));
             }
         }
         else
@@ -30,6 +31,9 @@ public class WindowInteraction : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets the window's Y position based on mouse inputs
+    /// </summary>
     private void SetYPosition()
     {
         float mouseY = Input.GetAxis("Mouse Y") / (windowObject.movementResistance * 100f);
@@ -37,15 +41,18 @@ public class WindowInteraction : MonoBehaviour
 
         motionChange += mouseY;
 
+        /** Restrict movement towards the player if the player is colliding with the window **/
         if (windowObject.isPlayerColliding)
         {
             motionChange = motionChange < 0f ? 0f : motionChange;
         }
 
         windowObject.yPosition += motionChange;
-        playerLook.SetObjectTracking(windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Bottom));
     }
 
+    /// <summary>
+    /// Attempts to grab the window the player is looking at
+    /// </summary>
     private void GrabWindow()
     {
         bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Window"), QueryTriggerInteraction.Ignore);
@@ -67,16 +74,22 @@ public class WindowInteraction : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Checks if the window should be let go based on certain conditions
+    /// </summary>
+    /// <returns>True if the window should be let go</returns>
     private bool ShouldLetGoOfWindow()
     {
         float playerWindowTopDistance = Vector3.Distance(playerLook.transform.position, windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Top));
         float playerWindowBottomDistance = Vector3.Distance(playerLook.transform.position, windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Bottom));
 
+        /** Player is too far from the window **/
         if (playerWindowTopDistance > player.reachDistance + 0.1f && playerWindowBottomDistance > player.reachDistance + 0.1f)
         {
             return true;
         }
 
+        /** Player can no longer interact with the window **/
         if (!player.CanInteractWith(Player.Interaction.Window))
         {
             return true;
@@ -85,6 +98,9 @@ public class WindowInteraction : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Lets go of the window the player is currently interacting with
+    /// </summary>
     private void LetGoOfWindow()
     {
         if (player.CanEndInteractionWith(Player.Interaction.Window))

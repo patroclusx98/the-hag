@@ -411,14 +411,6 @@ PrefabInstance:
       propertyPath: audioManager
       value: 
       objectReference: {fileID: 972039536}
-    - target: {fileID: 1529449330274610178, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
-      propertyPath: audioManagers.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1529449330274610178, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
-      propertyPath: audioManagers.Array.data[0]
-      value: 
-      objectReference: {fileID: 972039536}
     - target: {fileID: 1888782782682934728, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
       propertyPath: m_Name
       value: SceneLoader
@@ -543,7 +535,7 @@ GameObject:
   - component: {fileID: 972039537}
   - component: {fileID: 972039536}
   m_Layer: 0
-  m_Name: MenuAudio
+  m_Name: GlobalAudio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -561,19 +553,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a67da77098e533e4d9ec88bfc5ab7b0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicList:
-  - name: Main_Menu_Music
-    audioClip: {fileID: 8300000, guid: a204e317464b34743a7e03aee24e016a, type: 3}
-    volume: 0.5
-    pitch: 1
-    loop: 1
-    playOnAwake: 1
-    spatialBlend: 0
-    maxDistance: 0
-    dopplerLevel: 0
-    source: {fileID: 0}
+  musicList: []
   soundList:
-  - name: Menu_Sound_Start
+  - name: Sound_Menu_Start_Game
     audioClip: {fileID: 8300000, guid: 1d26ad1aed5731b439cfc9f4a471330d, type: 3}
     volume: 0.8
     pitch: 1
@@ -612,7 +594,7 @@ GameObject:
   - component: {fileID: 996911522}
   - component: {fileID: 996911525}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
