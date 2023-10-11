@@ -22,11 +22,11 @@ public class Climbable : MonoBehaviour
         {
             if (IsPlayerFacingClimbableObject())
             {
-                player.isClimbing = true;
+                player.playerAnimator.SetIsClimbing(true);
             }
             else
             {
-                player.isClimbing = false;
+                player.playerAnimator.SetIsClimbing(false);
             }
         }
     }
@@ -63,7 +63,7 @@ public class Climbable : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             canClimb = false;
-            player.isClimbing = false;
+            player.playerAnimator.SetIsClimbing(false);
         }
     }
 }

@@ -98,8 +98,8 @@ public class Player : MonoBehaviour
 
         if (!isMoving || (!CanMove() && !CanClimb()))
         {
-            isWalking = false;
-            isRunning = false;
+            playerAnimator.SetIsWalking(false);
+            playerAnimator.SetIsRunning(false);
             movementSpeed = 0f;
             horizontalVelocity = Vector3.zero;
         }
@@ -161,8 +161,7 @@ public class Player : MonoBehaviour
         {
             /** Player is running **/
 
-            isWalking = false;
-            isRunning = true;
+            playerAnimator.SetIsRunning(true);
             movementSpeed = sprintSpeed;
 
             if (!isJumping)
@@ -183,8 +182,7 @@ public class Player : MonoBehaviour
         {
             /** Player is walking **/
 
-            isWalking = true;
-            isRunning = false;
+            playerAnimator.SetIsWalking(true);
             movementSpeed = walkSpeed;
 
             if (isCrouching || modifiers.ContainsKey(Modifier.FallDamage))
@@ -207,8 +205,8 @@ public class Player : MonoBehaviour
             {
                 /** Player blocked by wall **/
 
-                isWalking = false;
-                isRunning = false;
+                playerAnimator.SetIsWalking(false);
+                playerAnimator.SetIsRunning(false);
                 movementSpeed = 0f;
                 horizontalVelocity = Vector3.zero;
             }
@@ -236,8 +234,6 @@ public class Player : MonoBehaviour
             horizontalVelocity += gameObject.transform.forward * walkY;
         }
 
-        isWalking = false;
-        isRunning = false;
         movementSpeed = climbSpeed;
 
         if (isCrouching || modifiers.ContainsKey(Modifier.FallDamage))

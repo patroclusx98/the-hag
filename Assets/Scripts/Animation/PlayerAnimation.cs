@@ -13,9 +13,25 @@ public class PlayerAnimator : MonoBehaviour
     }
 
     // Called by the player class
-    public void SetImpactVelocity(float impactVelocity)
+    public void SetIsWalking(bool isWalking)
     {
-        playerAnimator.SetFloat("ImpactVelocity", impactVelocity);
+        player.isWalking = isWalking;
+        player.isRunning = !isWalking && player.isRunning;
+    }
+
+    // Called by the player class
+    public void SetIsRunning(bool isRunning)
+    {
+        player.isRunning = isRunning;
+        player.isWalking = !isRunning && player.isWalking;
+    }
+
+    // Called by the climbable class
+    public void SetIsClimbing(bool isClimbing)
+    {
+        player.isClimbing = isClimbing;
+        player.isWalking = !isClimbing && player.isWalking;
+        player.isRunning = !isClimbing && player.isRunning;
     }
 
     // Called by the player class
@@ -58,5 +74,11 @@ public class PlayerAnimator : MonoBehaviour
     {
         player.hasFullyCrouched = false;
         playerAnimator.SetBool("HasFullyCrouched", false);
+    }
+
+    // Called by the player class
+    public void SetImpactVelocity(float impactVelocity)
+    {
+        playerAnimator.SetFloat("ImpactVelocity", impactVelocity);
     }
 }
