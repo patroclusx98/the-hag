@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     public CharacterController characterController;
     public PlayerAnimator playerAnimator;
     public PlayerLook playerLook;
+    public PlayerInventory playerInventory;
     public AudioManager audioManager;
 
     [Header("Player Movement Attributes")]

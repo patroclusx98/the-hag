@@ -3,22 +3,13 @@
 public class ItemInteraction : MonoBehaviour
 {
     public Player player;
-    public PlayerLook playerLook;
-
-    private PlayerInventory playerInventory;
-
-    // Start is called before the first frame update
-    private void Start()
-    {
-        playerInventory = PlayerInventory.instance;
-    }
 
     // Update is called once per frame
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            if (playerInventory != null && playerInventory.selectedItem != null && player.CanInteractWith(Player.Interaction.Item))
+            if (player.playerInventory.selectedItem != null && player.CanInteractWith(Player.Interaction.Item))
             {
                 UseSelectedItem();
             }
@@ -34,10 +25,18 @@ public class ItemInteraction : MonoBehaviour
     /// </summary>
     private void UseSelectedItem()
     {
-        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(player.playerLook.transform.position, player.playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, ~LayerMask.GetMask("Player"), QueryTriggerInteraction.Ignore);
+        bool itemUsed = player.playerInventory.selectedItem.Use(rayHit ? hitInfo.transform.gameObject : null);
 
-        playerInventory.selectedItem.Use(rayHit ? hitInfo.transform.gameObject : null);
-        playerInventory.selectedItem = null;
+        if (itemUsed)
+        {
+            player.playerInventory.RemoveItem(player.playerInventory.selectedItem);
+        }
+        else
+        {
+            player.playerInventory.selectedItem = null;
+            HintUI.instance.DisplayHintMessage("Could not use item!");
+        }
 
         player.modifiers.Remove(Player.Modifier.Interacting);
     }
@@ -47,7 +46,7 @@ public class ItemInteraction : MonoBehaviour
     /// </summary>
     private void PickUpItem()
     {
-        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Item"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(player.playerLook.transform.position, player.playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Item"), QueryTriggerInteraction.Ignore);
 
         if (rayHit)
         {
@@ -56,10 +55,10 @@ public class ItemInteraction : MonoBehaviour
 
             if (item != null)
             {
-                if (playerInventory.HasSpace())
+                if (player.playerInventory.HasSpace())
                 {
                     item.usableGameObjects = itemObject.usableGameObjects;
-                    playerInventory.AddItem(item);
+                    player.playerInventory.AddItem(item);
 
                     Destroy(itemObject.gameObject);
                 }

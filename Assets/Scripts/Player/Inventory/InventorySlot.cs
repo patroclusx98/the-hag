@@ -33,23 +33,12 @@ public class InventorySlot : MonoBehaviour
     /// Selects the item assigned to the inventory slot
     /// <para>This is called by the inventory slot's onClick</para>
     /// </summary>
-    public void SelectItem()
+    public void SelectItem(PlayerInventory playerInventory)
     {
         if (item != null)
         {
-            if (item.usableGameObjects.Count == 0)
-            {
-                /** Item does not need a game object to be used on **/
-
-                item.Use(null);
-            }
-            else
-            {
-                /** Item needs a game object to be used on **/
-
-                PlayerInventory.instance.selectedItem = item;
-                GetComponentInParent<InventoryUI>().ToggleInventory();
-            }
+            playerInventory.selectedItem = item;
+            GetComponentInParent<InventoryUI>().ToggleInventory();
         }
     }
 }

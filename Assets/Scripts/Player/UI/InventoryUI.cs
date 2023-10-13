@@ -1,25 +1,22 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class InventoryUI : MonoBehaviour
 {
     public Player player;
-    public PlayerLook playerLook;
     public GameObject inventoryUI;
+
+    [Header("Inventory UI Attributes")]
+    public List<InventorySlot> inventorySlots;
 
     [Header("Inventory UI Inspector")]
     [ReadOnlyInspector]
     public bool isInventoryOpen;
 
-    private PlayerInventory playerInventory;
-    private InventorySlot[] inventorySlots;
-
     // Start is called before the first frame update
     private void Start()
     {
-        playerInventory = PlayerInventory.instance;
-        playerInventory.onInventoryChange += UpdateInventoryUI;
-
-        inventorySlots = inventoryUI.GetComponentsInChildren<InventorySlot>();
+        player.playerInventory.onInventoryChange += UpdateInventoryUI;
     }
 
     // Update is called once per frame
@@ -36,11 +33,11 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     private void UpdateInventoryUI()
     {
-        for (int i = 0; i < inventorySlots.Length; i++)
+        for (int i = 0; i < inventorySlots.Count; i++)
         {
-            if (i < playerInventory.itemsList.Count)
+            if (i < player.playerInventory.itemList.Count)
             {
-                inventorySlots[i].AddItem(playerInventory.itemsList[i]);
+                inventorySlots[i].AddItem(player.playerInventory.itemList[i]);
             }
             else
             {
@@ -63,7 +60,8 @@ public class InventoryUI : MonoBehaviour
             Cursor.visible = true;
 
             player.modifiers[Player.Modifier.Interacting] = Player.Interaction.Inventory;
-            playerLook.LockMouseLook();
+            player.playerInventory.selectedItem = null;
+            player.playerLook.LockMouseLook();
         }
         else
         {
@@ -71,7 +69,7 @@ public class InventoryUI : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
-            if (playerInventory.selectedItem)
+            if (player.playerInventory.selectedItem)
             {
                 player.modifiers[Player.Modifier.Interacting] = Player.Interaction.Item;
             }
@@ -80,7 +78,7 @@ public class InventoryUI : MonoBehaviour
                 player.modifiers.Remove(Player.Modifier.Interacting);
             }
 
-            playerLook.UnlockMouseLook();
+            player.playerLook.UnlockMouseLook();
         }
     }
 }

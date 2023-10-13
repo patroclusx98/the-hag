@@ -3,7 +3,6 @@ using UnityEngine;
 public class PlayerHand : MonoBehaviour
 {
     public Player player;
-    public PlayerLook playerLook;
 
     [Header("Player Hand Attributes")]
     public float handSwaySpeed = 50f;
@@ -22,8 +21,8 @@ public class PlayerHand : MonoBehaviour
     /// </summary>
     private void HandSway()
     {
-        float handRotationX = Mathf.Clamp(playerLook.headXRotation, minHandXRotation, maxHandXRotation);
-        float handRotationY = playerLook.headYRotation;
+        float handRotationX = Mathf.Clamp(player.playerLook.headXRotation, minHandXRotation, maxHandXRotation);
+        float handRotationY = player.playerLook.headYRotation;
 
         transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(-handRotationX, handRotationY, 0f), handSwaySpeed * Time.deltaTime);
     }

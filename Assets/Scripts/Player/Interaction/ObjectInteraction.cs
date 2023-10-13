@@ -4,7 +4,6 @@ using UnityEngine;
 public class ObjectInteraction : MonoBehaviour
 {
     public Player player;
-    public PlayerLook playerLook;
 
     [Header("Interaction Attributes")]
     public float maxObjectCarryWeight = 5f;
@@ -51,7 +50,7 @@ public class ObjectInteraction : MonoBehaviour
                 else
                 {
                     DragObject();
-                    playerLook.SetObjectTracking(objectInHand.transform.position);
+                    player.playerLook.SetObjectTracking(objectInHand.transform.position);
                 }
             }
         }
@@ -138,18 +137,18 @@ public class ObjectInteraction : MonoBehaviour
             objectInHand.transform.Rotate(transform.up, -mouseX, Space.World);
             objectInHand.transform.Rotate(transform.right, mouseY, Space.World);
 
-            playerLook.LockMouseLook();
+            player.playerLook.LockMouseLook();
         }
         else if (Input.GetKeyUp(KeyCode.R))
         {
-            playerLook.UnlockMouseLook();
+            player.playerLook.UnlockMouseLook();
         }
 
         /** Throw object away **/
         if (Input.GetKey(KeyCode.Mouse1))
         {
             float forceMultiplier = Mathf.Clamp(objectRBInHand.mass, 1f, maxObjectCarryWeight);
-            Vector3 throwDirection = playerLook.transform.forward;
+            Vector3 throwDirection = player.playerLook.transform.forward;
 
             lastObjectVelocity = player.strength * forceMultiplier * throwDirection;
             DropObject();
@@ -174,7 +173,7 @@ public class ObjectInteraction : MonoBehaviour
         if (Input.GetKey(KeyCode.Mouse1))
         {
             float forceMultiplier = Mathf.Clamp(objectRBInHand.mass, 1f, maxObjectDragWeight);
-            Vector3 pushDirection = Quaternion.AngleAxis(90f, Vector3.up) * Vector3.Cross(playerLook.transform.forward, playerLook.transform.up);
+            Vector3 pushDirection = Quaternion.AngleAxis(90f, Vector3.up) * Vector3.Cross(player.playerLook.transform.forward, player.playerLook.transform.up);
 
             lastObjectVelocity = player.strength * forceMultiplier * pushDirection;
             DropObject();
@@ -186,7 +185,7 @@ public class ObjectInteraction : MonoBehaviour
     /// </summary>
     private void GrabObject()
     {
-        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(player.playerLook.transform.position, player.playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore);
 
         if (rayHit)
         {
@@ -266,8 +265,8 @@ public class ObjectInteraction : MonoBehaviour
     /// <returns>True if the object should be dropped</returns>
     private bool ShouldDropObject()
     {
-        bool rayHit1 = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo1, player.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore);
-        bool rayHit2 = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo2, player.reachDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore);
+        bool rayHit1 = Physics.Raycast(player.playerLook.transform.position, player.playerLook.transform.forward, out RaycastHit hitInfo1, player.reachDistance, LayerMask.GetMask("Object"), QueryTriggerInteraction.Ignore);
+        bool rayHit2 = Physics.Raycast(player.playerLook.transform.position, player.playerLook.transform.forward, out RaycastHit hitInfo2, player.reachDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore);
 
         /** Object is out of player's reach **/
         if ((!rayHit1 || hitInfo1.transform.gameObject != objectInHand) && !isObjectWithinReach)
@@ -322,7 +321,7 @@ public class ObjectInteraction : MonoBehaviour
             player.modifiers.Remove(Player.Modifier.Interacting);
         }
 
-        playerLook.ResetObjectTracking();
+        player.playerLook.ResetObjectTracking();
 
         /** Reset object interaction back to defaults **/
         isObjectGrabbed = false;

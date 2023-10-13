@@ -3,7 +3,6 @@
 public class WindowInteraction : MonoBehaviour
 {
     public Player player;
-    public PlayerLook playerLook;
 
     private WindowInteractable windowObject;
 
@@ -19,7 +18,7 @@ public class WindowInteraction : MonoBehaviour
             else if (Input.GetKey(KeyCode.Mouse0))
             {
                 SetYPosition();
-                playerLook.SetObjectTracking(windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Bottom));
+                player.playerLook.SetObjectTracking(windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Bottom));
             }
         }
         else
@@ -55,7 +54,7 @@ public class WindowInteraction : MonoBehaviour
     /// </summary>
     private void GrabWindow()
     {
-        bool rayHit = Physics.Raycast(playerLook.transform.position, playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Window"), QueryTriggerInteraction.Ignore);
+        bool rayHit = Physics.Raycast(player.playerLook.transform.position, player.playerLook.transform.forward, out RaycastHit hitInfo, player.reachDistance, LayerMask.GetMask("Window"), QueryTriggerInteraction.Ignore);
 
         if (rayHit)
         {
@@ -80,8 +79,8 @@ public class WindowInteraction : MonoBehaviour
     /// <returns>True if the window should be let go</returns>
     private bool ShouldLetGoOfWindow()
     {
-        float playerWindowTopDistance = Vector3.Distance(playerLook.transform.position, windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Top));
-        float playerWindowBottomDistance = Vector3.Distance(playerLook.transform.position, windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Bottom));
+        float playerWindowTopDistance = Vector3.Distance(player.playerLook.transform.position, windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Top));
+        float playerWindowBottomDistance = Vector3.Distance(player.playerLook.transform.position, windowObject.GetWindowEdge(WindowInteractable.WindowEdge.Bottom));
 
         /** Player is too far from the window **/
         if (playerWindowTopDistance > player.reachDistance + 0.1f && playerWindowBottomDistance > player.reachDistance + 0.1f)
@@ -108,7 +107,7 @@ public class WindowInteraction : MonoBehaviour
             player.modifiers.Remove(Player.Modifier.Interacting);
         }
 
-        playerLook.ResetObjectTracking();
+        player.playerLook.ResetObjectTracking();
 
         windowObject.isWindowGrabbed = false;
         windowObject = null;

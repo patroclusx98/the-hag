@@ -11,7 +11,6 @@ public class ItemKey : Item
             if (gameObject.TryGetComponent<DoorInteractable>(out var doorObject))
             {
                 doorObject.isLocked = false;
-                PlayerInventory.instance.RemoveItem(this);
 
                 return true;
             }

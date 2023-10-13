@@ -3,11 +3,9 @@ using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
 {
-    public static PlayerInventory instance;
-
     [Header("Inventory Attributes")]
     public int maxSpace = 8;
-    public List<Item> itemsList;
+    public List<Item> itemList;
 
     [Header("Inventory Inspector")]
     [ReadOnlyInspector]
@@ -16,27 +14,13 @@ public class PlayerInventory : MonoBehaviour
     public delegate void OnInventoryChange();
     public OnInventoryChange onInventoryChange;
 
-    // Awake is called on script load
-    private void Awake()
-    {
-        /** Singleton instance **/
-        if (!instance)
-        {
-            instance = this;
-        }
-        else
-        {
-            Debug.LogWarning("More than one instance of Player Inventory is found!");
-        }
-    }
-
     /// <summary>
     /// Checks if there are any free spaces in the inventory
     /// </summary>
     /// <returns>True if inventory has free space</returns>
     public bool HasSpace()
     {
-        return itemsList.Count < maxSpace;
+        return itemList.Count < maxSpace;
     }
 
     /// <summary>
@@ -45,7 +29,7 @@ public class PlayerInventory : MonoBehaviour
     /// <param name="itemObject">The item object to add to the inventory</param>
     public void AddItem(Item itemObject)
     {
-        itemsList.Add(itemObject);
+        itemList.Add(itemObject);
         onInventoryChange?.Invoke();
     }
 
@@ -55,7 +39,8 @@ public class PlayerInventory : MonoBehaviour
     /// <param name="itemObject">The item object to remove from the inventory</param>
     public void RemoveItem(Item itemObject)
     {
-        itemsList.Remove(itemObject);
+        itemList.Remove(itemObject);
+        selectedItem = (selectedItem == itemObject) ? null : selectedItem;
         onInventoryChange?.Invoke();
     }
 
@@ -64,7 +49,8 @@ public class PlayerInventory : MonoBehaviour
     /// </summary>
     public void RemoveAllItems()
     {
-        itemsList.Clear();
+        itemList.Clear();
+        selectedItem = null;
         onInventoryChange?.Invoke();
     }
 
@@ -75,9 +61,9 @@ public class PlayerInventory : MonoBehaviour
     /// <returns>The item object if found, otherwise null</returns>
     public Item GetItem(int index)
     {
-        if (itemsList.Count > index)
+        if (itemList.Count > index)
         {
-            return itemsList[index];
+            return itemList[index];
         }
         else
         {
