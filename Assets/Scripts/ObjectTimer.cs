@@ -21,6 +21,7 @@ public class ObjectTimer : MonoBehaviour
         if (objectTimer == null)
         {
             objectTimer = gameObject.AddComponent<ObjectTimer>();
+            objectTimer.hideFlags = HideFlags.HideInInspector;
             objectTimer.id = prefixedId;
         }
 
