@@ -24,49 +24,19 @@ public class AudioManager : MonoBehaviour
         /** Initialise all music audio sources **/
         foreach (Audio music in musicList)
         {
-            music.source = gameObject.AddComponent<AudioSource>();
-            music.source.clip = music.audioClip;
-            music.source.outputAudioMixerGroup = musicAudioGroup;
-            music.source.volume = music.volume;
-            music.source.pitch = music.pitch;
-            music.source.loop = music.loop;
-            music.source.playOnAwake = music.playOnAwake;
-            music.source.spatialBlend = music.spatialBlend;
-            music.source.maxDistance = music.maxDistance;
-            music.source.dopplerLevel = music.dopplerLevel;
+            music.CreateSource(gameObject, musicAudioGroup);
         }
 
         /** Initialise all sound audio sources **/
         foreach (Audio sound in soundList)
         {
-            sound.source = gameObject.AddComponent<AudioSource>();
-            sound.source.clip = sound.audioClip;
-            sound.source.outputAudioMixerGroup = soundAudioGroup;
-            sound.source.volume = sound.volume;
-            sound.source.pitch = sound.pitch;
-            sound.source.loop = sound.loop;
-            sound.source.playOnAwake = sound.playOnAwake;
-            sound.source.spatialBlend = sound.spatialBlend;
-            sound.source.maxDistance = sound.maxDistance;
-            sound.source.dopplerLevel = sound.dopplerLevel;
+            sound.CreateSource(gameObject, soundAudioGroup);
         }
 
         /** Initialise all sound collection audio sources **/
         foreach (AudioCollection soundCollection in soundCollectionList)
         {
-            for (int i = 0; i < soundCollection.audioClips.Count; i++)
-            {
-                soundCollection.sources.Add(gameObject.AddComponent<AudioSource>());
-                soundCollection.sources[i].clip = soundCollection.audioClips[i];
-                soundCollection.sources[i].outputAudioMixerGroup = soundAudioGroup;
-                soundCollection.sources[i].volume = soundCollection.volume;
-                soundCollection.sources[i].pitch = soundCollection.pitch;
-                soundCollection.sources[i].loop = false;
-                soundCollection.sources[i].playOnAwake = false;
-                soundCollection.sources[i].spatialBlend = soundCollection.spatialBlend;
-                soundCollection.sources[i].maxDistance = soundCollection.maxDistance;
-                soundCollection.sources[i].dopplerLevel = soundCollection.dopplerLevel;
-            }
+            soundCollection.CreateSources(gameObject, soundAudioGroup);
         }
     }
 

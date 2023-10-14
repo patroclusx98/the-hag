@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 [System.Serializable]
 public class AudioCollection
@@ -26,4 +27,22 @@ public class AudioCollection
     public List<AudioSource> sources;
     [HideInInspector]
     public AudioSource lastSourcePlayed;
+
+    public void CreateSources(GameObject gameObject, AudioMixerGroup audioMixerGroup)
+    {
+        for (int i = 0; i < audioClips.Count; i++)
+        {
+            sources.Add(gameObject.AddComponent<AudioSource>());
+            sources[i].hideFlags = HideFlags.HideInInspector;
+            sources[i].clip = audioClips[i];
+            sources[i].outputAudioMixerGroup = audioMixerGroup;
+            sources[i].volume = volume;
+            sources[i].pitch = pitch;
+            sources[i].loop = false;
+            sources[i].playOnAwake = false;
+            sources[i].spatialBlend = spatialBlend;
+            sources[i].maxDistance = maxDistance;
+            sources[i].dopplerLevel = dopplerLevel;
+        }
+    }
 }

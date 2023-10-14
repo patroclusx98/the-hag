@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 
 [System.Serializable]
 public class Audio
@@ -25,4 +26,19 @@ public class Audio
 
     [HideInInspector]
     public AudioSource source;
+
+    public void CreateSource(GameObject gameObject, AudioMixerGroup audioMixerGroup)
+    {
+        source = gameObject.AddComponent<AudioSource>();
+        source.hideFlags = HideFlags.HideInInspector;
+        source.outputAudioMixerGroup = audioMixerGroup;
+        source.clip = audioClip;
+        source.volume = volume;
+        source.pitch = pitch;
+        source.loop = loop;
+        source.playOnAwake = playOnAwake;
+        source.spatialBlend = spatialBlend;
+        source.maxDistance = maxDistance;
+        source.dopplerLevel = dopplerLevel;
+    }
 }
