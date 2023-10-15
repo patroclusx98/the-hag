@@ -9,7 +9,10 @@ public class Player : MonoBehaviour
         DisableInteraction, Interacting,
         DisableMovement, DisableRun, DisableJump, OutOfStamina, FallDamage, WallBlock
     }
-    public enum Interaction { Object, Item, Window, Door, Inventory }
+    public enum Interaction
+    {
+        Object, Item, Window, Door, Inventory
+    }
 
     public CharacterController characterController;
     public PlayerAnimator playerAnimator;
@@ -20,7 +23,6 @@ public class Player : MonoBehaviour
     [Header("Player Movement Attributes")]
     public LayerMask groundMask;
     public float jumpHeight = 1f;
-    public float maxObjectPushWeight = 5f;
     public float wallHitTolerance = 0.8f;
     public float gravityForce = 25f;
     public float impactTolerance = -7.5f;
@@ -82,6 +84,11 @@ public class Player : MonoBehaviour
             Climb();
         }
 
+        if (!isMoving || (!CanMove() && !CanClimb()))
+        {
+            ResetMovement();
+        }
+
         if (Input.GetKeyDown(KeyCode.Space) && CanJump())
         {
             Jump();
@@ -97,14 +104,6 @@ public class Player : MonoBehaviour
             ApplyGravity();
         }
 
-        if (!isMoving || (!CanMove() && !CanClimb()))
-        {
-            playerAnimator.SetIsWalking(false);
-            playerAnimator.SetIsRunning(false);
-            movementSpeed = 0f;
-            horizontalVelocity = Vector3.zero;
-        }
-
         if (CanRecoverStamina())
         {
             RecoverStamina();
@@ -118,30 +117,53 @@ public class Player : MonoBehaviour
 
     /** PLAYER MOVEMENT METHODS **/
 
-    public bool CanMove()
-    {
-        return !isClimbing && !modifiers.ContainsKey(Modifier.DisableMovement);
-    }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public bool CanWalk()
     {
-        return CanMove() && !modifiers.ContainsKey(Modifier.WallBlock);
-    }
-
-    public bool CanRun()
-    {
-        return CanMove() && !isCrouching &&
-            !modifiers.ContainsKey(Modifier.DisableRun) &&
-            !modifiers.ContainsKey(Modifier.OutOfStamina) &&
-            !modifiers.ContainsKey(Modifier.FallDamage) &&
+        return !isClimbing &&
+            !modifiers.ContainsKey(Modifier.DisableMovement) &&
             !modifiers.ContainsKey(Modifier.WallBlock);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public bool CanRun()
+    {
+        return !isClimbing && !isCrouching &&
+            !modifiers.ContainsKey(Modifier.DisableMovement) &&
+            !modifiers.ContainsKey(Modifier.DisableRun) &&
+            !modifiers.ContainsKey(Modifier.WallBlock) &&
+            !modifiers.ContainsKey(Modifier.OutOfStamina) &&
+            !modifiers.ContainsKey(Modifier.FallDamage);
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public bool CanMove()
+    {
+        return CanWalk() || CanRun();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public bool IsMoving()
     {
         return isWalking || isRunning;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void Move()
     {
         float walkX = Input.GetAxis("Horizontal");
@@ -206,23 +228,38 @@ public class Player : MonoBehaviour
             {
                 /** Player blocked by wall **/
 
-                playerAnimator.SetIsWalking(false);
-                playerAnimator.SetIsRunning(false);
-                movementSpeed = 0f;
-                horizontalVelocity = Vector3.zero;
+                ResetMovement();
             }
         }
 
         characterController.Move(movementSpeed * Time.deltaTime * horizontalVelocity);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    private void ResetMovement()
+    {
+        playerAnimator.SetIsWalking(false);
+        playerAnimator.SetIsRunning(false);
+        movementSpeed = 0f;
+        horizontalVelocity = Vector3.zero;
+    }
+
     /** PLAYER CLIMBING METHODS **/
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public bool CanClimb()
     {
         return isClimbing && !modifiers.ContainsKey(Modifier.DisableMovement);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void Climb()
     {
         float walkX = Input.GetAxis("Horizontal");
@@ -247,14 +284,22 @@ public class Player : MonoBehaviour
 
     /** PLAYER JUMPING METHODS **/
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public bool CanJump()
     {
-        return CanMove() && isGrounded && !isJumping && (!isCrouching || hasFullyCrouched) &&
+        return isGrounded && !isClimbing && !isJumping && (!isCrouching || hasFullyCrouched) &&
+            !modifiers.ContainsKey(Modifier.DisableMovement) &&
             !modifiers.ContainsKey(Modifier.DisableJump) &&
             !modifiers.ContainsKey(Modifier.OutOfStamina) &&
             !modifiers.ContainsKey(Modifier.FallDamage);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void Jump()
     {
         float playerRadius = characterController.radius * transform.localScale.y;
@@ -265,21 +310,16 @@ public class Player : MonoBehaviour
             playerAnimator.SetJumping();
             verticalVelocity.y = Mathf.Sqrt(gravityForce) * jumpHeight;
 
-            if (modifiers.TryGetValue(Modifier.AdrenalineBoost, out dynamic adrenalineModifier))
-            {
-                stamina -= staminaChangeSpeed / adrenalineModifier;
-            }
-            else
-            {
-                stamina -= staminaChangeSpeed;
-            }
-
             PlayJumpingSound();
         }
     }
 
     /** PLAYER CROUCHING METHODS **/
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public bool CanCrouch()
     {
         return (isGrounded || isClimbing) && !isJumping &&
@@ -310,11 +350,18 @@ public class Player : MonoBehaviour
 
     /** PLAYER STAMINA METHODS **/
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public bool CanRecoverStamina()
     {
         return !modifiers.ContainsKey(Modifier.DisableStamina);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void RecoverStamina()
     {
         /** Recover player stamina **/
@@ -356,11 +403,18 @@ public class Player : MonoBehaviour
 
     /** PLAYER FALL DAMAGE METHODS **/
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public bool CanRecoverFallDamage()
     {
         return modifiers.ContainsKey(Modifier.FallDamage);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void RecoverFallDamage()
     {
         if (modifiers[Modifier.FallDamage] > 0f)
@@ -375,6 +429,9 @@ public class Player : MonoBehaviour
 
     /** PLAYER GRAVITY METHODS **/
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void ApplyGravity()
     {
         if (!isGrounded)
@@ -413,16 +470,17 @@ public class Player : MonoBehaviour
 
     /** PLAYER COLLISION METHODS **/
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="hit"></param>
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (hit.moveDirection.y == 0f)
+        if (hit.moveDirection.y != 0f)
         {
             /** Horizontal only collisions **/
 
-            if (!PushRigidBodyObjects(hit))
-            {
-                CheckForWallHit(hit);
-            }
+            CheckForWallHit(hit);
         }
         else
         {
@@ -432,38 +490,14 @@ public class Player : MonoBehaviour
         }
     }
 
-    //Pushes small rigid bodies around when collided with
-    //Returns true if object can be pushed and/or is being pushed
-    private bool PushRigidBodyObjects(ControllerColliderHit hit)
-    {
-        Rigidbody objectRB = hit.rigidbody;
-
-        /** Not a rigid body **/
-        if (objectRB == null || objectRB.isKinematic)
-        {
-            return false;
-        }
-
-        /** Do not push heavy objects **/
-        if (objectRB.mass > maxObjectPushWeight)
-        {
-            return false;
-        }
-
-        /** Calculate push direction from move direction
-            Only push objects along X and Z **/
-        Vector3 pushDirection = new Vector3(hit.moveDirection.x, 0f, hit.moveDirection.z);
-
-        // Apply the push
-        objectRB.velocity = Mathf.Clamp(1f / objectRB.mass, 0.5f, 1.5f) * pushDirection;
-
-        return true;
-    }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="hit"></param>
     private void CheckForWallHit(ControllerColliderHit hit)
     {
         /** Ignore objects **/
-        if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Object"))
+        if (hit.gameObject.layer == LayerMask.NameToLayer("Object"))
         {
             return;
         }
@@ -475,30 +509,48 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="hit"></param>
     private void SetGameObjectUnderPlayer(ControllerColliderHit hit)
     {
         Vector3 pointOfHitLocal = transform.InverseTransformPoint(hit.point);
 
         if (pointOfHitLocal.y < (characterController.height * 0.5f) - 0.3f)
         {
-            gameObjectUnderPlayer = hit.collider.gameObject;
+            gameObjectUnderPlayer = hit.gameObject;
         }
     }
 
     /** PLAYER INTERACTION METHODS **/
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public bool CanInteract()
     {
         return !modifiers.ContainsKey(Modifier.DisableInteraction) &&
             !modifiers.ContainsKey(Modifier.Interacting);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="interaction"></param>
+    /// <returns></returns>
     public bool CanInteractWith(Interaction interaction)
     {
         return !modifiers.ContainsKey(Modifier.DisableInteraction) &&
             (!modifiers.ContainsKey(Modifier.Interacting) || modifiers[Modifier.Interacting] == interaction);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="interaction"></param>
+    /// <returns></returns>
     public bool CanEndInteractionWith(Interaction interaction)
     {
         return modifiers.ContainsKey(Modifier.DisableInteraction) ||
@@ -511,8 +563,7 @@ public class Player : MonoBehaviour
     {
         if (isGrounded && !isCrouching && horizontalVelocity.magnitude > 0.35f)
         {
-            float baseSpeed = 1f;
-            float stepSpeed = Mathf.Clamp(baseSpeed / movementSpeed, 0.4f, 0.75f);
+            float stepSpeed = Mathf.Clamp(1f / movementSpeed, 0.4f, 0.75f);
 
             audioManager.PlayCollectionSound("Sound_Step_Walk_Dirt", true, stepSpeed);
         }

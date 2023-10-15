@@ -3,6 +3,7 @@ using UnityEngine;
 public class DoorInteractable : MonoBehaviour
 {
     public enum DoorEdge { Left, Right }
+
     public Animator doorHandleAnimator;
 
     [Header("Door Attributes")]
