@@ -38,7 +38,7 @@ public class Climbable : MonoBehaviour
     private bool IsPlayerFacingClimbableObject()
     {
         Vector3 playerFacing = player.transform.right;
-        Vector3 objectFacing = -gameObject.transform.right;
+        Vector3 objectFacing = -transform.right;
         float facingDotProduct = Vector3.Dot(playerFacing, objectFacing);
 
         return facingDotProduct > -faceAwayTolerance;

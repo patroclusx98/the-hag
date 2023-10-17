@@ -94,7 +94,7 @@ public class Player : MonoBehaviour
             Jump();
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftControl) && CanCrouch())
+        if (Input.GetKeyDown(KeyCode.LeftControl) && CanToggleCrouch())
         {
             ToggleCrouch();
         }
@@ -118,60 +118,59 @@ public class Player : MonoBehaviour
     /** PLAYER MOVEMENT METHODS **/
 
     /// <summary>
-    /// 
+    /// Returns if the player is able to horizontally move
     /// </summary>
-    /// <returns></returns>
-    public bool CanWalk()
+    /// <returns>True if able to move/returns>
+    public bool CanMove()
     {
         return !isClimbing &&
-            !modifiers.ContainsKey(Modifier.DisableMovement) &&
+            !modifiers.ContainsKey(Modifier.DisableMovement);
+    }
+
+    /// <summary>
+    /// Returns if the player is able to walk
+    /// </summary>
+    /// <returns>True if able to walk</returns>
+    public bool CanWalk()
+    {
+        return CanMove() &&
             !modifiers.ContainsKey(Modifier.WallBlock);
     }
 
     /// <summary>
-    /// 
+    /// Returns if the player is able to run
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if able to run</returns>
     public bool CanRun()
     {
-        return !isClimbing && !isCrouching &&
-            !modifiers.ContainsKey(Modifier.DisableMovement) &&
+        return CanMove() && !isCrouching &&
             !modifiers.ContainsKey(Modifier.DisableRun) &&
             !modifiers.ContainsKey(Modifier.WallBlock) &&
             !modifiers.ContainsKey(Modifier.OutOfStamina) &&
             !modifiers.ContainsKey(Modifier.FallDamage);
-
     }
 
     /// <summary>
-    /// 
+    /// Returns if the player is moving
     /// </summary>
-    /// <returns></returns>
-    public bool CanMove()
-    {
-        return CanWalk() || CanRun();
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
+    /// <returns>True if moving</returns>
     public bool IsMoving()
     {
         return isWalking || isRunning;
     }
 
     /// <summary>
-    /// 
+    /// Moves the player based on user inputs and handles collisions with walls that block movement
     /// </summary>
     private void Move()
     {
         float walkX = Input.GetAxis("Horizontal");
         float walkY = Input.GetAxis("Vertical");
 
+        /** Build up horizontal velocity based on inputs **/
         if (isGrounded)
         {
-            horizontalVelocity = gameObject.transform.forward * walkY + gameObject.transform.right * walkX;
+            horizontalVelocity = transform.forward * walkY + transform.right * walkX;
 
             /** Strafe running speed modulation **/
             if (walkY != 0f && walkX != 0f)
@@ -187,17 +186,9 @@ public class Player : MonoBehaviour
             playerAnimator.SetIsRunning(true);
             movementSpeed = sprintSpeed;
 
-            if (!isJumping)
-            {
-                if (modifiers.TryGetValue(Modifier.AdrenalineBoost, out dynamic adrenalineModifier))
-                {
-                    stamina -= staminaChangeSpeed / adrenalineModifier * Time.deltaTime;
-                }
-                else
-                {
-                    stamina -= staminaChangeSpeed * Time.deltaTime;
-                }
-            }
+            /** Handle stamina decrease **/
+            float modifier = modifiers.TryGetValue(Modifier.AdrenalineBoost, out dynamic adrenalineModifier) ? adrenalineModifier : 1f;
+            stamina -= staminaChangeSpeed / modifier * Time.deltaTime;
 
             PlayRunSound();
         }
@@ -216,6 +207,7 @@ public class Player : MonoBehaviour
             PlayWalkSound();
         }
 
+        /** Check if movement direction is blocked by wall **/
         if (modifiers.TryGetValue(Modifier.WallBlock, out dynamic directionOfWallCollision))
         {
             if (isJumping || isCrouching || Vector3.Dot(directionOfWallCollision, horizontalVelocity) < wallHitTolerance)
@@ -228,7 +220,9 @@ public class Player : MonoBehaviour
             {
                 /** Player blocked by wall **/
 
-                ResetMovement();
+                playerAnimator.SetIsWalking(false);
+                playerAnimator.SetIsRunning(false);
+                movementSpeed = 0f;
             }
         }
 
@@ -236,7 +230,7 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Resets the player's movement parameters
     /// </summary>
     private void ResetMovement()
     {
@@ -249,27 +243,28 @@ public class Player : MonoBehaviour
     /** PLAYER CLIMBING METHODS **/
 
     /// <summary>
-    /// 
+    /// Returns if the player is able to climb
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if able to climb</returns>
     public bool CanClimb()
     {
         return isClimbing && !modifiers.ContainsKey(Modifier.DisableMovement);
     }
 
     /// <summary>
-    /// 
+    /// Moves the player in a vertical direction based on user inputs
     /// </summary>
     private void Climb()
     {
         float walkX = Input.GetAxis("Horizontal");
         float walkY = Input.GetAxis("Vertical");
 
-        horizontalVelocity = gameObject.transform.up * walkY + gameObject.transform.right * walkX;
+        horizontalVelocity = transform.up * walkY + transform.right * walkX;
 
+        /** Allow forwards movement off the ground or backwards movement on the ground **/
         if ((!isGrounded && walkY > 0f) || (isGrounded && walkY < 0f))
         {
-            horizontalVelocity += gameObject.transform.forward * walkY;
+            horizontalVelocity += transform.forward * walkY;
         }
 
         movementSpeed = climbSpeed;
@@ -285,12 +280,16 @@ public class Player : MonoBehaviour
     /** PLAYER JUMPING METHODS **/
 
     /// <summary>
-    /// 
+    /// Returns if the player is able to jump
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if able to jump</returns>
     public bool CanJump()
     {
+        float playerRadius = characterController.radius * transform.localScale.y;
+        float playerJumpHeight = (characterController.height + jumpHeight) * transform.localScale.y - playerRadius;
+
         return isGrounded && !isClimbing && !isJumping && (!isCrouching || hasFullyCrouched) &&
+            !Physics.SphereCast(transform.position, playerRadius * 0.85f, transform.up, out _, playerJumpHeight * 0.9f, groundMask, QueryTriggerInteraction.Ignore) &&
             !modifiers.ContainsKey(Modifier.DisableMovement) &&
             !modifiers.ContainsKey(Modifier.DisableJump) &&
             !modifiers.ContainsKey(Modifier.OutOfStamina) &&
@@ -298,34 +297,35 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Sets the player's jump animation state and applies a positive vertical velocity to the player
     /// </summary>
     private void Jump()
     {
-        float playerRadius = characterController.radius * transform.localScale.y;
-        float playerJumpHeight = (characterController.height + jumpHeight) * transform.localScale.y - playerRadius;
+        playerAnimator.SetJumping();
+        verticalVelocity.y = Mathf.Sqrt(gravityForce) * jumpHeight;
 
-        if (!Physics.SphereCast(gameObject.transform.position, playerRadius * 0.85f, transform.up, out _, playerJumpHeight * 0.9f, groundMask, QueryTriggerInteraction.Ignore))
-        {
-            playerAnimator.SetJumping();
-            verticalVelocity.y = Mathf.Sqrt(gravityForce) * jumpHeight;
-
-            PlayJumpingSound();
-        }
+        PlayJumpingSound();
     }
 
     /** PLAYER CROUCHING METHODS **/
 
     /// <summary>
-    /// 
+    /// Returns if the player is able to crouch or stand up
     /// </summary>
-    /// <returns></returns>
-    public bool CanCrouch()
+    /// <returns>True if able to crouch or stand up</returns>
+    public bool CanToggleCrouch()
     {
+        float playerRadius = characterController.radius * transform.localScale.y;
+        float playerStandHeight = characterController.height * transform.localScale.y - playerRadius;
+
         return (isGrounded || isClimbing) && !isJumping &&
+            (!hasFullyCrouched || !Physics.SphereCast(transform.position, playerRadius * 0.85f, transform.up, out _, playerStandHeight, groundMask, QueryTriggerInteraction.Ignore)) &&
             !modifiers.ContainsKey(Modifier.DisableMovement);
     }
 
+    /// <summary>
+    /// Toggles the player's crouch animation state
+    /// </summary>
     private void ToggleCrouch()
     {
         if (!isCrouching)
@@ -336,31 +336,25 @@ public class Player : MonoBehaviour
         }
         else if (hasFullyCrouched)
         {
-            float playerRadius = characterController.radius * transform.localScale.y;
-            float playerStandHeight = characterController.height * transform.localScale.y - playerRadius;
+            playerAnimator.ResetFullyCrouched();
 
-            if (!Physics.SphereCast(gameObject.transform.position, playerRadius * 0.85f, transform.up, out _, playerStandHeight, groundMask, QueryTriggerInteraction.Ignore))
-            {
-                playerAnimator.ResetFullyCrouched();
-
-                PlayCrouchingSound();
-            }
+            PlayCrouchingSound();
         }
     }
 
     /** PLAYER STAMINA METHODS **/
 
     /// <summary>
-    /// 
+    /// Returns if the player is able to recover stamina
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if able to recover stamina</returns>
     public bool CanRecoverStamina()
     {
         return !modifiers.ContainsKey(Modifier.DisableStamina);
     }
 
     /// <summary>
-    /// 
+    /// Recovers the players stamina level and handles the out of stamina modifier
     /// </summary>
     private void RecoverStamina()
     {
@@ -404,16 +398,16 @@ public class Player : MonoBehaviour
     /** PLAYER FALL DAMAGE METHODS **/
 
     /// <summary>
-    /// 
+    /// Returns if the player is able to recover fall damage
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if able to recover fall damage</returns>
     public bool CanRecoverFallDamage()
     {
         return modifiers.ContainsKey(Modifier.FallDamage);
     }
 
     /// <summary>
-    /// 
+    /// Recovers the player from the fall damage modifier
     /// </summary>
     private void RecoverFallDamage()
     {
@@ -430,7 +424,7 @@ public class Player : MonoBehaviour
     /** PLAYER GRAVITY METHODS **/
 
     /// <summary>
-    /// 
+    /// Applies the vertical velocity to the player and handles ground impacts
     /// </summary>
     private void ApplyGravity()
     {
@@ -471,12 +465,12 @@ public class Player : MonoBehaviour
     /** PLAYER COLLISION METHODS **/
 
     /// <summary>
-    /// 
+    /// Runs when the player character controller's collider hits another collider
     /// </summary>
-    /// <param name="hit"></param>
+    /// <param name="hit">The character controller collider's hit details</param>
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (hit.moveDirection.y != 0f)
+        if (hit.moveDirection.y == 0f)
         {
             /** Horizontal only collisions **/
 
@@ -491,9 +485,9 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Checks if the player walked into a wall and applies the wall block modifier to prevent further movement towards that direction
     /// </summary>
-    /// <param name="hit"></param>
+    /// <param name="hit">The character controller collider's hit details</param>
     private void CheckForWallHit(ControllerColliderHit hit)
     {
         /** Ignore objects **/
@@ -510,9 +504,9 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Sets the game object that is under the player
     /// </summary>
-    /// <param name="hit"></param>
+    /// <param name="hit">The character controller collider's hit details</param>
     private void SetGameObjectUnderPlayer(ControllerColliderHit hit)
     {
         Vector3 pointOfHitLocal = transform.InverseTransformPoint(hit.point);
@@ -526,9 +520,9 @@ public class Player : MonoBehaviour
     /** PLAYER INTERACTION METHODS **/
 
     /// <summary>
-    /// 
+    /// Returns if the player is able to interact with anything
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if able to interact, False if already interacting with something</returns>
     public bool CanInteract()
     {
         return !modifiers.ContainsKey(Modifier.DisableInteraction) &&
@@ -536,10 +530,10 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Returns if the player is able to preform the specified interaction
     /// </summary>
-    /// <param name="interaction"></param>
-    /// <returns></returns>
+    /// <param name="interaction">The interaction to check</param>
+    /// <returns>True if able to interact, False if already interacting with something else</returns>
     public bool CanInteractWith(Interaction interaction)
     {
         return !modifiers.ContainsKey(Modifier.DisableInteraction) &&
@@ -547,10 +541,10 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Returns if the player is able to end the specified interaction
     /// </summary>
-    /// <param name="interaction"></param>
-    /// <returns></returns>
+    /// <param name="interaction">The interaction to check</param>
+    /// <returns>True if able to end the interaction, False if interacting with something else</returns>
     public bool CanEndInteractionWith(Interaction interaction)
     {
         return modifiers.ContainsKey(Modifier.DisableInteraction) ||
