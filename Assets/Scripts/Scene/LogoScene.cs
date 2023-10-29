@@ -5,6 +5,7 @@ public class LogoScene : MonoBehaviour
 {
     public SceneLoader sceneLoader;
     public VideoPlayer videoPlayer;
+    public AudioSource videoAudioSource;
 
     // Start is called before the first frame update
     private void Start()
@@ -25,6 +26,7 @@ public class LogoScene : MonoBehaviour
 
     public void EndVideo(VideoPlayer videoPlayer)
     {
+        videoAudioSource.mute = true;
         sceneLoader.LoadNextScene();
     }
 }

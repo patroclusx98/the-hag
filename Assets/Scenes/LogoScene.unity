@@ -498,6 +498,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneLoader: {fileID: 1046518011}
   videoPlayer: {fileID: 1806105417}
+  videoAudioSource: {fileID: 1806105416}
 --- !u!1001 &2044013849
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -512,7 +513,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1529449330274610178, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
       propertyPath: fadeOutTime
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1529449330274610178, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
       propertyPath: audioManager
