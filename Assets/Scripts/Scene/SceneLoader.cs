@@ -83,7 +83,7 @@ public class SceneLoader : MonoBehaviour
     /// <returns>IEnumerator routine</returns>
     private IEnumerator LoadSceneCR(int sceneIndex)
     {
-        audioManager.FadeOutAllAudio(fadeOutTime);
+        audioManager.FadeOutGlobalAudio(fadeOutTime);
         transition.SetTrigger("StartFadeOut");
 
         yield return new WaitForSeconds(fadeOutTime);

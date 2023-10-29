@@ -1182,7 +1182,7 @@ MonoBehaviour:
   musicList: []
   soundList: []
   soundCollectionList:
-  - name: Sound_Player_Jump
+  - name: player_jump
     audioClips:
     - {fileID: 8300000, guid: 24fdc465c7225184d978f763efbd82ec, type: 3}
     - {fileID: 8300000, guid: 640e83a3d6b823744bc2f14d06d46add, type: 3}
@@ -1194,7 +1194,7 @@ MonoBehaviour:
     dopplerLevel: 0
     sources: []
     lastSourcePlayed: {fileID: 0}
-  - name: Sound_Player_Crouch
+  - name: player_crouch
     audioClips:
     - {fileID: 8300000, guid: 4acdb1af8f6aadb4f9083008890a2ca9, type: 3}
     - {fileID: 8300000, guid: 2fd84037ffe4a2e4fbfa5916369ff1a0, type: 3}
@@ -1206,40 +1206,12 @@ MonoBehaviour:
     dopplerLevel: 0
     sources: []
     lastSourcePlayed: {fileID: 0}
-  - name: Sound_Player_Breath
+  - name: player_breath
     audioClips:
     - {fileID: 8300000, guid: f87b8b0fe6633d348a816e4a0b13a7ee, type: 3}
     - {fileID: 8300000, guid: 8e08b801cab168f4caf3bce62a337ac4, type: 3}
     - {fileID: 8300000, guid: 48bd05099ae01664481fe7cc18242019, type: 3}
     volume: 0.4
-    pitch: 1
-    spatialBlend: 0
-    maxDistance: 0
-    dopplerLevel: 0
-    sources: []
-    lastSourcePlayed: {fileID: 0}
-  - name: Sound_Step_Walk_Dirt
-    audioClips:
-    - {fileID: 8300000, guid: 7e413ae9aea681648836028c71ec28fc, type: 3}
-    - {fileID: 8300000, guid: 0b97a7786ae2df44788571f5b21e97c2, type: 3}
-    - {fileID: 8300000, guid: 5e95971f10949ab44adf66a31c904ccc, type: 3}
-    - {fileID: 8300000, guid: fbdb9f7676a1a424cbedbbb2b1b59d4d, type: 3}
-    - {fileID: 8300000, guid: a08093ea505235249ab78343d0b55ad7, type: 3}
-    volume: 0.3
-    pitch: 1
-    spatialBlend: 0
-    maxDistance: 0
-    dopplerLevel: 0
-    sources: []
-    lastSourcePlayed: {fileID: 0}
-  - name: Sound_Step_Run_Dirt
-    audioClips:
-    - {fileID: 8300000, guid: d0458ba291049544aa55a0094d5ef696, type: 3}
-    - {fileID: 8300000, guid: 9704e51177f856c4c9f2c73d922878ce, type: 3}
-    - {fileID: 8300000, guid: 34ce3c8549cd88242b898f5cd83c9094, type: 3}
-    - {fileID: 8300000, guid: 6a8e4ded52894d3469f0396e81151b32, type: 3}
-    - {fileID: 8300000, guid: a04209d33f705ab4d9c643db8be597da, type: 3}
-    volume: 0.3
     pitch: 1
     spatialBlend: 0
     maxDistance: 0
@@ -1333,7 +1305,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 52225
   jumpHeight: 1
-  maxObjectPushWeight: 5
   wallHitTolerance: 0.8
   gravityForce: 25
   impactTolerance: -7.5

@@ -1,0 +1,774 @@
+fileFormatVersion: 2
+guid: 33a96c0b143d0934fb48dc969d7654e7
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticCeiling
+    second: {fileID: 2100000, guid: b7b1804a4dbc35a4a8e0debead54ce1a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticFence
+    second: {fileID: 2100000, guid: 01c6eaf657afe7b42b55f6a345acc722, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticFloor
+    second: {fileID: 2100000, guid: ded1050cbbc5d6a47a4bdad3043fe270, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticSecond VentJoints
+    second: {fileID: 2100000, guid: 394c8b79881f0524e939e4f65b77a462, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticSecondCeiling
+    second: {fileID: 2100000, guid: fb6ca699d520d0c4eba907f44c5d6d80, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticSecondFloor
+    second: {fileID: 2100000, guid: cce0befe8a1a61140a0397c08e171896, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticSecondPillars
+    second: {fileID: 2100000, guid: 348cb895b6eafd740afd7bfed09bb0f7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticSecondSkirts
+    second: {fileID: 2100000, guid: 46459ff5079b4f4408e552de6a2e1e84, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticSecondVent
+    second: {fileID: 2100000, guid: 5d060f9bf85bc414cac442fe39913bf9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticSecondWalls
+    second: {fileID: 2100000, guid: cda197020a37d7a47880dbb3b41d8e19, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticWalls_Back
+    second: {fileID: 2100000, guid: 6cac52fdc0f641c46aae906c513c0911, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticWalls_Front
+    second: {fileID: 2100000, guid: e4d81ee62c4a93347bc9d15fd90741bf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticWalls_Left
+    second: {fileID: 2100000, guid: 3d793d09bcb97804e91046e748d4192c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AtticWalls_Right
+    second: {fileID: 2100000, guid: 08cf97da34c4da64d8cc2a853a4944ce, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BRLeftWindowGlass
+    second: {fileID: 2100000, guid: a31c66e9ef334d540a46e8270ce94eeb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BRRightWindowGlass
+    second: {fileID: 2100000, guid: 10c34c1da93945248b60d6d117478e67, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Balcony-HallwayFloor
+    second: {fileID: 2100000, guid: 87403b08b5eb47a4ca3e1a76bf70da6a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BalconyCeiling
+    second: {fileID: 2100000, guid: d088a2a1c830e2342893d3c98162511e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BalconyFenceInside
+    second: {fileID: 2100000, guid: 483802185a75a834cbceec1bc799836c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BalconyFenceOutside
+    second: {fileID: 2100000, guid: 69cff238eb61a834280f69661c2ea589, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BalconyFenceOutsideRight_
+    second: {fileID: 2100000, guid: b742239185bd20c48828795ee2ae2339, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BalconyGutterHolder
+    second: {fileID: 2100000, guid: d053be396b17a814188a4827d90622b2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BalconyLargeWindowGlass
+    second: {fileID: 2100000, guid: 3c591b1cf2a02f543a607131f92b49db, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BalconyLargeWindowGlass001
+    second: {fileID: 2100000, guid: bb5a9c9bd6f5ce7499905f439a119259, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BalconyPillars
+    second: {fileID: 2100000, guid: 660e5d39510f0174785743a247ceb996, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementCeiling
+    second: {fileID: 2100000, guid: 6255b5f8ad4ca7141acb5778eaddab81, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementDoor
+    second: {fileID: 2100000, guid: 024a0a2dc01382b4ab2dffb546485909, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementDoorFrame
+    second: {fileID: 2100000, guid: 32ebc1a466fe096489a5236956afbe51, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementFloor
+    second: {fileID: 2100000, guid: f9d77708a8726774fb994d98584da17f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementRoof
+    second: {fileID: 2100000, guid: 6857e63fc2bc0cc47b58fd7be83e6d22, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementStairs
+    second: {fileID: 2100000, guid: e8697095cfd95454c8f9fd4d6d735f5b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementWalls_Back
+    second: {fileID: 2100000, guid: 902adec196e055a47a54a3fabbf9eede, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementWalls_Front
+    second: {fileID: 2100000, guid: 02459b0350dcd6f45b2ebf74a2ea13f0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementWalls_Left
+    second: {fileID: 2100000, guid: f3851d079fbfef848bce4642edd1b706, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementWalls_Right
+    second: {fileID: 2100000, guid: 71d25995982c9784396074ba9f773ed9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementWindowFrame
+    second: {fileID: 2100000, guid: 8a5ab343cb23dcc4999533555ddaf607, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BasementWindowGlass
+    second: {fileID: 2100000, guid: 6a24a0d2a33abc344b3c0e584bb2a1e8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Basement_DoorHandle
+    second: {fileID: 2100000, guid: d3dade390794f4f418d364c0bab34d40, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BathroomCeiling
+    second: {fileID: 2100000, guid: 096e1e41d81c2f348aa5258f1dc7d216, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BathroomFloor
+    second: {fileID: 2100000, guid: b8d27affd57f2e045bdc554e59188627, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BathroomUnderFloor
+    second: {fileID: 2100000, guid: 6577e1f6756bdb64085af5c525a65de8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BathroomWalls_Back
+    second: {fileID: 2100000, guid: 3b4a1485f81b57443ae1b25e01f4c022, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BathroomWalls_Front
+    second: {fileID: 2100000, guid: d593d3949e3ce09409baf00c412c2b85, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BathroomWalls_Left
+    second: {fileID: 2100000, guid: 0f6ab6a25a62d514cba8456b178f7004, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BathroomWalls_Right
+    second: {fileID: 2100000, guid: 13303a301c86e4f4c80bb03b4a1842ec, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BedroomCeiling
+    second: {fileID: 2100000, guid: 5365bc00a6c78524a830d4f4d47deea1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BedroomFloor
+    second: {fileID: 2100000, guid: d3cf73fd9901fd14b806ee4472d55215, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BedroomWalls_Back
+    second: {fileID: 2100000, guid: f8b2f5929a7c7c0429847c3e20464656, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BedroomWalls_Front
+    second: {fileID: 2100000, guid: 47cf00cba5b7d5c43b1ebb393d9b1803, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BedroomWalls_Left
+    second: {fileID: 2100000, guid: 378ad3d42212fc646ba8dc83018f945d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BedroomWalls_Right
+    second: {fileID: 2100000, guid: 5afa37491c7c29d4284be5cf4dab9b59, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Chimney
+    second: {fileID: 2100000, guid: f04984804c3c9194c800098ba4fe395c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Chimney Pipes
+    second: {fileID: 2100000, guid: c8d2cf8d2d98e6f42a6199eaefd0cf21, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DRSmallWindowGlass
+    second: {fileID: 2100000, guid: 76fde9e06c4c7574d8017e63acd260ba, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DRSmallWindowGlass001
+    second: {fileID: 2100000, guid: b11f0da185abf964bb3631f0f7ecece7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DiningroomCeiling
+    second: {fileID: 2100000, guid: 234ed4cc712b62e48a39f7f0de055aa9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DiningroomFloor
+    second: {fileID: 2100000, guid: 8ec0020e6acd6e0439ee8fdfbbc60327, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DiningroomWalls_Back
+    second: {fileID: 2100000, guid: 01214552cf358f247ab9fd6f3596256b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DiningroomWalls_Front
+    second: {fileID: 2100000, guid: 261773cab7dd5de4993430fa3fede355, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DiningroomWalls_Left
+    second: {fileID: 2100000, guid: c4ce6c8332cc84246ac76c20bdb31a0d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DiningroomWalls_Right
+    second: {fileID: 2100000, guid: 1a1595d78711b32408159d4f0b83f999, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DoorFrameType1
+    second: {fileID: 2100000, guid: d8b0e3578870f6b4a90bc9b07260f3bc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DoorFrameType2
+    second: {fileID: 2100000, guid: 2fe6c3aa8a56c7847a855f2ff83f68c2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DoorFrameType3
+    second: {fileID: 2100000, guid: e20ea6383129e884ab35f934d4bd9b6a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DoorHandleType1
+    second: {fileID: 2100000, guid: c1272b6f11f02e4438c79f7b2f6f3530, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DoorHandleType2
+    second: {fileID: 2100000, guid: d04f225565cd2ff418ef650ac77617d5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DoorType1
+    second: {fileID: 2100000, guid: 96d7b610673909f488edcd7abd78cf54, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DoorType2
+    second: {fileID: 2100000, guid: cc54890f048eb1848be8e037532fdb0d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DoubleWindowFrames
+    second: {fileID: 2100000, guid: cb5a8ac8590d3dd4ab22c2cef5c93c06, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ENTStairs
+    second: {fileID: 2100000, guid: 4a24e5eac4f1d13429b5814e013b8da0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Foundation
+    second: {fileID: 2100000, guid: fb39772a3c5065540b27366ec585c5dd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: KDoubleWindowGlass
+    second: {fileID: 2100000, guid: 51ec4d38ffaec274e97b7e8ef0625e1a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: KitchenFloor
+    second: {fileID: 2100000, guid: 4fe84e9a76ed9e742b28ee40e4436c0a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: KitchenWalls_Back
+    second: {fileID: 2100000, guid: 6f8628a2119e5ab4a8eed87785345830, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: KitchenWalls_Front
+    second: {fileID: 2100000, guid: 63bae581f0e7f7b449710574c6a8c710, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: KitchenWalls_Left
+    second: {fileID: 2100000, guid: 5b5b63f962d581c4ba27c18d59501c3e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: KitchenWalls_Right
+    second: {fileID: 2100000, guid: cb581e4813dac764f8c2f31d9c702c55, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LRDoubleWindowGlass
+    second: {fileID: 2100000, guid: 6629318c542f4484d9a4d68adf9ae7b4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LRSmallWindowGlass
+    second: {fileID: 2100000, guid: f3e792fb74ad2f147a3bb339ef3b76a1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LRSmallWindowGlass001
+    second: {fileID: 2100000, guid: b7ffe3a2db4e74d4196500f6b0fc750f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LRStairs
+    second: {fileID: 2100000, guid: 5817776300ab4ac47a4f931871e6a1f9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LargeWindowFrames
+    second: {fileID: 2100000, guid: 007cf7e09d8f06a47be57d129127a4a0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LivingroomCeiling
+    second: {fileID: 2100000, guid: e5ff857dd6ab79f4a938b4ab61e9bf7f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LivingroomFloor
+    second: {fileID: 2100000, guid: fec8fc4d32b607f41901c07e6f16d57d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LivingroomWalls_Back
+    second: {fileID: 2100000, guid: 75c885f08211efc43835b5f1edf3d31f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LivingroomWalls_Front
+    second: {fileID: 2100000, guid: 269dca077667e6c429100b80c601c50e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LivingroomWalls_Left
+    second: {fileID: 2100000, guid: 9a3d172da4f81914e886c4678e398549, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LivingroomWalls_Right
+    second: {fileID: 2100000, guid: c627dd8e7ba24ba4691b3d802cabd7de, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MBRLeftWindowGlass
+    second: {fileID: 2100000, guid: df9d284644440f948ac8178a632c5fae, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MBRRightWindowGlass
+    second: {fileID: 2100000, guid: 8385f3e8c433b7b4b9d033842e4cc49f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MHEllipseWindowFrame
+    second: {fileID: 2100000, guid: 324ee3b4393cd394ba1e7def3c30eb00, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MHEllipseWindowGlass
+    second: {fileID: 2100000, guid: 2a415f28590beec48a5aa55c6d39dc32, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MHEntranceColumns
+    second: {fileID: 2100000, guid: 82e446ca907c51244adb3753d378e943, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MHEntranceRoof
+    second: {fileID: 2100000, guid: 9a32d8fa3bbbed8469058284204c3018, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MHLargeWindowGlass
+    second: {fileID: 2100000, guid: 184415231eee70e4c8429b642619b221, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MHLargeWindowGlass001
+    second: {fileID: 2100000, guid: c476b2288ccf04440a7984324e5bab28, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MHStairsColumns
+    second: {fileID: 2100000, guid: 4d373523b8d66a5488fa686db3bd7d5d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MHStairsFences
+    second: {fileID: 2100000, guid: a11ed94ab920c03408433048c4b08f76, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MHStairsLeft
+    second: {fileID: 2100000, guid: 08e70fb8aa8994e49801d9f33bac3849, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MHStairsRight
+    second: {fileID: 2100000, guid: d0843670e93dd8a4eac4738622a6158d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MHStairsSkirts
+    second: {fileID: 2100000, guid: dde8fab76b8ab0d46b062c2bf4b2b8f8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MainHallCeiling
+    second: {fileID: 2100000, guid: 9896cbb7659c82d4691e16faea104beb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MainHallFloor
+    second: {fileID: 2100000, guid: 2be8402c5dc7ac6478fdeb021e14583b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MainHallWalls_Back
+    second: {fileID: 2100000, guid: 160e407ef1954064b9614217e028c0f6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MainHallWalls_Front
+    second: {fileID: 2100000, guid: f6f1c789fb211bc498da770371c7a417, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MainHallWalls_Left
+    second: {fileID: 2100000, guid: 94355c663d7a6f141988ed3d854169b5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MainHallWalls_Right
+    second: {fileID: 2100000, guid: b2fb31950b1f6064ab735d08c8942eb8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MasterBedroomCeiling
+    second: {fileID: 2100000, guid: 11366e09c6ae21a47b4b2b93f3fdb9b4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MasterBedroomFloor
+    second: {fileID: 2100000, guid: 2e779747f25d7dd4098163153b22d549, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MasterBedroomRoof
+    second: {fileID: 2100000, guid: 4534cbd6daa563840902f64636f63bda, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MasterBedroomWalls_Back
+    second: {fileID: 2100000, guid: 71d1c1766e9cc6540b9987184772b41c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MasterBedroomWalls_Front
+    second: {fileID: 2100000, guid: 7f3b599d69951fd40aec8a6c4de23712, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MasterBedroomWalls_Left
+    second: {fileID: 2100000, guid: aa381696c9bcba448be0910bde30325f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MasterBedroomWalls_Right
+    second: {fileID: 2100000, guid: 4948c816d579127419c11842c7582e29, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: OutsideWalls_Back
+    second: {fileID: 2100000, guid: 74e5c1bee2a24ae4986ec1ce3b5d7e9e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: OutsideWalls_Front
+    second: {fileID: 2100000, guid: 3617020cad8acde439fa050045a75ca4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: OutsideWalls_Left
+    second: {fileID: 2100000, guid: 6137f7c336010f24ba3380df3bea601e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: OutsideWalls_Right
+    second: {fileID: 2100000, guid: 3cebbbc76a4140e4b81b2f386d5b55ce, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RoofGutterPipesLargeFront
+    second: {fileID: 2100000, guid: 7776a463c841a274984fc541781d12a8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RoofGutterPipesLargeRear
+    second: {fileID: 2100000, guid: a8a61ecc0654bf64e8b9e2ee52117c84, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RoofGutterPipesMedium
+    second: {fileID: 2100000, guid: 4e3926c6e5e0242459096c8b19612d0e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RoofGutterPipesSmall
+    second: {fileID: 2100000, guid: b4b6887f7a4a1334eb27e40a885bcd46, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RoofGutters
+    second: {fileID: 2100000, guid: 8260362729765674687ba35e3aac976c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RoofTiles
+    second: {fileID: 2100000, guid: f6cd2b4d024668948b2e9186c28c2e46, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SHStairs
+    second: {fileID: 2100000, guid: adc1fe61071797a42ab6f08f018a1780, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SecondHallCeiling
+    second: {fileID: 2100000, guid: d76f6dce19fd2aa408e9e4329f951bd6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SecondHallFloor
+    second: {fileID: 2100000, guid: 64e2150147daa404193261e1d5fefbc6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SecondHallWalls_Back
+    second: {fileID: 2100000, guid: 56341f807b7e71e409aa68f1c69e30a3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SecondHallWalls_Front
+    second: {fileID: 2100000, guid: 60d999ed31fb0a1438fff193986f0bca, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SecondHallWalls_Left
+    second: {fileID: 2100000, guid: 1dbb58f07934a8e48abf98a224e994c4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SecondHallWalls_Right
+    second: {fileID: 2100000, guid: c6fd14fb8bf1e1d478fae8566c21630f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SmallWindowFramesType1
+    second: {fileID: 2100000, guid: a1af448b59b832640a1ce0adb1cc1ed5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SmallWindowFramesType2
+    second: {fileID: 2100000, guid: 88cf105b596887b42bc18e9d14d2f220, type: 2}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 1
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 0
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 0
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

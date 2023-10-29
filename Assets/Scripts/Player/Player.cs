@@ -189,8 +189,6 @@ public class Player : MonoBehaviour
             /** Handle stamina decrease **/
             float modifier = modifiers.TryGetValue(Modifier.AdrenalineBoost, out dynamic adrenalineModifier) ? adrenalineModifier : 1f;
             stamina -= staminaChangeSpeed / modifier * Time.deltaTime;
-
-            PlayRunSound();
         }
         else if (CanWalk())
         {
@@ -203,8 +201,6 @@ public class Player : MonoBehaviour
             {
                 movementSpeed *= 0.5f;
             }
-
-            PlayWalkSound();
         }
 
         /** Check if movement direction is blocked by wall **/
@@ -446,12 +442,11 @@ public class Player : MonoBehaviour
                     float fallDamageRecoveryTime = Mathf.Abs(Mathf.Pow(verticalVelocity.y * multiplier, 3f));
 
                     modifiers[Modifier.FallDamage] = Mathf.Clamp(fallDamageRecoveryTime, 5f, 15f);
-
-                    PlayFallDamageSound();
                 }
-                else if (verticalVelocity.y < impactTolerance)
+
+                if (verticalVelocity.y < impactTolerance)
                 {
-                    PlayImpactSound();
+                    // TODO Add impact sounds
                 }
 
                 playerAnimator.SetImpactVelocity(verticalVelocity.y);
@@ -490,12 +485,6 @@ public class Player : MonoBehaviour
     /// <param name="hit">The character controller collider's hit details</param>
     private void CheckForWallHit(ControllerColliderHit hit)
     {
-        /** Ignore objects **/
-        if (hit.gameObject.layer == LayerMask.NameToLayer("Object"))
-        {
-            return;
-        }
-
         /** Compare surface normal to direction of movement when colliding **/
         if (Vector3.Dot(hit.moveDirection, hit.normal) < -wallHitTolerance)
         {
@@ -553,46 +542,18 @@ public class Player : MonoBehaviour
 
     /** PLAYER SOUND METHODS **/
 
-    private void PlayWalkSound()
-    {
-        if (isGrounded && !isCrouching && horizontalVelocity.magnitude > 0.35f)
-        {
-            float stepSpeed = Mathf.Clamp(1f / movementSpeed, 0.4f, 0.75f);
-
-            audioManager.PlayCollectionSound("Sound_Step_Walk_Dirt", true, stepSpeed);
-        }
-    }
-
-    private void PlayRunSound()
-    {
-        if (isGrounded && horizontalVelocity.magnitude > 0.35f)
-        {
-            audioManager.PlayCollectionSound("Sound_Step_Run_Dirt", true, 0.3f);
-        }
-    }
-
     private void PlayJumpingSound()
     {
-        audioManager.PlayCollectionSound("Sound_Player_Jump", true);
+        audioManager.PlayCollectionSound("player_jump", true);
     }
 
     private void PlayCrouchingSound()
     {
-        audioManager.PlayCollectionSound("Sound_Player_Crouch", true);
+        audioManager.PlayCollectionSound("player_crouch", true);
     }
 
     private void PlayerBreathSound()
     {
-        audioManager.PlayCollectionSound("Sound_Player_Breath", false, 0.2f);
-    }
-
-    private void PlayImpactSound()
-    {
-        audioManager.PlayCollectionSound("Sound_Step_Run_Dirt");
-    }
-
-    private void PlayFallDamageSound()
-    {
-        audioManager.PlayCollectionSound("Sound_Step_Run_Dirt");
+        audioManager.PlayCollectionSound("player_breath", false, 0.2f);
     }
 }

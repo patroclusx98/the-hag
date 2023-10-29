@@ -346,10 +346,10 @@ AudioSource:
   m_GameObject: {fileID: 1806105415}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -7413443456547451695, guid: b7902cc6b99cf7147aff822d0fcf71f6, type: 2}
+  OutputAudioMixerGroup: {fileID: 7810753949974906789, guid: b7902cc6b99cf7147aff822d0fcf71f6, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.5
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -450,7 +450,7 @@ VideoPlayer:
   m_TargetMaterialRenderer: {fileID: 0}
   m_TargetMaterialProperty: _MainTex
   m_RenderMode: 0
-  m_AspectRatio: 2
+  m_AspectRatio: 5
   m_DataSource: 0
   m_TimeUpdateMode: 2
   m_PlaybackSpeed: 1
@@ -512,7 +512,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1529449330274610178, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
       propertyPath: fadeOutTime
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1529449330274610178, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
       propertyPath: audioManager

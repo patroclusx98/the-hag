@@ -6,8 +6,8 @@ using UnityEngine.Audio;
 public class AudioManager : MonoBehaviour
 {
     [Header("Audio Manager Attributes")]
-    public List<Audio> musicList;
-    public List<Audio> soundList;
+    public List<AudioMusic> musicList;
+    public List<AudioSound> soundList;
     public List<AudioCollection> soundCollectionList;
 
     private AudioMixer audioMixer;
@@ -19,16 +19,16 @@ public class AudioManager : MonoBehaviour
     {
         audioMixer = Resources.Load<AudioMixer>("MasterAudioMixer");
         musicAudioGroup = audioMixer.FindMatchingGroups("Master/Music")[0];
-        soundAudioGroup = audioMixer.FindMatchingGroups("Master/Sound")[0];
+        soundAudioGroup = audioMixer.FindMatchingGroups("Master/Sounds")[0];
 
         /** Initialise all music audio sources **/
-        foreach (Audio music in musicList)
+        foreach (AudioMusic music in musicList)
         {
             music.CreateSource(gameObject, musicAudioGroup);
         }
 
         /** Initialise all sound audio sources **/
-        foreach (Audio sound in soundList)
+        foreach (AudioSound sound in soundList)
         {
             sound.CreateSource(gameObject, soundAudioGroup);
         }
@@ -43,19 +43,14 @@ public class AudioManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        /** Play all playOnAwake music **/
-        foreach (Audio music in musicList)
-        {
-            if (music.source.playOnAwake)
-            {
-                music.source.Play();
-            }
-        }
+        /** Play first playOnAwake music **/
+        AudioMusic music = musicList.Find((music) => music.playOnAwake);
+        music?.PlayMusic();
 
         /** Play all playOnAwake sounds **/
-        foreach (Audio sound in soundList)
+        foreach (AudioSound sound in soundList)
         {
-            if (sound.source.playOnAwake)
+            if (sound.playOnAwake)
             {
                 sound.source.Play();
             }
@@ -65,12 +60,12 @@ public class AudioManager : MonoBehaviour
     /** MUSIC METHODS **/
 
     /// <summary>
-    /// Checks if any music is playing at the audio manager instance
+    /// Gets the currently playing music at the audio manager instance
     /// </summary>
-    /// <returns>True if any music is playing at the audio manager instance</returns>
-    public bool IsMusicPlaying()
+    /// <returns>The currently playing music object or null</returns>
+    public AudioMusic GetCurrentlyPlayingMusic()
     {
-        return musicList.Exists((music) => music.source.isPlaying);
+        return musicList.Find((music) => music.IsPlaying());
     }
 
     /// <summary>
@@ -80,20 +75,19 @@ public class AudioManager : MonoBehaviour
     /// <param name="musicName">The name of the music as defined within the audio manager instance</param>
     public void PlayMusic(string musicName)
     {
-        Audio music = musicList.Find((music) => music.name == musicName);
+        AudioMusic music = musicList.Find((music) => music.name == musicName);
 
         if (music != null)
         {
-            if (!music.source.isPlaying)
+            AudioMusic currentMusic = GetCurrentlyPlayingMusic();
+
+            if (currentMusic != null && currentMusic != music)
             {
-                if (!IsMusicPlaying())
-                {
-                    music.source.Play();
-                }
-                else
-                {
-                    StartCoroutine(SwapMusicCR(music.source, 3f));
-                }
+                StartCoroutine(SwapMusicCR(currentMusic, music, 3f));
+            }
+            else if (currentMusic != music)
+            {
+                music.PlayMusic();
             }
         }
         else
@@ -107,8 +101,8 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void StopMusic()
     {
-        Audio music = musicList.Find((music) => music.source.isPlaying);
-        music?.source.Stop();
+        AudioMusic currentMusic = GetCurrentlyPlayingMusic();
+        currentMusic?.StopMusic();
     }
 
     /** SOUND METHODS **/
@@ -127,11 +121,11 @@ public class AudioManager : MonoBehaviour
     /// </param>
     public void PlaySound(string soundName, bool canOverlap = false, float frequencyTime = 0f)
     {
-        Audio sound = soundList.Find((sound) => sound.name == soundName);
+        AudioSound sound = soundList.Find((sound) => sound.name == soundName);
 
         if (sound != null)
         {
-            if (frequencyTime == 0f || ObjectTimer.StartTimer(soundName, gameObject, canOverlap ? frequencyTime : frequencyTime + sound.audioClip.length))
+            if (frequencyTime == 0f || ObjectTimer.StartTimer(soundName, gameObject, canOverlap ? frequencyTime : frequencyTime + sound.soundClip.length))
             {
                 if (!canOverlap)
                 {
@@ -142,14 +136,7 @@ public class AudioManager : MonoBehaviour
                 }
                 else
                 {
-                    if (!sound.source.loop)
-                    {
-                        sound.source.PlayOneShot(sound.audioClip);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("Looped sounds cannot be overlapped: " + soundName);
-                    }
+                    sound.source.PlayOneShot(sound.soundClip);
                 }
             }
         }
@@ -160,43 +147,11 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Stops the defined sound at the audio manager instance
-    /// </summary>
-    /// <param name="soundName">The name of the sound as defined within the audio manager instance</param>
-    public void StopSound(string soundName)
-    {
-        Audio sound = soundList.Find((sound) => sound.name == soundName);
-
-        if (sound != null)
-        {
-            if (sound.source.isPlaying)
-            {
-                sound.source.Stop();
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Could not find sound to stop: " + soundName);
-        }
-    }
-
-    /// <summary>
     /// Plays a random sound from the specified sound collection at the audio manager instance
     /// </summary>
     /// <param name="soundCollectionName">The name of the sound collection as defined within the audio manager instance</param>
-    /// <param name="canOverlap">
-    /// Allows the audio to overlap with itself if played multiple times
-    /// <para>Otherwise it waits for the sound to finish playing first before playing it again</para>
-    /// </param>
-    /// <param name="frequencyTime">
-    /// Frequency time in seconds, determines how much time should pass between frequent plays
-    /// <para>If the audio can't overlap it's audio clip length will be automatically added to frequency time</para>
-    /// </param>
-    /// <param name="canRepeatSameSound">
-    /// Allows the same sound clip to play multiple times in a row
-    /// <para>Otherwise the same sound clip will never play twice in a row</para>
-    /// </param>
-    public void PlayCollectionSound(string soundCollectionName, bool canOverlap = false, float frequencyTime = 0f, bool canRepeatSameSound = false)
+    /// <inheritdoc cref="PlaySound"/>>
+    public void PlayCollectionSound(string soundCollectionName, bool canOverlap = false, float frequencyTime = 0f)
     {
         AudioCollection soundCollection = soundCollectionList.Find((soundCollection) => soundCollection.name == soundCollectionName);
 
@@ -204,10 +159,9 @@ public class AudioManager : MonoBehaviour
         {
             AudioSource soundCollectionSource = null;
 
-            while (!soundCollectionSource || (!canRepeatSameSound && soundCollectionSource == soundCollection.lastSourcePlayed))
+            while (!soundCollectionSource || soundCollectionSource == soundCollection.lastSourcePlayed)
             {
-                int collectionLength = soundCollection.sources.Count;
-                int randomSourceIndex = Random.Range(0, collectionLength);
+                int randomSourceIndex = Random.Range(0, soundCollection.sources.Count);
                 soundCollectionSource = soundCollection.sources[randomSourceIndex];
             }
 
@@ -236,7 +190,38 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    /** AUDIO FADE METHODS **/
+    /// <summary>
+    /// Stops the defined sound at the audio manager instance
+    /// </summary>
+    /// <param name="soundName">The name of the sound as defined within the audio manager instance</param>
+    public void StopSound(string soundName)
+    {
+        AudioSound sound = soundList.Find((sound) => sound.name == soundName);
+
+        if (sound != null)
+        {
+            sound.source.Stop();
+        }
+        else
+        {
+            Debug.LogWarning("Could not find sound to stop: " + soundName);
+        }
+    }
+
+    /// <summary>
+    /// Stops all playing sounds at the audio manager instance
+    /// </summary>
+    public void StopAllSounds()
+    {
+        List<AudioSound> playingSounds = soundList.FindAll((sound) => sound.source.isPlaying);
+
+        foreach (AudioSound sound in playingSounds)
+        {
+            sound.source.Stop();
+        }
+    }
+
+    /** LOCAL AUDIO FADE METHODS **/
 
     /// <summary>
     /// Fades out the currently playing music at the audio manager instance
@@ -244,16 +229,12 @@ public class AudioManager : MonoBehaviour
     /// <param name="fadeTime">Fade out time in seconds</param>
     public void FadeOutMusic(float fadeTime)
     {
-        StartCoroutine(FadeOutMusicCR(fadeTime));
-    }
+        AudioMusic currentMusic = GetCurrentlyPlayingMusic();
 
-    /// <summary>
-    /// Fades out all playing music for all audio manager instances
-    /// </summary>
-    /// <param name="fadeTime">Fade out time in seconds</param>
-    public void FadeOutAllMusic(float fadeTime)
-    {
-        StartCoroutine(FadeOutAllMusicCR(fadeTime));
+        if (currentMusic != null)
+        {
+            StartCoroutine(FadeOutMusicCR(currentMusic, fadeTime));
+        }
     }
 
     /// <summary>
@@ -263,66 +244,116 @@ public class AudioManager : MonoBehaviour
     /// <param name="fadeTime">Fade out time in seconds</param>
     public void FadeOutSound(string soundName, float fadeTime)
     {
-        StartCoroutine(FadeOutSoundCR(soundName, fadeTime));
+        AudioSound sound = soundList.Find((sound) => sound.name == soundName);
+
+        if (sound != null)
+        {
+            if (sound.source.isPlaying)
+            {
+                StartCoroutine(FadeOutSoundCR(sound, fadeTime));
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Could not find sound to fade out: " + soundName);
+        }
+    }
+
+    /// <summary>
+    /// Fades out all playing sounds at the audio manager instance
+    /// </summary>
+    /// <param name="fadeTime">Fade out time in seconds</param>
+    public void FadeOutAllSounds(float fadeTime)
+    {
+        List<AudioSound> playingSounds = soundList.FindAll((sound) => sound.source.isPlaying);
+
+        foreach (AudioSound sound in playingSounds)
+        {
+            StartCoroutine(FadeOutSoundCR(sound, fadeTime));
+        }
+    }
+
+    /** GLOBAL AUDIO FADE METHODS **/
+
+    /// <summary>
+    /// Fades out all playing music for all audio manager instances
+    /// </summary>
+    /// <param name="fadeTime">Fade out time in seconds</param>
+    public void FadeOutGlobalMusic(float fadeTime)
+    {
+        StartCoroutine(FadeOutGlobalMusicCR(fadeTime));
     }
 
     /// <summary>
     /// Fades out all playing sounds for all audio manager instances
     /// </summary>
     /// <param name="fadeTime">Fade out time in seconds</param>
-    public void FadeOutAllSound(float fadeTime)
+    public void FadeOutGlobalSounds(float fadeTime)
     {
-        StartCoroutine(FadeOutAllSoundCR(fadeTime));
+        StartCoroutine(FadeOutGlobalSoundsCR(fadeTime));
     }
 
     /// <summary>
     /// Fades out all playing audio for all audio manager instances
     /// </summary>
     /// <param name="fadeTime">Fade out time in seconds</param>
-    public void FadeOutAllAudio(float fadeTime)
+    public void FadeOutGlobalAudio(float fadeTime)
     {
-        StartCoroutine(FadeOutAllMusicCR(fadeTime));
-        StartCoroutine(FadeOutAllSoundCR(fadeTime));
+        FadeOutGlobalMusic(fadeTime);
+        FadeOutGlobalSounds(fadeTime);
     }
 
-    /** AUDIO FADE COROUTINES **/
+    /** LOCAL AUDIO FADE COROUTINES **/
 
-    private IEnumerator FadeOutMusicCR(float fadeTime)
+    private IEnumerator FadeOutMusicCR(AudioMusic music, float fadeTime)
     {
-        Audio music = musicList.Find((music) => music.source.isPlaying);
+        float defaultVolume = music.volume;
 
-        if (music != null)
+        while (fadeTime > 0f && music.GetSourceVolume() > 0f)
         {
-            float defaultVolume = music.source.volume;
+            float newVolume = music.GetSourceVolume() - defaultVolume * Time.deltaTime / fadeTime;
+            music.SetSourceVolume(newVolume);
 
-            while (fadeTime > 0f && music.source.volume > 0f)
-            {
-                music.source.volume -= defaultVolume * Time.deltaTime / fadeTime;
-
-                yield return null;
-            }
-
-            music.source.Stop();
-            music.source.volume = defaultVolume;
+            yield return null;
         }
+
+        music.StopMusic();
+        music.SetSourceVolume(defaultVolume);
     }
 
-    private IEnumerator SwapMusicCR(AudioSource musicSource, float swapTime)
+    private IEnumerator SwapMusicCR(AudioMusic currentMusic, AudioMusic newMusic, float swapTime)
     {
-        StartCoroutine(FadeOutMusicCR(swapTime));
+        StartCoroutine(FadeOutMusicCR(currentMusic, swapTime));
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(swapTime);
 
-        musicSource.Play();
+        newMusic.PlayMusic();
     }
 
-    private IEnumerator FadeOutAllMusicCR(float fadeTime)
+    private IEnumerator FadeOutSoundCR(AudioSound sound, float fadeTime)
+    {
+        float defaultVolume = sound.volume;
+
+        while (fadeTime > 0f && sound.source.volume > 0f)
+        {
+            sound.source.volume -= defaultVolume * Time.deltaTime / fadeTime;
+
+            yield return null;
+        }
+
+        sound.source.Stop();
+        sound.source.volume = defaultVolume;
+    }
+
+    /** GLOBAL AUDIO FADE COROUTINES **/
+
+    private IEnumerator FadeOutGlobalMusicCR(float fadeTime)
     {
         audioMixer.GetFloat("MusicVolume", out float defaultVolume);
 
         while (fadeTime > 0f && audioMixer.GetFloat("MusicVolume", out float currentVolume) && currentVolume > -80f)
         {
-            currentVolume -= defaultVolume * Time.deltaTime / fadeTime;
+            currentVolume -= (defaultVolume + 80f) * Time.deltaTime / fadeTime;
             audioMixer.SetFloat("MusicVolume", currentVolume);
 
             yield return null;
@@ -339,53 +370,26 @@ public class AudioManager : MonoBehaviour
         audioMixer.SetFloat("MusicVolume", defaultVolume);
     }
 
-    private IEnumerator FadeOutSoundCR(string soundName, float fadeTime)
+    private IEnumerator FadeOutGlobalSoundsCR(float fadeTime)
     {
-        Audio sound = soundList.Find((sound) => sound.name == soundName);
+        audioMixer.GetFloat("SoundsVolume", out float defaultVolume);
 
-        if (sound != null)
+        while (fadeTime > 0f && audioMixer.GetFloat("SoundsVolume", out float currentVolume) && currentVolume > -80f)
         {
-            if (sound.source.isPlaying)
-            {
-                float defaultVolume = sound.source.volume;
-
-                while (fadeTime > 0f && sound.source.volume > 0f)
-                {
-                    sound.source.volume -= defaultVolume * Time.deltaTime / fadeTime;
-
-                    yield return null;
-                }
-
-                sound.source.Stop();
-                sound.source.volume = defaultVolume;
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Could not find sound to fade out: " + soundName);
-        }
-    }
-
-    private IEnumerator FadeOutAllSoundCR(float fadeTime)
-    {
-        audioMixer.GetFloat("SoundVolume", out float defaultVolume);
-
-        while (fadeTime > 0f && audioMixer.GetFloat("SoundVolume", out float currentVolume) && currentVolume > -80f)
-        {
-            currentVolume -= defaultVolume * Time.deltaTime / fadeTime;
-            audioMixer.SetFloat("SoundVolume", currentVolume);
+            currentVolume -= (defaultVolume + 80f) * Time.deltaTime / fadeTime;
+            audioMixer.SetFloat("SoundsVolume", currentVolume);
 
             yield return null;
         }
 
         foreach (AudioSource audioSource in FindObjectsOfType<AudioSource>())
         {
-            if (audioSource.outputAudioMixerGroup.name == "Sound")
+            if (audioSource.outputAudioMixerGroup.name == "Sounds")
             {
                 audioSource.Stop();
             }
         }
 
-        audioMixer.SetFloat("SoundVolume", defaultVolume);
+        audioMixer.SetFloat("SoundsVolume", defaultVolume);
     }
 }
