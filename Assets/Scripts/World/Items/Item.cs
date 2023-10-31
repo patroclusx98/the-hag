@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
+[CreateAssetMenu(fileName = "New Item", menuName = "Item/Generic")]
 
 public class Item : ScriptableObject
 {
-    new public string name = "New Item";
-    public Sprite icon = null;
+    new public string name;
+    public Sprite icon;
     [Range(0.01f, 10f)]
     public float iconScale = 1f;
 

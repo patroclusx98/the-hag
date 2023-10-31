@@ -50,16 +50,11 @@ public class ItemInteraction : MonoBehaviour
 
         if (rayHit)
         {
-            ItemInteractable itemObject = hitInfo.transform.gameObject.GetComponent<ItemInteractable>();
-            Item item = itemObject != null ? itemObject.item : null;
-
-            if (item != null)
+            if (hitInfo.transform.gameObject.TryGetComponent(out ItemInteractable itemObject))
             {
                 if (player.playerInventory.HasSpace())
                 {
-                    item.usableGameObjects = itemObject.usableGameObjects;
-                    player.playerInventory.AddItem(item);
-
+                    player.playerInventory.AddItem(itemObject.item);
                     Destroy(itemObject.gameObject);
                 }
                 else
@@ -69,7 +64,7 @@ public class ItemInteraction : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("GameObject does not hold an Item component: " + itemObject.name);
+                Debug.LogWarning("Interactable Item object does not hold an ItemInteractable component: " + hitInfo.transform.gameObject.name);
             }
         }
     }

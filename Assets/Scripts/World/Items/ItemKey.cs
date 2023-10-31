@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Key", menuName = "Inventory/Key")]
+[CreateAssetMenu(fileName = "New Key", menuName = "Item/Key")]
 
 public class ItemKey : Item
 {

@@ -13,4 +13,10 @@ public class ItemInteractable : MonoBehaviour
         gameObject.tag = "Interactable";
         gameObject.layer = LayerMask.NameToLayer("Item");
     }
+
+    // Start is called before the first frame update
+    private void Start()
+    {
+        item.usableGameObjects = usableGameObjects;
+    }
 }
