@@ -67,7 +67,7 @@ public class PlayerInventory : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Invalid inventory item index!");
+            Debug.LogWarning("Invalid inventory item index: " + index);
 
             return null;
         }
