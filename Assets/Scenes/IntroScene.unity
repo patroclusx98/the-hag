@@ -412,10 +412,12 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: One cloudy afternoon, Elara's insatiable curiosity drew her toward the
-    heart of the forest. Guided by an inexplicable force, she stumbled upon the ancient
+  m_Text: 'One cloudy afternoon, Elara''s curiosity drew her toward the heart of
+    the forest.
+
+    Guided by an inexplicable force, she stumbled upon the ancient
     house. Its windows were shattered, and the timeworn structure seemed to groan
-    under the weight of its own history.
+    under the weight of its own history.'
 --- !u!222 &241226006
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -494,11 +496,13 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: In a village nestled on the edge of an mysterious forest, resided a spirited
-    young girl named Elara. Her adventurous nature and fearlessness were well-known
-    throughout the village. Whispers of an eerie legend surrounded the woods, telling
-    tales of an abandoned house deep within, believed to be the dwelling place of
-    an evil witch.
+  m_Text: 'In a village nestled on the edge of a forest, resided a young girl named
+    Elara.
+
+    Her adventurous nature and fearlessness were well-known throughout
+    the village. Whispers of an eerie legend surrounded the woods, telling tales
+    of an abandoned house deep within, believed to be the dwelling place of an evil
+    witch.'
 --- !u!222 &402420951
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -577,10 +581,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Days merged into nights, and the village was consumed by worry. Elara had
-    not returned. They scoured the forest tirelessly, calling out her name, but there
-    was no trace of her. The truth behind Elara's disappearance remained veiled in
-    mystery, enveloping the village in an unsettling aura of uncertainty and dread.
+  m_Text: 'As the night fell, the village was consumed by worry. Elara had not returned.
+
+    They
+    scoured the forest tirelessly, calling out her name, but there was no trace of
+    her. The truth behind Elara''s disappearance remains veiled in mystery...'
 --- !u!222 &689438458
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -819,7 +824,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1529449330274610178, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
       propertyPath: fadeOutTime
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1529449330274610178, guid: 6989e4536a7e36e4395437d38c94cf90, type: 3}
       propertyPath: audioManager
