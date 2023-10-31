@@ -190,9 +190,8 @@ public class ObjectInteraction : MonoBehaviour
         if (rayHit)
         {
             objectInHand = hitInfo.transform.gameObject;
-            objectRBInHand = objectInHand.GetComponent<Rigidbody>();
 
-            if (objectRBInHand != null)
+            if (objectInHand.TryGetComponent(out objectRBInHand))
             {
                 if (objectRBInHand.mass <= maxObjectDragWeight && !IsObjectUnderPlayer())
                 {
@@ -231,7 +230,7 @@ public class ObjectInteraction : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Interactable Object does not contain Rigidbody component: " + objectInHand.name);
+                Debug.LogWarning("Interactable Object does not contain a Rigidbody component: " + objectInHand.name);
                 objectInHand = null;
             }
         }

@@ -58,17 +58,22 @@ public class WindowInteraction : MonoBehaviour
 
         if (rayHit)
         {
-            windowObject = hitInfo.transform.gameObject.GetComponent<WindowInteractable>();
-
-            if (!windowObject.isLocked)
+            if (hitInfo.transform.gameObject.TryGetComponent(out windowObject))
             {
-                player.modifiers[Player.Modifier.Interacting] = Player.Interaction.Window;
-                windowObject.isWindowGrabbed = true;
+                if (!windowObject.isLocked)
+                {
+                    player.modifiers[Player.Modifier.Interacting] = Player.Interaction.Window;
+                    windowObject.isWindowGrabbed = true;
+                }
+                else
+                {
+                    HintUI.instance.DisplayHintMessage("Window is locked!");
+                    windowObject = null;
+                }
             }
             else
             {
-                HintUI.instance.DisplayHintMessage("Window is locked!");
-                windowObject = null;
+                Debug.LogWarning("Interactable Window object does not hold a WindowInteractable component: " + hitInfo.transform.gameObject.name);
             }
         }
     }

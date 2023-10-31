@@ -91,19 +91,24 @@ public class DoorInteraction : MonoBehaviour
 
         if (rayHit)
         {
-            doorObject = hitInfo.transform.gameObject.GetComponent<DoorInteractable>();
-
-            if (!doorObject.isLocked)
+            if (hitInfo.transform.gameObject.TryGetComponent(out doorObject))
             {
-                player.modifiers[Player.Modifier.Interacting] = Player.Interaction.Door;
-                doorObject.isDoorGrabbed = true;
+                if (!doorObject.isLocked)
+                {
+                    player.modifiers[Player.Modifier.Interacting] = Player.Interaction.Door;
+                    doorObject.isDoorGrabbed = true;
 
-                doorObject.PlayDoorHandleAnimation();
+                    doorObject.PlayDoorHandleAnimation();
+                }
+                else
+                {
+                    HintUI.instance.DisplayHintMessage("Door is locked!");
+                    doorObject = null;
+                }
             }
             else
             {
-                HintUI.instance.DisplayHintMessage("Door is locked!");
-                doorObject = null;
+                Debug.LogWarning("Interactable Door object does not hold a DoorInteractable component: " + hitInfo.transform.gameObject.name);
             }
         }
     }
