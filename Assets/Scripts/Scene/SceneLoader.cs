@@ -13,10 +13,6 @@ public class SceneLoader : MonoBehaviour
     [Tooltip("Fade out time in seconds. Setting 0 will skip the fade out.")]
     public float fadeOutTime = 2f;
 
-    [Header("Scene Loader Inspector")]
-    [ReadOnlyInspector]
-    public bool isSceneSkipped = false;
-
     //Awake is called on script load
     private void Awake()
     {
@@ -83,7 +79,11 @@ public class SceneLoader : MonoBehaviour
     /// <returns>IEnumerator routine</returns>
     private IEnumerator LoadSceneCR(int sceneIndex)
     {
-        audioManager.FadeOutGlobalAudio(fadeOutTime);
+        if (fadeOutTime >= 1f)
+        {
+            audioManager.FadeOutGlobalAudio(fadeOutTime);
+        }
+
         transition.SetTrigger("StartFadeOut");
 
         yield return new WaitForSeconds(fadeOutTime);

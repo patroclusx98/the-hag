@@ -4,13 +4,15 @@ public class IntroScene : MonoBehaviour
 {
     public SceneLoader sceneLoader;
 
+    private bool isSceneSkipped;
+
     // Update is called once per frame
     private void Update()
     {
         /** Skip the intro scene **/
-        if (Input.GetKeyDown(KeyCode.Space) && !sceneLoader.isSceneSkipped)
+        if (Input.GetKeyDown(KeyCode.Space) && !isSceneSkipped)
         {
-            sceneLoader.isSceneSkipped = true;
+            isSceneSkipped = true;
             EndIntro();
         }
     }

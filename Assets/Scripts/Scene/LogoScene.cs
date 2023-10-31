@@ -7,6 +7,8 @@ public class LogoScene : MonoBehaviour
     public VideoPlayer videoPlayer;
     public AudioSource videoAudioSource;
 
+    private bool isSceneSkipped;
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -17,9 +19,9 @@ public class LogoScene : MonoBehaviour
     private void Update()
     {
         /** Skip the logo scene **/
-        if (Input.GetKeyDown(KeyCode.Space) && !sceneLoader.isSceneSkipped)
+        if (Input.GetKeyDown(KeyCode.Space) && !isSceneSkipped)
         {
-            sceneLoader.isSceneSkipped = true;
+            isSceneSkipped = true;
             EndVideo(videoPlayer);
         }
     }
