@@ -29,7 +29,7 @@ public class AudioSound
 
     public void CreateSource(GameObject gameObject, AudioMixerGroup audioMixerGroup)
     {
-        if (source != null)
+        if (soundClip != null)
         {
             source = gameObject.AddComponent<AudioSource>();
             source.hideFlags = HideFlags.HideInInspector;
