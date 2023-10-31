@@ -259,50 +259,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Fades out all playing sounds at the audio manager instance
-    /// </summary>
-    /// <param name="fadeTime">Fade out time in seconds</param>
-    public void FadeOutAllSounds(float fadeTime)
-    {
-        List<AudioSound> playingSounds = soundList.FindAll((sound) => sound.source.isPlaying);
-
-        foreach (AudioSound sound in playingSounds)
-        {
-            StartCoroutine(FadeOutSoundCR(sound, fadeTime));
-        }
-    }
-
-    /** GLOBAL AUDIO FADE METHODS **/
-
-    /// <summary>
-    /// Fades out all playing music for all audio manager instances
-    /// </summary>
-    /// <param name="fadeTime">Fade out time in seconds</param>
-    public void FadeOutGlobalMusic(float fadeTime)
-    {
-        StartCoroutine(FadeOutGlobalMusicCR(fadeTime));
-    }
-
-    /// <summary>
-    /// Fades out all playing sounds for all audio manager instances
-    /// </summary>
-    /// <param name="fadeTime">Fade out time in seconds</param>
-    public void FadeOutGlobalSounds(float fadeTime)
-    {
-        StartCoroutine(FadeOutGlobalSoundsCR(fadeTime));
-    }
-
-    /// <summary>
-    /// Fades out all playing audio for all audio manager instances
-    /// </summary>
-    /// <param name="fadeTime">Fade out time in seconds</param>
-    public void FadeOutGlobalAudio(float fadeTime)
-    {
-        FadeOutGlobalMusic(fadeTime);
-        FadeOutGlobalSounds(fadeTime);
-    }
-
     /** LOCAL AUDIO FADE COROUTINES **/
 
     private IEnumerator FadeOutMusicCR(AudioMusic music, float fadeTime)
@@ -345,51 +301,36 @@ public class AudioManager : MonoBehaviour
         sound.source.volume = defaultVolume;
     }
 
-    /** GLOBAL AUDIO FADE COROUTINES **/
+    /** GLOBAL AUDIO FADE METHODS **/
 
-    private IEnumerator FadeOutGlobalMusicCR(float fadeTime)
+    /// <summary>
+    /// Fades out all playing audio for all audio manager instances
+    /// </summary>
+    /// <param name="fadeTime">Fade out time in seconds</param>
+    public void FadeOutGlobalAudio(float fadeTime)
     {
-        audioMixer.GetFloat("MusicVolume", out float defaultVolume);
-
-        while (fadeTime > 0f && audioMixer.GetFloat("MusicVolume", out float currentVolume) && currentVolume > -80f)
-        {
-            currentVolume -= (defaultVolume + 80f) * Time.deltaTime / fadeTime;
-            audioMixer.SetFloat("MusicVolume", currentVolume);
-
-            yield return null;
-        }
-
-        foreach (AudioSource audioSource in FindObjectsOfType<AudioSource>())
-        {
-            if (audioSource.outputAudioMixerGroup.name == "Music")
-            {
-                audioSource.Stop();
-            }
-        }
-
-        audioMixer.SetFloat("MusicVolume", defaultVolume);
+        StartCoroutine(FadeOutGlobalAudioCR(fadeTime));
     }
 
-    private IEnumerator FadeOutGlobalSoundsCR(float fadeTime)
-    {
-        audioMixer.GetFloat("SoundsVolume", out float defaultVolume);
+    /** GLOBAL AUDIO FADE COROUTINES **/
 
-        while (fadeTime > 0f && audioMixer.GetFloat("SoundsVolume", out float currentVolume) && currentVolume > -80f)
+    private IEnumerator FadeOutGlobalAudioCR(float fadeTime)
+    {
+        audioMixer.GetFloat("MasterVolume", out float defaultVolume);
+
+        while (fadeTime > 0f && audioMixer.GetFloat("MasterVolume", out float currentVolume) && currentVolume > -80f)
         {
             currentVolume -= (defaultVolume + 80f) * Time.deltaTime / fadeTime;
-            audioMixer.SetFloat("SoundsVolume", currentVolume);
+            audioMixer.SetFloat("MasterVolume", currentVolume);
 
             yield return null;
         }
 
         foreach (AudioSource audioSource in FindObjectsOfType<AudioSource>())
         {
-            if (audioSource.outputAudioMixerGroup.name == "Sounds")
-            {
-                audioSource.Stop();
-            }
+            audioSource.Stop();
         }
 
-        audioMixer.SetFloat("SoundsVolume", defaultVolume);
+        audioMixer.SetFloat("MasterVolume", defaultVolume);
     }
 }

@@ -30,19 +30,30 @@ public class AudioCollection
 
     public void CreateSources(GameObject gameObject, AudioMixerGroup audioMixerGroup)
     {
-        for (int i = 0; i < audioClips.Count; i++)
+        if (audioClips.Count > 1)
         {
-            sources.Add(gameObject.AddComponent<AudioSource>());
-            sources[i].hideFlags = HideFlags.HideInInspector;
-            sources[i].clip = audioClips[i];
-            sources[i].outputAudioMixerGroup = audioMixerGroup;
-            sources[i].volume = volume;
-            sources[i].pitch = pitch;
-            sources[i].loop = false;
-            sources[i].playOnAwake = false;
-            sources[i].spatialBlend = spatialBlend;
-            sources[i].maxDistance = maxDistance;
-            sources[i].dopplerLevel = dopplerLevel;
+            for (int i = 0; i < audioClips.Count; i++)
+            {
+                sources.Add(gameObject.AddComponent<AudioSource>());
+                sources[i].hideFlags = HideFlags.HideInInspector;
+                sources[i].clip = audioClips[i];
+                sources[i].outputAudioMixerGroup = audioMixerGroup;
+                sources[i].volume = volume;
+                sources[i].pitch = pitch;
+                sources[i].loop = false;
+                sources[i].playOnAwake = false;
+                sources[i].spatialBlend = spatialBlend;
+                sources[i].maxDistance = maxDistance;
+                sources[i].dopplerLevel = dopplerLevel;
+            }
+        }
+        else if (audioClips.Count == 1)
+        {
+            Debug.LogWarning("Sound collection was attempted to be created with only one audio clip: " + name);
+        }
+        else
+        {
+            Debug.LogWarning("Sound collection has no audio clips attached: " + name);
         }
     }
 }

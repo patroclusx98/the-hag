@@ -29,15 +29,22 @@ public class AudioSound
 
     public void CreateSource(GameObject gameObject, AudioMixerGroup audioMixerGroup)
     {
-        source = gameObject.AddComponent<AudioSource>();
-        source.hideFlags = HideFlags.HideInInspector;
-        source.outputAudioMixerGroup = audioMixerGroup;
-        source.clip = soundClip;
-        source.volume = volume;
-        source.pitch = pitch;
-        source.loop = loop;
-        source.spatialBlend = spatialBlend;
-        source.maxDistance = maxDistance;
-        source.dopplerLevel = dopplerLevel;
+        if (source != null)
+        {
+            source = gameObject.AddComponent<AudioSource>();
+            source.hideFlags = HideFlags.HideInInspector;
+            source.outputAudioMixerGroup = audioMixerGroup;
+            source.clip = soundClip;
+            source.volume = volume;
+            source.pitch = pitch;
+            source.loop = loop;
+            source.spatialBlend = spatialBlend;
+            source.maxDistance = maxDistance;
+            source.dopplerLevel = dopplerLevel;
+        }
+        else
+        {
+            Debug.LogWarning("Sound has no audio clip attached: " + name);
+        }
     }
 }

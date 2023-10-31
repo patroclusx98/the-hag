@@ -48,6 +48,11 @@ public class AudioMusic
             loopSource.loop = true;
             loopSource.spatialBlend = 0f;
         }
+
+        if (!introClip && !loopClip)
+        {
+            Debug.LogWarning("Music has no audio clip attached: " + name);
+        }
     }
 
     public bool IsPlaying()
