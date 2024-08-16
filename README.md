@@ -1,1 +1,1 @@
-# The Hag, Game Development Phase 1
+# The Hag Game Project
